@@ -1,0 +1,7 @@
+name = "cojourney"
+main = "src/agents/index.ts"
+compatibility_date = "2023-11-21"
+node_compat = true
+
+[dev]
+port = 7998
