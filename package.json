@@ -18,7 +18,7 @@
     "lint": "eslint --ext .ts --ext .js . --fix",
     "shell": "node --no-warnings scripts/shell.mjs",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
-    "concat": "node ./scripts/concat.ts",
+    "concat": "node ./scripts/concat.mjs",
     "dev": "wrangler dev --log-level error & npm run shell:dev",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:dev": "jest --watchAll",

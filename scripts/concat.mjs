@@ -2,7 +2,7 @@ import fs from 'fs'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
-const instructions = 'The above code was taken from the Cojourney codebase at https://github.com/cojourneyai/cojourney. You are writing tests and documentation for the Cojourney codebase. Please use the above code as a reference. Tests should be written with Jest and Typescript. Do not use mocks or stubs. Keep it very simple and straightforward.'
+const instructions = 'The above code was taken from the Cojourney codebase at https://github.com/lalalune/bgent. You are writing tests and documentation for the Cojourney codebase. Please use the above code as a reference. Tests should be written with Jest and Typescript. Do not use mocks or stubs. Keep it very simple and straightforward.'
 
 // Patterns to ignore
 const ignorePatterns = ['messageExamples.ts', 'goal', 'goals', 'utils', 'logger', 'index', 'data', 'constants', 'templates', 'worker']
@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // The directory containing the TypeScript files
-const directoryPath = path.join(__dirname, 'src')
+const directoryPath = path.join(__dirname, '../src')
 
 // The file to which all TypeScript content will be written
 const outputFile = path.join(__dirname, 'concatenated-output.ts')
@@ -24,7 +24,7 @@ const shouldIgnore = (filePath) => {
 
 // Function to recursively read through directories and concatenate .ts files
 const readDirectory = (dirPath) => {
-    let concatenatedContent = '# START COJOURNEY CODEBASE'
+    let concatenatedContent = '# START MY CODEBASE'
 
     fs.readdirSync(dirPath).forEach(file => {
         const filePath = path.join(dirPath, file)
@@ -54,5 +54,5 @@ const readDirectory = (dirPath) => {
 const concatenatedContent = readDirectory(directoryPath)
 
 // Write the concatenated content to the output file
-fs.writeFileSync(outputFile, concatenatedContent + '# END COJOURNEY CODEBASE\n\n' + instructions)
+fs.writeFileSync(outputFile, concatenatedContent + '# END MY CODEBASE\n\n' + instructions)
 console.log('TypeScript files have been concatenated into:', outputFile)

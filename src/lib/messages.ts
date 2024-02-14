@@ -42,9 +42,6 @@ export function formatMessageActors({ actors }: { actors: Actor[] }) {
   return finalActorStrings;
 }
 
-/** get random conversation examples
- * return an array of random conversation examples from the messageExamples array
- */
 export const getRandomMessageExamples = (count: number) => {
   const examples: Array<
     Array<

@@ -46,14 +46,6 @@ export interface AgentRuntimeOpts {
   evaluators?: Evaluator[]; // Optional custom evaluators
 }
 
-/**
- * @class BgentRuntime
- * @param {object} opts
- * @param {number} opts.recentMessageCount
- * @param {string} opts.token - JWT token
- * @param {object} opts.supabase - Supabase client
- * @param {boolean} opts.debugMode - If true, will log debug messages
- */
 export class BgentRuntime {
   readonly #recentMessageCount = 32 as number;
   serverUrl = "http://localhost:7998";
