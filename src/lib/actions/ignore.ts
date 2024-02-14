@@ -9,10 +9,12 @@ export default {
   description:
     "Ignore the user and do not respond, use this if your role involves being sassy, or mad at user",
   handler: async (
-    _runtime: BgentRuntime,
+    runtime: BgentRuntime,
     message: Message,
   ): Promise<boolean> => {
-    console.log("Ignored:", message);
+    if (runtime.debugMode) {
+      console.log("Ignored message: ", message.content);
+    }
     return true;
   },
   condition: "The agent wants to ignore the user",

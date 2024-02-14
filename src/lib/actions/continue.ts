@@ -7,8 +7,9 @@ export default {
   validate: async (_runtime: BgentRuntime, _message: Message) => {
     return true;
   },
-  handler: async (_runtime: BgentRuntime, message: Message) => {
-    console.log("continue", message);
+  handler: async (runtime: BgentRuntime, message: Message) => {
+    const data = await runtime.handleRequest(message);
+    return data;
   },
   condition:
     "The agent wants to continue speaking and say something else as a continuation of the last thought",

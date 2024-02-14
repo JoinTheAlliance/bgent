@@ -7,13 +7,13 @@ import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
-import action from "../continue";
+import action from "../wait";  // Import the wait action
 
 dotenv.config();
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
-describe("User Profile", () => {
+describe("Wait Action Behavior", () => {
   let user: User | null;
   let runtime: BgentRuntime;
   let room_id: UUID | null;
@@ -75,15 +75,14 @@ describe("User Profile", () => {
     }
   }
 
-  test("Test continue action", async () => {
+  test("Test wait action behavior", async () => {
     const message: Message = {
       senderId: zeroUuid as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
       content: {
-        content:
-          "Hmm, let think for a second, I was going to tell you about something...",
-        action: "continue",
+        content: "Please wait a moment, I need to think about this...",
+        action: "wait",
       },
       room_id: room_id as UUID,
     };
@@ -93,6 +92,9 @@ describe("User Profile", () => {
     await populateMemories([GetTellMeAboutYourselfConversation1]);
 
     const result = (await handler(runtime, message)) as string[];
-    expect(result.length).toBeGreaterThan(1);
+    // Expectation depends on the implementation of the wait action. 
+    // For instance, it might be that there's no immediate output, 
+    // or the output indicates waiting, so adjust the expectation accordingly.
+    expect(result).toEqual(true);  // Update this line based on the expected behavior of the wait action
   }, 60000);
 });

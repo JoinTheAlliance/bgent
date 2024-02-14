@@ -3,9 +3,10 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
+import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
-import { type Message } from "../../types";
+import { Content, type Message } from "../../types";
 import action from "../continue";
 
 dotenv.config();
@@ -74,20 +75,25 @@ describe("User Profile", () => {
     }
   }
 
-  test("Test ignore action", async () => {
+  test("Test continue action", async () => {
     const message: Message = {
       senderId: zeroUuid as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: { content: "", action: "continue" },
+      content: {
+        content:
+          "Hmm, let think for a second, I was going to tell you about something...",
+        action: "continue",
+      },
       room_id: room_id as UUID,
     };
 
-    await populateMemories([]);
-
     const handler = action.handler!;
 
-    const result = (await handler(runtime, message)) as string[];
-    return result;
+    await populateMemories([GetTellMeAboutYourselfConversation1]);
+
+    const result = (await handler(runtime, message)) as Content;
+
+    expect(result.content.length).toBeGreaterThan(1);
   }, 60000);
 });

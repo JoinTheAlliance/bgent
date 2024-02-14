@@ -3,17 +3,16 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
-import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
-import action from "../wait";  // Import the wait action
+import action from "../continue";
 
 dotenv.config();
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
-describe("Wait Action Behavior", () => {
+describe("User Profile", () => {
   let user: User | null;
   let runtime: BgentRuntime;
   let room_id: UUID | null;
@@ -75,26 +74,20 @@ describe("Wait Action Behavior", () => {
     }
   }
 
-  test("Test wait action behavior", async () => {
+  test("Test ignore action", async () => {
     const message: Message = {
       senderId: zeroUuid as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: {
-        content: "Please wait a moment, I need to think about this...",
-        action: "wait",
-      },
+      content: { content: "", action: "continue" },
       room_id: room_id as UUID,
     };
 
+    await populateMemories([]);
+
     const handler = action.handler!;
 
-    await populateMemories([GetTellMeAboutYourselfConversation1]);
-
     const result = (await handler(runtime, message)) as string[];
-    // Expectation depends on the implementation of the wait action. 
-    // For instance, it might be that there's no immediate output, 
-    // or the output indicates waiting, so adjust the expectation accordingly.
-    expect(result).toEqual(expect.anything());  // Update this line based on the expected behavior of the wait action
+    expect(result).toBe(true);
   }, 60000);
 });

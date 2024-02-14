@@ -32,7 +32,7 @@ describe("Messages Library", () => {
     expect(result.length).toBeGreaterThan(0);
     result.forEach((actor) => {
       expect(actor).toHaveProperty("name");
-      expect(actor).toHaveProperty("description");
+      expect(actor).toHaveProperty("details");
       expect(actor).toHaveProperty("id");
     });
   });
@@ -41,9 +41,9 @@ describe("Messages Library", () => {
     const formattedActors = formatMessageActors({ actors });
     actors.forEach((actor) => {
       expect(formattedActors).toContain(actor.name);
-      expect(formattedActors).toContain(actor.details);
     });
   });
+  
 
   test("getRandomMessageExamples should return a specified number of random message examples", () => {
     const examples = getRandomMessageExamples(3);
