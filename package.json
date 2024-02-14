@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
@@ -13,19 +13,16 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && npm run build:types",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "lint": "eslint --ext .ts --ext .js . --fix",
-    "shell": "node --no-warnings scripts/shell.mjs",
+    "dev": "wrangler dev",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
     "concat": "node ./scripts/concat.mjs",
-    "dev": "wrangler dev --log-level error & npm run shell:dev",
+    "shell:cloud": "node --no-warnings scripts/shell.mjs",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
-    "test:dev": "jest --watchAll",
-    "test:coverage": "jest --coverage",
-    "dev:logs": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "start": "wrangler dev"
+    "reset-profile": "rm ~/.cjrc",
+    "deploy": "wrangler deploy"
   },
   "bin": {
     "bgent": "./scripts/shell.mjs"

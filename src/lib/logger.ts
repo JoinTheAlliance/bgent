@@ -1,19 +1,17 @@
-// @ts-nocheck
-
-import process from 'node:process';
-import os from 'node:os';
-import tty from 'node:tty';
+import process from 'process';
+import os from 'os';
+import tty from 'tty';
 
 // From: https://github.com/sindresorhus/has-flag/blob/main/index.js
 /// function hasFlag(flag, argv = globalThis.Deno?.args ?? process.argv) {
-function hasFlag(flag: string, argv = globalThis.Deno ? globalThis.Deno.args : process.argv) {
+function hasFlag(flag: string, argv = process.argv) {
 	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
 	const position = argv.indexOf(prefix + flag);
 	const terminatorPosition = argv.indexOf('--');
 	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
 }
 
-const {env} = process as unknown as { [x: string]: string };
+const env = process.env as { [x: string]: string };
 
 let flagForceColor: number;
 if (
@@ -44,6 +42,7 @@ function envForceColor() {
 
 		return env.FORCE_COLOR.length === 0 ? 1 : Math.min(Number.parseInt(env.FORCE_COLOR, 10), 3);
 	}
+	return undefined;
 }
 
 function translateLevel(level: number) {
@@ -59,7 +58,7 @@ function translateLevel(level: number) {
 	};
 }
 
-function _supportsColor(haveStream: any, {streamIsTTY, sniffFlags = true} = {}) {
+function _supportsColor(haveStream: any, { streamIsTTY = false, sniffFlags = true } = {}) {
 	const noFlagForceColor = envForceColor();
 	if (noFlagForceColor !== undefined) {
 		flagForceColor = noFlagForceColor;
@@ -177,8 +176,8 @@ export function createSupportsColor(stream: { isTTY: any; }, options = {}) {
 }
 
 const supportsColor = {
-	stdout: createSupportsColor({isTTY: tty.isatty(1)}),
-	stderr: createSupportsColor({isTTY: tty.isatty(2)}),
+	stdout: createSupportsColor({ isTTY: tty.isatty(1) }),
+	stderr: createSupportsColor({ isTTY: tty.isatty(2) }),
 };
 
 const ANSI_BACKGROUND_OFFSET = 10;
@@ -258,11 +257,13 @@ function assembleStyles() {
 
 	for (const [groupName, group] of Object.entries(styles)) {
 		for (const [styleName, style] of Object.entries(group)) {
+			// @ts-ignore
 			styles[styleName] = {
 				open: `\u001B[${style[0]}m`,
 				close: `\u001B[${style[1]}m`,
 			};
 
+			// @ts-ignore
 			group[styleName] = styles[styleName];
 
 			codes.set(style[0], style[1]);
@@ -279,14 +280,21 @@ function assembleStyles() {
 		enumerable: false,
 	});
 
+	// @ts-expect-error
 	styles.color.close = '\u001B[39m';
+	// @ts-expect-error
 	styles.bgColor.close = '\u001B[49m';
-
+	// @ts-expect-error
 	styles.color.ansi = wrapAnsi16();
+	// @ts-expect-error
 	styles.color.ansi256 = wrapAnsi256();
+	// @ts-expect-error
 	styles.color.ansi16m = wrapAnsi16m();
+	// @ts-expect-error
 	styles.bgColor.ansi = wrapAnsi16(ANSI_BACKGROUND_OFFSET);
+	// @ts-expect-error
 	styles.bgColor.ansi256 = wrapAnsi256(ANSI_BACKGROUND_OFFSET);
+	// @ts-expect-error
 	styles.bgColor.ansi16m = wrapAnsi16m(ANSI_BACKGROUND_OFFSET);
 
 	// From https://github.com/Qix-/color-convert/blob/3f0e0d4e92e235796ccb17f6e85c72094a651f49/conversions.js
@@ -340,6 +348,7 @@ function assembleStyles() {
 			enumerable: false,
 		},
 		hexToAnsi256: {
+			// @ts-expect-error
 			value: (hex: any) => styles.rgbToAnsi256(...styles.hexToRgb(hex)),
 			enumerable: false,
 		},
@@ -389,10 +398,12 @@ function assembleStyles() {
 			enumerable: false,
 		},
 		rgbToAnsi: {
+			// @ts-expect-error
 			value: (red: any, green: any, blue: any) => styles.ansi256ToAnsi(styles.rgbToAnsi256(red, green, blue)),
 			enumerable: false,
 		},
 		hexToAnsi: {
+			// @ts-expect-error
 			value: (hex: any) => styles.ansi256ToAnsi(styles.hexToAnsi256(hex)),
 			enumerable: false,
 		},
@@ -403,7 +414,7 @@ function assembleStyles() {
 
 const ansiStyles = assembleStyles();
 
-const {stdout: stdoutColor, stderr: stderrColor} = supportsColor;
+const { stdout: stdoutColor, stderr: stderrColor } = supportsColor;
 
 const GENERATOR = Symbol('GENERATOR');
 const STYLER = Symbol('STYLER');
@@ -420,7 +431,7 @@ const levelMapping = [
 const styles2 = Object.create(null);
 
 function stringReplaceAll(string: string, substring: string | any[], replacer: any) {
-	let index = string.indexOf(substring);
+	let index = string.indexOf(substring as string);
 	if (index === -1) {
 		return string;
 	}
@@ -431,7 +442,7 @@ function stringReplaceAll(string: string, substring: string | any[], replacer: a
 	do {
 		returnValue += string.slice(endIndex, index) + substring + replacer;
 		endIndex = index + substringLength;
-		index = string.indexOf(substring, endIndex);
+		index = string.indexOf(substring as string, endIndex);
 	} while (index !== -1);
 
 	returnValue += string.slice(endIndex);
@@ -452,13 +463,13 @@ function stringEncaseCRLFWithFirstIndex(string: string | string[], prefix: any, 
 	return returnValue;
 }
 
-const applyOptions = (object: { (...strings: any[]): string; level?: any; }, options = {}) => {
+const applyOptions = (object: { (...strings: any[]): string; level?: any; }, options: { level?: number } = {}) => {
 	if (options.level && !(Number.isInteger(options.level) && options.level >= 0 && options.level <= 3)) {
 		throw new Error('The `level` option should be an integer from 0 to 3');
 	}
 
 	// Detect level if not set manually
-	const colorLevel = stdoutColor ? stdoutColor.level : 0;
+	const colorLevel = stdoutColor ? (stdoutColor as unknown as { level: boolean }).level : 0;
 	object.level = options.level === undefined ? colorLevel : options.level;
 };
 
@@ -487,8 +498,9 @@ Object.setPrototypeOf(createChalk.prototype, Function.prototype);
 for (const [styleName, style] of Object.entries(ansiStyles)) {
 	styles2[styleName] = {
 		get() {
+			// @ts-expect-error
 			const builder = createBuilder(this, createStyler(style.open, style.close, this[STYLER]), this[IS_EMPTY]);
-			Object.defineProperty(this, styleName, {value: builder});
+			Object.defineProperty(this, styleName, { value: builder });
 			return builder;
 		},
 	};
@@ -497,28 +509,34 @@ for (const [styleName, style] of Object.entries(ansiStyles)) {
 styles2.visible = {
 	get() {
 		const builder = createBuilder(this, this[STYLER], true);
-		Object.defineProperty(this, 'visible', {value: builder});
+		Object.defineProperty(this, 'visible', { value: builder });
 		return builder;
 	},
 };
 
+// @ts-expect-error
 const getModelAnsi = (model: string, level: string, type: string, ...arguments_: any[]) => {
 	if (model === 'rgb') {
 		if (level === 'ansi16m') {
+			// @ts-expect-error
 			return ansiStyles[type].ansi16m(...arguments_);
 		}
 
 		if (level === 'ansi256') {
+			// @ts-expect-error
 			return ansiStyles[type].ansi256(ansiStyles.rgbToAnsi256(...arguments_));
 		}
 
+		// @ts-expect-error
 		return ansiStyles[type].ansi(ansiStyles.rgbToAnsi(...arguments_));
 	}
 
 	if (model === 'hex') {
+		// @ts-expect-error
 		return getModelAnsi('rgb', level, type, ...ansiStyles.hexToRgb(...arguments_));
 	}
 
+	// @ts-expect-error
 	return ansiStyles[type][model](...arguments_);
 };
 
@@ -527,9 +545,11 @@ const usedModels = ['rgb', 'hex', 'ansi256'];
 for (const model of usedModels) {
 	styles2[model] = {
 		get() {
-			const {level} = this;
+			const { level } = this;
 			return function (...arguments_: any) {
+				// @ts-expect-error
 				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'color', ...arguments_), ansiStyles.color.close, this[STYLER]);
+				// @ts-expect-error
 				return createBuilder(this, styler, this[IS_EMPTY]);
 			};
 		},
@@ -538,16 +558,18 @@ for (const model of usedModels) {
 	const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
 	styles2[bgModel] = {
 		get() {
-			const {level} = this;
+			const { level } = this;
 			return function (...arguments_: any) {
+				// @ts-expect-error
 				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'bgColor', ...arguments_), ansiStyles.bgColor.close, this[STYLER]);
+				// @ts-expect-error
 				return createBuilder(this, styler, this[IS_EMPTY]);
 			};
 		},
 	};
 }
 
-const proto = Object.defineProperties(() => {}, {
+const proto = Object.defineProperties(() => { }, {
 	...styles2,
 	level: {
 		enumerable: true,
@@ -598,21 +620,24 @@ const createBuilder = (self: any, _styler: { open: any; close: any; openAll: any
 
 const applyStyle = (self: { (...arguments_: any[]): any;[x: string]: any; "__@GENERATOR@162242"?: any; "__@STYLER@162087"?: any; "__@IS_EMPTY@162243"?: any; level?: any; }, string: string | string[]) => {
 	if (self.level <= 0 || !string) {
+		// @ts-expect-error
 		return self[IS_EMPTY] ? '' : string;
 	}
 
+	// @ts-expect-error
 	let styler = self[STYLER];
 
 	if (styler === undefined) {
 		return string;
 	}
 
-	const {openAll, closeAll} = styler;
+	const { openAll, closeAll } = styler;
 	if (string.includes('\u001B')) {
 		while (styler !== undefined) {
 			// Replace any instances already present with a re-opening code
 			// otherwise only the part of the string until said closing code
 			// will be colored, and the rest will simply be 'plain'.
+			// @ts-expect-error
 			string = stringReplaceAll(string, styler.close, styler.open);
 
 			styler = styler.parent;
@@ -632,8 +657,8 @@ const applyStyle = (self: { (...arguments_: any[]): any;[x: string]: any; "__@GE
 
 Object.defineProperties(createChalk.prototype, styles2);
 
-const chalk = createChalk();
-export const chalkStderr = createChalk({level: stderrColor ? stderrColor.level : 0});
+const chalk = createChalk({ level: 0 });
+export const chalkStderr = createChalk({ level: stderrColor ? (stderrColor as { level?: number}).level : 0 });
 
 export {
 	stdoutColor as supportsColor,
@@ -641,59 +666,60 @@ export {
 };
 
 class Logger {
-  frameChar = "*";
+	frameChar = "*";
 
-  log(
-    message: string,
-    {
-      title = "",
-      frame = false,
-      color = "white",
-    }: {
-      title?: string;
-      frame?: boolean;
-      color?: ForegroundColorName
-    },
-  ): void {
-    const coloredMessage = chalk[color](message);
-    if (frame) {
-      const framedMessage = this.frameMessage(coloredMessage, title);
-      console.log(framedMessage);
-    } else {
-      console.log(coloredMessage);
-    }
-  }
+	log(
+		message: string,
+		{
+			title = "",
+			frame = false,
+			color = "white",
+		}: {
+			title?: string;
+			frame?: boolean;
+			color?: string
+		},
+	): void {
+		// @ts-expect-error
+		const coloredMessage = chalk[color](message);
+		if (frame) {
+			const framedMessage = this.frameMessage(coloredMessage, title);
+			console.log(framedMessage);
+		} else {
+			console.log(coloredMessage);
+		}
+	}
 
-  warn(message: string, options = {}) {
-    this.log(message, { ...options, color: "yellow" });
-  }
+	warn(message: string, options = {}) {
+		this.log(message, { ...options, color: "yellow" });
+	}
 
-  error(message: string, options = {}) {
-    this.log(message, { ...options, color: "red" });
-  }
+	error(message: string, options = {}) {
+		this.log(message, { ...options, color: "red" });
+	}
 
-  frameMessage(message: string, title: string) {
-    const lines = message.split("\n");
-    const maxLength = Math.max(
-      ...lines.map((line: string) => line.length),
-      title.length,
-    );
-    const topFrame = title
-      ? this.frameChar.repeat(maxLength + 4) +
-        "\n" +
-        this.frameChar +
-        " " +
-        title +
-        " ".repeat(maxLength - title.length + 1) +
-        this.frameChar
-      : this.frameChar.repeat(maxLength + 4);
-    const bottomFrame = this.frameChar.repeat(maxLength + 4);
-    const framedLines = lines.map(
-      (line: string) =>
-        `${this.frameChar} ${line} ${" ".repeat(maxLength - line.length)} ${this.frameChar}`,
-    );
-    return [topFrame, ...framedLines, bottomFrame].join("\n");
-  }
+	frameMessage(message: string, title: string) {
+		const lines = message.split("\n");
+		const maxLength = Math.max(
+			...lines.map((line: string) => line.length),
+			title.length,
+		);
+		const topFrame = title
+			? this.frameChar.repeat(maxLength + 4) +
+			"\n" +
+			this.frameChar +
+			" " +
+			title +
+			" ".repeat(maxLength - title.length + 1) +
+			this.frameChar
+			: this.frameChar.repeat(maxLength + 4);
+		const bottomFrame = this.frameChar.repeat(maxLength + 4);
+		const framedLines = lines.map(
+			(line: string) =>
+				`${this.frameChar} ${line} ${" ".repeat(maxLength - line.length)} ${this.frameChar}`,
+		);
+		return [topFrame, ...framedLines, bottomFrame].join("\n");
+	}
 }
 
 export default new Logger();

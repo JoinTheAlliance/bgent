@@ -53,7 +53,7 @@ const getSupabase = (access_token) => {
   return supabase
 }
 
-export const getMe = async (session) => {
+const getMe = async (session) => {
   const {
     data: { user },
     error
@@ -67,17 +67,98 @@ export const getMe = async (session) => {
   }
 }
 
-// Main application logic
-// Main application logic
+const checkAndUpdateAccount = async (user) => {
+  console.log('checkAndUpdateAccount', user)
+  const supabase = getSupabase(user.access_token)
+  const response = await supabase
+    .from('accounts')
+    .select('*')
+    .eq('id', user.id)
+    console.log('response', response)
+  let { data: accounts, error: accountsError } = response
+  if (accountsError) {
+    console.error(chalk.red(`Failed to fetch accounts: ${accountsError.message}`))
+    return
+  }
+
+  if (accounts.length === 0) {
+    const { name } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Enter your name:',
+        validate: (input) => input.trim() !== '' || 'Name cannot be empty.'
+      }
+    ])
+
+    const { error: insertError } = await supabase
+      .from('accounts')
+      .insert([{ id: user.id, name, email: user.email, register_complete: true }])
+
+    if (insertError) {
+      console.error(chalk.red(`Failed to create account: ${insertError.message}`))
+    } else {
+      console.log(chalk.green('Account created successfully.'))
+    }
+  }
+}
+
+async function loginUser(retry = false) {
+  if (retry) {
+    console.log(chalk.yellow('Incorrect email or password. Please try again.'))
+  }
+
+  const credentials = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'email',
+      message: 'Enter your email:',
+      validate: (input) => input.includes('@') || 'Please enter a valid email address.'
+    },
+    {
+      type: 'password',
+      name: 'password',
+      message: 'Enter your password:',
+      mask: '*'
+    }
+  ])
+
+  const supabase = getSupabase()
+
+  const {data, error} = await supabase.auth.signInWithPassword({
+    email: credentials.email,
+    password: credentials.password
+  })
+
+  console.log('response.data', data)
+
+  const { session } = data;
+
+  if (error) {
+    await loginUser(true) // Recursively call loginUser to retry
+  } else {
+    console.log('session', session)
+    fs.writeFileSync(configFile, JSON.stringify({ session }))
+    console.log(chalk.green('Login successful! Configuration saved.'))
+    await startApplication() // Start the application after login
+  }
+}
+
+
 async function startApplication () {
   console.log(chalk.green('Starting application...'))
 
   // Assuming session information is stored in the .cjrc file
   const userData = JSON.parse(fs.readFileSync(configFile).toString())
   const session = userData?.session
+  await checkAndUpdateAccount(session.user) // Check and update account after login
+
   const supabase = getSupabase(session?.access_token)
+  
 
   const userId = session.user?.id
+
+  console.log('userId', userId)
 
   // get all entries from 'rooms' where there are two particants (entries in the partipants table) where the user and agent ids match the participant user_id field
   // this will require a join between the rooms and participants table
@@ -227,42 +308,6 @@ async function handleUserInteraction () {
       chalk.green('Configuration file found. You are already logged in.')
     )
     await startApplication() // Start the application if already logged in
-  }
-}
-
-// Function to log in the user
-async function loginUser () {
-  const credentials = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'email',
-      message: 'Enter your email:',
-      validate: (input) =>
-        input.includes('@') ? true : 'Please enter a valid email address.'
-    },
-    {
-      type: 'password',
-      name: 'password',
-      message: 'Enter your password:',
-      mask: '*'
-    }
-  ])
-
-  const supabase = getSupabase()
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: credentials.email,
-      password: credentials.password
-    })
-
-    if (error) throw error
-
-    fs.writeFileSync(configFile, JSON.stringify({ session: data.session }))
-    console.log(chalk.green('Login successful! Configuration saved.'))
-    await startApplication() // Start the application after login
-  } catch (error) {
-    console.error(chalk.red(`Login failed: ${error.message}`))
   }
 }
 

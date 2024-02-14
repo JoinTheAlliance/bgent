@@ -272,7 +272,7 @@ export class BgentRuntime {
     }
 
     if (!responseContent) {
-      responseContent = "I'm sorry, I don't have a response for that";
+      responseContent = { content: "I'm sorry, I don't have a response for that", action: 'wait' };
     }
 
     await this.processActions(message, responseContent);
