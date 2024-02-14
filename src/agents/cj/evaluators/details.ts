@@ -57,12 +57,14 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
     return;
   }
 
-  const { user, name, age, location, gender } = responseData;
+  const { name, age, location, gender } = responseData;
+
+  console.log('responseData', responseData)
 
   const response = await runtime.supabase
     .from("accounts")
     .select("*")
-    .eq("name", user)
+    .eq("id", message.senderId)
     .single();
   const { data: userRecord, error } = response;
   if (error) {
