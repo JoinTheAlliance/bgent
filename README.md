@@ -1,9 +1,11 @@
-# bgent <a href="https://discord.gg/qetWd7J9De"><img style="float: right" src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
+# bgent
 
-Flexible, scalable and customizable agents to do your bidding.
+Alexible, scalable and customizable agent to do your bidding.
 
 ![cj](https://github.com/lalalune/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
+<a href="https://discord.gg/qetWd7J9De"><img style="float: right" src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
+[![npm version](https://badge.fury.io/js/bgent.svg)](https://badge.fury.io/js/bgent)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/lalalune/bgent/blob/main/LICENSE)
 [![stars - bgent](https://img.shields.io/github/stars/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
 [![forks - bgent](https://img.shields.io/github/forks/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
