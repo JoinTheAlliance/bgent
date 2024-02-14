@@ -14,8 +14,6 @@ export async function createRelationship({
   userA: UUID;
   userB: UUID;
 }) {
-  // create a connection
-  // return the connection
   const { data, error } = await supabase.from("relationships").upsert({
     user_a: userA,
     user_b: userB,
@@ -56,11 +54,9 @@ export async function getRelationships({
   supabase: SupabaseClient;
   userId: string;
 }) {
-  // Await the query to complete and get the response directly
   const { data, error } = await supabase
     .from("relationships")
     .select("*")
-    // Check for userId in either user_a or user_b columns
     .or(`user_a.eq.${userId},user_b.eq.${userId}`)
     .eq("status", "FRIENDS");
 

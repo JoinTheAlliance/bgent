@@ -1,12 +1,12 @@
-export { BgentRuntime } from "./runtime";
-
-export * from "./context";
-export * from "./goals";
-export * from "./messages";
-export * from "./memory";
 export * from "./actions";
-export * from "./relationships";
+export * from "./context";
 export * from "./evaluation";
-export * from "./utils";
+export * from "./goals";
 export * from "./logger";
+export * from "./memory";
+export * from "./messages";
+export * from "./relationships";
+export * from "./runtime";
 export * from "./types";
+export * from "./utils";
+

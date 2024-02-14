@@ -13,7 +13,6 @@ export async function createRuntime(
 ) {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
 
-  // login
   const {
     data: { user, session },
   } = await supabase.auth.signInWithPassword({

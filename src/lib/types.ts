@@ -71,7 +71,6 @@ export interface State {
   [key: string]: unknown;
 }
 
-// what onMessage etc receive
 export interface Message {
   agentId: UUID;
   senderId: UUID;

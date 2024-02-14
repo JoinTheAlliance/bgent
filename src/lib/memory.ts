@@ -134,7 +134,6 @@ export class MemoryManager {
   }
 
   async removeMemory(memoryId: UUID): Promise<void> {
-    // remove item
     const result = await this.runtime.supabase
       .from(this.tableName)
       .delete()

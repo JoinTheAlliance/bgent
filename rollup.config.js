@@ -25,11 +25,10 @@ export default defineConfig([
         ],
         plugins: [
             json(),
-            resolve(), // so Rollup can resolve packages
-            commonjs(), // so Rollup can convert commonjs to an ES module
-            typescript(), // so Rollup can convert TypeScript to JavaScript
+            resolve(),
+            commonjs(),
+            typescript(),
             replace({
-                // see: https://github.com/rollup/plugins/tree/master/packages/replace#preventassignment
                 preventAssignment: true,
             })
         ].filter(Boolean),
@@ -55,11 +54,9 @@ export default defineConfig([
         ],
         plugins: [
             json(),
-            typescript(), // so Rollup can convert TypeScript to JavaScript
+            typescript(),
             replace({
-                // preserve to be handled by bundlers
                 __DEV__: `(process.env.NODE_ENV !== 'production')`,
-                // see: https://github.com/rollup/plugins/tree/master/packages/replace#preventassignment
                 preventAssignment: true,
             })
         ].filter(Boolean),

@@ -1,19 +1,3 @@
-// - Gather general information about the user
-
-// - Info we want:
-
-// Basics / Logistics
-//     - Name
-//     - Gender
-//     - Age
-//     - Location
-
-// Deeper
-//     - What is important to you in a connection?
-//     - Describe the best aspects of your best connection.
-//     - Describe what went well and what went poorly.
-//     - How much do they value interests and hobbies vs other things
-
 import { type UUID } from "crypto";
 import { getRelationship, type BgentRuntime } from "../../../lib";
 import { composeContext } from "../../../lib/context";

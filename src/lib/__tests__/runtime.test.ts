@@ -1,4 +1,3 @@
-// test creating an agent runtime
 import dotenv from "dotenv";
 
 import { createRuntime } from "../../test/createRuntime";
@@ -7,7 +6,6 @@ import { getRelationship } from "../relationships";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 dotenv.config();
 
-// create a UUID of 0s
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
 describe("Agent Runtime", () => {

@@ -1,4 +1,3 @@
-// test creating an agent runtime
 import dotenv from "dotenv";
 
 import { type UUID } from "crypto";
@@ -20,7 +19,6 @@ import {
 } from "../../../../test/cache";
 dotenv.config();
 
-// create a UUID of 0s
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
 describe("Introduce Action", () => {
@@ -55,7 +53,6 @@ describe("Introduce Action", () => {
     }
 
     async function _testCreateProfile() {
-      // first, add all the memories for conversation
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID);
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i];
@@ -79,8 +76,7 @@ describe("Introduce Action", () => {
 
       const handler = evaluator.handler!;
 
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-      let result = (await handler(runtime, message)) as unknown as string;
+      let result = (await handler(runtime, message)) as string;
 
       expect(result.includes("programmer")).toBe(true);
 
@@ -113,7 +109,6 @@ describe("Introduce Action", () => {
 
       const previousDescriptions = [jimProfileExample1, jimProfileExample2];
 
-      // for each description in previousDescriptions, add it to the memory
       for (let i = 0; i < previousDescriptions.length; i++) {
         const c = previousDescriptions[i];
         const bakedMemory =
@@ -124,13 +119,11 @@ describe("Introduce Action", () => {
             room_id,
           });
         await runtime.descriptionManager.createMemory(bakedMemory);
-        // wait for .2 seconds
+
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
 
-      // TODO: fix this
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-      result = (await handler(runtime, message)) as unknown as string;
+      result = (await handler(runtime, message)) as string;
 
       expect(result.includes("38")).toBe(true);
 
@@ -141,12 +134,10 @@ describe("Introduce Action", () => {
       expect(result.toLowerCase().includes("startup")).toBe(true);
     }
 
-    // first, destroy all memories where the user_id is TestUser
     await _cleanup();
 
     await _testCreateProfile();
 
-    // then destroy all memories again
     await _cleanup();
   }, 60000);
 });

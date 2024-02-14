@@ -6,11 +6,9 @@ import { type Action } from "./types";
 export const defaultActions: Action[] = [continue_, wait, ignore];
 
 export function getFormattedActions(actions: Action[]) {
-  const formattedActions = actions.map((action) => {
+  return actions.map((action) => {
     return `${action.name} - ${action.description}`;
-  });
-  // join into a single string
-  return formattedActions.join("\n");
+  }).join("\n");
 }
 
 export function formatActionNames(actions: Action[]) {

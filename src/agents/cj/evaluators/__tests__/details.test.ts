@@ -1,4 +1,3 @@
-// test creating an agent runtime
 import dotenv from "dotenv";
 
 import { type UUID } from "crypto";
@@ -18,7 +17,6 @@ import {
 } from "../../../../test/cache";
 dotenv.config();
 
-// create a UUID of 0s
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
 describe("User Details", () => {
@@ -54,7 +52,6 @@ describe("User Details", () => {
     }
 
     async function _testGetDetails() {
-      // first, add all the memories for conversation
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID);
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i];
@@ -69,7 +66,6 @@ describe("User Details", () => {
           embedding,
         });
         await runtime.messageManager.createMemory(bakedMemory);
-        // wait for .2 seconds
         if (!embedding) {
           writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
           await new Promise((resolve) => setTimeout(resolve, 250));
@@ -125,12 +121,10 @@ describe("User Details", () => {
       expect(locationIncludesSanFrancisco).toBe(true);
     }
 
-    // first, destroy all memories where the user_id is TestUser
     await _cleanup();
 
     await _testGetDetails();
 
-    // then destroy all memories again
     await _cleanup();
   }, 60000);
 });

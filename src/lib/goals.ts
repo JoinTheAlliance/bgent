@@ -30,7 +30,6 @@ export const getGoals = async ({
 };
 
 export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
-  // format goals as a string
   const goalStrings = goals.map((goal: Goal) => {
     const header = `${goal.name} - ${goal.status}`;
     const objectives = goal.objectives.map((objective: Objective) => {

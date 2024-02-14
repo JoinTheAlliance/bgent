@@ -5,8 +5,6 @@ import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
 import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
-// import { composeState } from '../state'
-// import { type Message } from '../types'
 
 dotenv.config();
 

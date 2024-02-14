@@ -1,4 +1,3 @@
-// Respond to user input
 export const requestHandlerTemplate = `## Example Messages
 json\`\`\`
 {{messageExamples}}

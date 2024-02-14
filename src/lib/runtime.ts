@@ -19,8 +19,6 @@ import {
   type Message,
 } from "./types";
 import { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";
-// State can be passed around to different parts of the agent to provide context for decision making
-// State is also passed converted into a context object via template injection to generate a response with the LLM
 
 import {
   formatActionConditions,
@@ -170,7 +168,6 @@ export class BgentRuntime {
         requestOptions,
       );
 
-      // if response has an error
       if (!response.ok) {
         throw new Error(
           "OpenAI API Error: " + response.status + " " + response.statusText,
@@ -259,7 +256,6 @@ export class BgentRuntime {
         stop: [],
       });
 
-      // log the response
       await this.supabase
         .from("logs")
         .insert({
@@ -323,7 +319,7 @@ export class BgentRuntime {
     )!;
 
     if (!action) {
-      return; // console.warn('No action found for', data.action)
+      return console.warn('No action found for', data.action)
     }
 
     if (!action.handler) {
@@ -387,9 +383,6 @@ export class BgentRuntime {
   }
 
   async evaluate(message: Message, state: State) {
-    // 3. make sure all the evaluators have conditionals and desciptions
-    // 4. write test and validate
-
     const evaluatorPromises = this.evaluators.map(
       async (evaluator: Evaluator) => {
         if (!evaluator.handler) {
@@ -408,7 +401,6 @@ export class BgentRuntime {
     const resolvedEvaluators = await Promise.all(evaluatorPromises);
     const evaluatorsData = resolvedEvaluators.filter(Boolean);
 
-    // format the evaluators
     const evaluators = formatEvaluators(evaluatorsData as Evaluator[]);
     const evaluatorNames = formatEvaluatorNames(evaluatorsData as Evaluator[]);
     const evaluatorConditions = formatEvaluatorConditions(
@@ -424,7 +416,6 @@ export class BgentRuntime {
       context,
     });
 
-    // parse the result array
     const parsedResult = parseJsonArrayFromText(result);
 
     this.evaluators

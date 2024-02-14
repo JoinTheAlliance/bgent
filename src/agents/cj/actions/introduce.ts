@@ -73,13 +73,11 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
 
   let responseData = null;
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-    // generate the response
     const response = await runtime.completion({
       context,
       stop: [],
     });
 
-    // parse the response, which is a json object block
     const parsedResponse = parseJSONObjectFromText(response);
 
     if (parsedResponse) {
@@ -109,7 +107,6 @@ export default {
     _runtime: BgentRuntime,
     _message: Message,
   ): Promise<boolean> => {
-    // immediatel resolve true
     return await Promise.resolve(true);
   },
   description:

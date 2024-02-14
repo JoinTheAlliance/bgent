@@ -3,10 +3,8 @@ import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
-// import { composeState } from '../../lib/state'
 import { type Content, type Message, type State } from "../../lib/types";
 
-// main entry point for the agent
 const onMessage = async (
   message: Message,
   runtime: BgentRuntime,
@@ -14,7 +12,6 @@ const onMessage = async (
 ) => {
   const { content: senderContent, senderId, agentId } = message;
 
-  // if userIds is not defined, set it to [senderId, agentId]
   if (!message.userIds) {
     message.userIds = [senderId!, agentId!];
   }
@@ -44,7 +41,6 @@ class Route {
   path;
   handler;
 
-  // handler is an async function which takes HandlerArgs and returns Promise<Response>
   constructor({
     path = /^/,
     handler,

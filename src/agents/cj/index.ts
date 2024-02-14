@@ -3,14 +3,12 @@ import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
-import { composeState } from "../../lib/state";
 import { type Content, type Message, type State } from "../../lib/types";
 import { shouldSkipMessage } from "../../lib/utils";
 import actions from "./actions";
 import evaluators from "./evaluators";
 import flavor from "./flavor";
 
-// main entry point for the agent
 const onMessage = async (
   message: Message,
   runtime: BgentRuntime,
@@ -18,7 +16,6 @@ const onMessage = async (
 ) => {
   const { content: senderContent, senderId, agentId } = message;
 
-  // if userIds is not defined, set it to [senderId, agentId]
   if (!message.userIds) {
     message.userIds = [senderId!, agentId!];
   }
@@ -48,7 +45,6 @@ class Route {
   path;
   handler;
 
-  // handler is an async function which takes HandlerArgs and returns Promise<Response>
   constructor({
     path = /^/,
     handler,
@@ -69,7 +65,6 @@ const routes: Route[] = [
         return;
       }
 
-      // parse the body from the request
       const message = await req.json();
 
       const runtime = new BgentRuntime({
@@ -114,7 +109,6 @@ const routes: Route[] = [
         return;
       }
 
-      // parse the body from the request
       const message = (await req.json()) as Message;
 
       const runtime = new BgentRuntime({
@@ -220,7 +214,6 @@ async function handleRequest(
     }
   }
 
-  // Default handler if no other routes are called
   return _setHeaders(
     new Response(
       JSON.stringify({ content: "No handler found for this path" }),
@@ -242,9 +235,8 @@ export const fetch = async (
 ) => {
   try {
     const res = (await handleRequest(request, env)) as Response;
-    return _setHeaders(res); // Ensure _setHeaders modifies the response and returns it
+    return _setHeaders(res);
   } catch (error) {
-    // Catch any errors that occur during handling and return a Response object
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -289,7 +281,6 @@ function _setHeaders(res: Response) {
   ];
 
   for (const { key, value } of defaultHeaders) {
-    // if res.headers doesnt contain, add
     if (!res.headers.has(key)) res.headers.append(key, value);
   }
   return res;

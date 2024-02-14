@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
@@ -60,7 +60,6 @@
     "@rollup/plugin-json": "^6.1.0",
     "@supabase/supabase-js": "^2.39.3",
     "@tsndr/cloudflare-worker-jwt": "^2.2.1",
-    "chalk": "^5.3.0",
     "dotenv": "^16.4.4",
     "inquirer": "^9.2.14",
     "ts-node": "^10.9.2"

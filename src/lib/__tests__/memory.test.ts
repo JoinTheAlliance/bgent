@@ -1,5 +1,3 @@
-// memory.test.ts
-
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";

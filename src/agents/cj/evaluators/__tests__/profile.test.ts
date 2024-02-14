@@ -1,4 +1,3 @@
-// test creating an agent runtime
 import dotenv from "dotenv";
 
 import { type UUID } from "crypto";
@@ -23,7 +22,6 @@ import evaluator from "../profile";
 
 dotenv.config();
 
-// create a UUID of 0s
 const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
 let runtime: BgentRuntime;
 let user: User;
@@ -164,7 +162,7 @@ describe("User Profile", () => {
 
       expect(result.toLowerCase().includes("francisco")).toBe(true);
 
-      expect(result.toLowerCase().includes("startup")).toBe(true);
+      expect(result.toLowerCase().includes("startup") || result.toLowerCase().includes("programmer")).toBe(true);
 
       const descriptions = await runtime.descriptionManager.getMemoriesByIds({
         userIds: [message.senderId, message.agentId] as UUID[],

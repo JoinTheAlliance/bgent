@@ -5,8 +5,7 @@ import { type BgentRuntime } from "../runtime";
 import { type Action, type Actor, type Message, type State } from "../types";
 import { parseJsonArrayFromText } from "../utils";
 
-// Used in the reflection step
-const template = `TASK: FACT SUMMARIZATION ("Reflection")
+const template = `TASK: Fact Summarization
 Extract what happened in the scene as an array of claims in JSON format.
 
 These are an examples of the expected output of this task:
@@ -99,7 +98,7 @@ Correct response format:
 
 # END OF INSTRUCTIONS
 
-# START OF ACTUAL TASK
+# START OF ACTUAL TASK INFORMATION
 
 Facts about the scene:
 {{recentReflections}}
@@ -115,10 +114,6 @@ Scene Dialog:
 
 INSTRUCTIONS: Extract any claims from the conversation in the scene that are not already present in the list of facts.`;
 
-/**
- * Summarizes the last event into a list of JSON entries, utility for the Rolodex feature
- * @TODO - Rework moon's factual json reflection system (rolodex)
- */
 async function handler(runtime: BgentRuntime, message: Message) {
   const state = (await runtime.composeState(message)) as State;
 
@@ -165,7 +160,6 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   let reflections = null;
 
-  // loop 3 times, call runtime.completion, and parse the result, if result is null try again, if result is valid continue
   for (let i = 0; i < 3; i++) {
     const reflectionText: string = await runtime.completion({
       context,
@@ -205,7 +199,6 @@ async function handler(runtime: BgentRuntime, message: Message) {
     })
     .map((reflection) => reflection.claim);
 
-  // break up the reflection into multiple memories
   for (const reflection of filteredReflections) {
     const reflectionMemory =
       await runtime.reflectionManager.addEmbeddingToMemory({
@@ -217,7 +210,6 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
     await runtime.reflectionManager.createMemory(reflectionMemory, true);
 
-    // wait for .2 seconds
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
   return filteredReflections;
@@ -229,7 +221,6 @@ export default {
     _runtime: BgentRuntime,
     _message: Message,
   ): Promise<boolean> => {
-    // immediatel resolve true
     return await Promise.resolve(true);
   },
   description:

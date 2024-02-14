@@ -3,9 +3,6 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
-// import {
-//   GetTellMeAboutYourselfConversation1, InnapropriateConversation1,
-// } from '../../../test/data'
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";

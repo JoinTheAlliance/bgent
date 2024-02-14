@@ -2,11 +2,15 @@
 
 Flexible, scalable and customizable agents to do your bidding.
 
-<img src="resources/image.jpg">
+![cj](https://github.com/lalalune/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/lalalune/bgent/blob/main/LICENSE)
 [![stars - bgent](https://img.shields.io/github/stars/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
 [![forks - bgent](https://img.shields.io/github/forks/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
+
+## PRE-ALPHA RELEASE
+- This code is NOT production ready. This package has been released as-is to enable collaboration and development.
+- 0.1.0 will be the first official alpha release!
 
 ## Features
 
