@@ -1,96 +1,94 @@
 import dotenv from "dotenv";
-
 import { createRuntime } from "../../test/createRuntime";
 import { type UUID } from "crypto";
 import { getRelationship } from "../relationships";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
+import { BgentRuntime } from "../runtime";
+import { type User } from "@supabase/supabase-js";
+import { type Message } from "../types";
+
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
-
 describe("Agent Runtime", () => {
-  test("Create an agent runtime instance and use the basic functionality", async () => {
-    const { user, session, runtime } = await createRuntime(
-      process.env as Record<string, string>,
-    );
-    expect(user).toBeDefined();
-    expect(session).toBeDefined();
-    expect(runtime).toBeDefined();
-  });
-  test("Create it a second time to demonstrate idempotency", async () => {
-    const { user, session, runtime } = await createRuntime(
-      process.env as Record<string, string>,
-    );
-    expect(user).toBeDefined();
-    expect(runtime).toBeDefined();
-    expect(session).toBeDefined();
-  });
-  test("Create a memory, get it and destroy it", async () => {
-    const { user, runtime } = await createRuntime(
-      process.env as Record<string, string>,
-    );
+  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
+  let user: User;
+  let runtime: BgentRuntime;
+  let room_id: UUID;
+
+  // Helper function to clear memories
+  async function clearMemories() {
+    await runtime.messageManager.removeAllMemoriesByUserIds([user?.id as UUID, zeroUuid]);
+  }
+
+  // Helper function to create memories
+  async function createMemories() {
+    const memories = [
+      { userId: user?.id as UUID, content: "test memory from user" },
+      { userId: zeroUuid, content: "test memory from agent" },
+    ];
+
+    for (const { userId, content } of memories) {
+      let embedding = getCachedEmbedding(content);
+      const memory = await runtime.messageManager.addEmbeddingToMemory({
+        user_id: userId,
+        user_ids: [user?.id as UUID, zeroUuid],
+        content: { content },
+        room_id,
+        embedding,
+      });
+      if (!embedding) {
+        writeCachedEmbedding(content, memory.embedding as number[]);
+      }
+      await runtime.messageManager.createMemory(memory);
+    }
+  }
+
+  // Set up before each test
+  beforeEach(async () => {
+    const result = await createRuntime();
+    runtime = result.runtime;
+    user = result.session.user;
 
     const data = await getRelationship({
       supabase: runtime.supabase,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });
-    const room_id = data?.room_id;
 
-    async function _clearMemories() {
-      await runtime.messageManager.removeAllMemoriesByUserIds([
-        user?.id as UUID,
-        zeroUuid,
-      ]);
+    room_id = data?.room_id;
+    await clearMemories(); // Clear memories before each test
+  });
+
+  // Clean up after each test
+  afterEach(async () => {
+    await clearMemories(); // Clear memories after each test to ensure a clean state
+  });
+
+  test("Create an agent runtime instance and use the basic functionality", () => {
+    expect(user).toBeDefined();
+    expect(runtime).toBeDefined();
+  });
+
+  test("Demonstrate idempotency by creating an agent runtime instance again", () => {
+    expect(user).toBeDefined();
+    expect(runtime).toBeDefined();
+  });
+
+  test("Memory lifecycle: create, retrieve, and destroy", async () => {
+    await createMemories(); // Create new memories
+
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user.id as UUID, zeroUuid],
+      content: 'test message',
+      room_id: room_id as UUID
     }
 
-    async function _createMemories() {
-      let embedding = getCachedEmbedding("test memory from user");
-      const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-        user_id: user?.id as UUID,
-        user_ids: [user?.id as UUID, zeroUuid],
-        content: {
-          content: "test memory from user",
-        },
-        room_id,
-        embedding,
-      });
-      if (!embedding) {
-        writeCachedEmbedding(
-          "test memory from user",
-          bakedMemory.embedding as number[],
-        );
-      }
-      // create a memory
-      await runtime.messageManager.createMemory(bakedMemory);
+    const state = await runtime.composeState(message);
 
-      embedding = getCachedEmbedding("test memory from agent");
-      const bakedMemory2 = await runtime.messageManager.addEmbeddingToMemory({
-        user_id: zeroUuid,
-        user_ids: [user?.id as UUID, zeroUuid],
-        content: {
-          content: "test memory from agent",
-        },
-        room_id,
-        embedding,
-      });
-      if (!embedding) {
-        writeCachedEmbedding(
-          "test memory from agent",
-          bakedMemory2.embedding as number[],
-        );
-      }
-      // create a memory
-      await runtime.messageManager.createMemory(bakedMemory2);
-    }
+    expect(state.recentMessagesData.length).toBeGreaterThan(1);
 
-    // first, destroy all memories where the user_id is TestUser
-    await _clearMemories();
-
-    // then, create new memories
-    await _createMemories();
-
-    // then destroy all memories again
-    await _clearMemories();
+    await clearMemories();
   });
 });

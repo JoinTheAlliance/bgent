@@ -4,7 +4,27 @@ import { createRelationship } from "../../../lib/relationships";
 import { Action, type Message, type State } from "../../../lib/types";
 import { parseJSONObjectFromText } from "../../../lib/utils";
 
-const template = `You are taking the role of {{agentName}} in a scene. {{agentName}} might want to make a connection between a user in the current scene and one of the users in their rolodex.
+const template = `## Example input:
+Agent's Rolodex:
+- Jamie: Loves music, and especially loves playing guitar hero
+- Mike: Plays Starcraft 2 and likes to talk about it
+- Lucius: Big fan of tweeting about the latest tech news
+
+Current Actors in the scene
+- Agent: A test agent who is being evluated for their ability to connect users
+- Kyle: Like to listen to heavy metal music, and also plays Guitar Hero
+
+Recent conversation:
+Kyle: Hey, Agent, can you help me meet someone who likes heavy metal music?
+
+## Example output:
+Based on the recent conversation and the information provided, it seems like there is a potential connection that could be made between Kyle from the current scene and Jamie from CJ's rolodex:
+Brief explanation: Kyle mentioned his interest in heavy metal music and playing Guitar Hero, and Jamie from CJ's rolodex loves music and especially enjoys playing Guitar Hero.
+\`\`\`json
+{ "userA": "Kyle", "userB": "Jamie" }
+\`\`\`
+
+You are deciding whether {{agentName}} should make a connection between a user in the current scene and one of the users in their rolodex.
 Your goal is to evaluate if a connection should be made, and which users should be connected.
 
 The response format should be this:
@@ -34,34 +54,7 @@ in a JSON block formatted for markdown with this structure
 { userA: <name>, userB: <name> }
 \`\`\`
 
-Your response must include the explanation and JSON block. If you do not think that a connection should made, do not include a JSON block.
-
-##Example input:
-[[agentName]] = CJ
-
-Recent conversation:
-'''
-Tom: Hey, CJ, you know what's great? My reflection. It's almost as charming as me!
-CJ: Haha, you do have quite the charisma. Speaking of charisma, Kyle, I heard you're a fan of heavy metal music.
-Kyle: Absolutely! I can't get enough of it. I even play guitar hero sometimes.
-'''
-
-Rolodex:
-- Cynthia: Loves music, and especially loves playing guitar hero
-- Mark: Plays League of Legends
-- Gojo: Likes to say out-of-pocket stuff like "Nah I'd win", "With this treasure i summon"
-
-[[actors]]
-- Tom: Narcissistic guy who's obsessed with his looks
-- Kyle: Like to listen to heavy metal music, and also plays Guitar Hero
-
-##Example output:
-
-Based on the recent conversation and the information provided, it seems like there is a potential connection that could be made between Kyle from the current scene and Cynthia from CJ's rolodex:
-
-Brief explanation: Kyle mentioned his interest in heavy metal music and playing Guitar Hero, and Cynthia from CJ's rolodex loves music and especially enjoys playing Guitar Hero.
-{ "userA": "Kyle", "userB": "Cynthia" }
-`;
+Your response must include the explanation and JSON block. If you do not think that a connection should made, do not include a JSON block.`;
 
 const handler = async (runtime: BgentRuntime, message: Message) => {
   const state = (await runtime.composeState(message)) as State;

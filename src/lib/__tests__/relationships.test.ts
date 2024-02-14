@@ -18,9 +18,9 @@ describe('Relationships Module', () => {
     let user: User;
 
     beforeAll(async () => {
-        const setup = await createRuntime(process.env as Record<string, string>);
+        const setup = await createRuntime();
         runtime = setup.runtime;
-        user = setup.user as User;
+        user = setup.session.user;
     });
 
     test('createRelationship creates a new relationship', async () => {

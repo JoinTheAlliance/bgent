@@ -28,7 +28,7 @@ describe("User Profile", () => {
   });
 
   beforeAll(async () => {
-    const setup = await createRuntime(process.env as Record<string, string>);
+    const setup = await createRuntime();
     user = setup.user;
     runtime = setup.runtime;
 

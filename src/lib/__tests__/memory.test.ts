@@ -16,9 +16,9 @@ describe("Memory", () => {
   let room_id: UUID | null = null;
 
   beforeAll(async () => {
-    const result = await createRuntime(process.env as Record<string, string>);
+    const result = await createRuntime();
     runtime = result.runtime;
-    user = result.user;
+    user = result.session.user;
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -203,9 +203,9 @@ describe("Memory - Basic tests", () => {
 
   // Setup before all tests
   beforeAll(async () => {
-    const result = await createRuntime(process.env as Record<string, string>);
+    const result = await createRuntime();
     runtime = result.runtime;
-    user = result.user;
+    user = result.session.user;
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -293,13 +293,13 @@ describe("Memory - Extended Tests", () => {
   let room_id: UUID | null = null;
 
   beforeAll(async () => {
-    const result = await createRuntime(process.env as Record<string, string>);
+    const result = await createRuntime();
     runtime = result.runtime;
-    user = result.user;
+    user = result.session.user;
 
     const data = await getRelationship({
       supabase: runtime.supabase,
-      userA: user?.id as UUID,
+      userA: user.id as UUID,
       userB: zeroUuid,
     });
 

@@ -8,7 +8,7 @@ import {
 } from "./constants";
 
 export async function createRuntime(
-  env: Record<string, string>,
+  env: Record<string, string> | NodeJS.ProcessEnv = process.env,
   recentMessageCount = 32,
 ) {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);

@@ -28,9 +28,9 @@ let user: User;
 
 describe("User Profile", () => {
   beforeAll(async () => {
-    const result = await createRuntime(process.env as Record<string, string>);
+    const result = await createRuntime();
     runtime = result.runtime;
-    user = result.user as User;
+    user = result.session.user;
   });
 
   beforeEach(async () => {

@@ -10,9 +10,9 @@ describe('Evaluation Process', () => {
     const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
     beforeAll(async () => {
-        const setup = await createRuntime(process.env as Record<string, string>);
+        const setup = await createRuntime();
         runtime = setup.runtime;
-        user = setup.user as User;
+        user = setup.session.user;
 
         // Assuming the evaluator 'reflect' is already registered in the runtime setup
     });

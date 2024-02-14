@@ -54,19 +54,20 @@ export interface State {
   room_id: UUID;
   agentName?: string;
   senderName?: string;
-  actors?: string;
+  actors: string;
   actorsData?: Actor[];
   goals?: string;
-  goalsData: Goal[];
-  recentMessages?: string;
-  recentMessagesData?: Memory[];
+  goalsData?: Goal[];
+  recentMessages: string;
+  recentMessagesData: Memory[];
   recentReflections?: string;
   recentReflectionsData?: Memory[];
   relevantReflections?: string;
   relevantReflectionsData?: Memory[];
   actionNames?: string;
   actions?: string;
-  messageExamples?: string;
+  actionsData?: Action[];
+  messageExamples: string;
   responseData?: Content;
   [key: string]: unknown;
 }
@@ -93,6 +94,7 @@ export type Handler = (
 export type Validator = (
   runtime: BgentRuntime,
   message: Message,
+  state?: State,
 ) => Promise<boolean>;
 
 export interface Action {

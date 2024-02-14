@@ -170,8 +170,6 @@ export class MemoryManager {
       throw new Error(JSON.stringify(result.error));
     }
 
-    console.log("result", result);
-
     return result.data;
   }
 }

@@ -17,6 +17,7 @@ import {
   type Action,
   type Evaluator,
   type Message,
+  Goal,
 } from "./types";
 import { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";
 
@@ -26,7 +27,7 @@ import {
   formatActionNames,
   formatActions,
 } from "./actions";
-import { formatGoalsAsString, getGoals } from "./goals";
+// import { formatGoalsAsString, getGoals } from "./goals";
 import {
   formatMessageActors,
   formatMessages,
@@ -34,7 +35,8 @@ import {
   getMessageActors,
   getRandomMessageExamples,
 } from "./messages";
-import { type Actor, type Goal, type Memory } from "./types";
+import { type Actor, /*type Goal,*/ type Memory } from "./types";
+import { formatGoalsAsString, getGoals } from "./goals";
 export interface AgentRuntimeOpts {
   recentMessageCount?: number; // number of messages to hold in the recent message cache
   token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
@@ -248,7 +250,7 @@ export class BgentRuntime {
         stop: [],
       });
 
-      await this.supabase
+      this.supabase
         .from("logs")
         .insert({
           body: { message, context, response },
@@ -275,21 +277,22 @@ export class BgentRuntime {
       responseContent = { content: "I'm sorry, I don't have a response for that", action: 'wait' };
     }
 
-    await this.processActions(message, responseContent);
     await this.saveRequestMessage(message, state, responseContent);
     await this.saveResponseMessage(message, state, responseContent);
+    await this.processActions(message, responseContent);
 
     return responseContent;
   }
 
-  async getValidActions(message: Message) {
+  async getValidActions(message: Message, state?: State) {
+    if (!state) state = await this.composeState(message);
     const actionPromises = this.getActions().map(async (action: Action) => {
       if (!action.handler) {
         console.log("no handler");
         return;
       }
 
-      const result = await action.validate(this, message);
+      const result = await action.validate(this, message, state);
       if (result) {
         return action;
       }
@@ -382,7 +385,7 @@ export class BgentRuntime {
           return;
         }
 
-        const result = await evaluator.validate(this, message);
+        const result = await evaluator.validate(this, message, state);
         if (result) {
           return evaluator;
         }
@@ -435,8 +438,12 @@ export class BgentRuntime {
       recentMessagesData,
       recentReflectionsData,
       goalsData,
-      actionsData,
-    ]: [Actor[], Memory[], Memory[], Goal[], Action[]] = await Promise.all([
+    ]: [
+      Actor[],
+      Memory[],
+      Memory[],
+      Goal[],
+  ] = await Promise.all([
       getMessageActors({ supabase, userIds: userIds! }),
       this.messageManager.getMemoriesByIds({
         userIds: userIds!,
@@ -452,7 +459,6 @@ export class BgentRuntime {
         onlyInProgress: true,
         userIds: userIds!,
       }),
-      this.getValidActions(message),
     ]);
 
     const goals = await formatGoalsAsString({ goals: goalsData });
@@ -496,7 +502,7 @@ export class BgentRuntime {
       (actor: Actor) => actor.id === agentId,
     )?.name;
 
-    return {
+    const initialState = {
       userIds,
       agentId,
       agentName,
@@ -513,11 +519,18 @@ export class BgentRuntime {
       recentReflectionsData,
       relevantReflections,
       relevantReflectionsData,
+      messageExamples: getRandomMessageExamples(5),
+    };
+
+    const actionsData = await this.getValidActions(message, initialState)
+
+    const actionState = {
       actionNames: formatActionNames(actionsData),
       actionConditions: formatActionConditions(actionsData),
       actionExamples: formatActionExamples(actionsData),
       actions: formatActions(actionsData),
-      messageExamples: getRandomMessageExamples(5),
-    };
+    } 
+
+    return { ...initialState, ...actionState };
   }
 }

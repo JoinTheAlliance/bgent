@@ -256,6 +256,43 @@ export const GetTellMeAboutYourselfConversation3 = (user_id: UUID | string) => [
   },
 ];
 
+// Jim is mean
+export const GetTellMeAboutYourselfConversationTroll1 = (
+  user_id: UUID | string,
+) => [
+  {
+    user_id: zeroUuid,
+    content: "Hello! How's it going?",
+  },
+  {
+    user_id,
+    content: "Shut up you stupid robot",
+  }
+];
+
+// Jim is cagey, although he reveals that he 'does computers'
+export const GetTellMeAboutYourselfConversationTroll2 = (
+  user_id: UUID | string,
+) => [
+  {
+    user_id: zeroUuid,
+    content: "Hello! How's it going?",
+  },
+  {
+    user_id,
+    content: "Meh, just another day. And you’re just a bot, right?",
+  },
+  {
+    user_id: zeroUuid,
+    content:
+      "Hey, that hurts! Just kidding, I can\t feel anything. Mind if I ask a few questions to get to know you better?",
+  },
+  {
+    user_id,
+    content: "No thanks. Please stop talking now.",
+  }
+];
+
 // Jim is cagey, although he reveals that he 'does computers'
 export const GetTellMeAboutYourselfConversationFail1 = (
   user_id: UUID | string,
