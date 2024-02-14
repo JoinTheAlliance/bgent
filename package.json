@@ -19,7 +19,7 @@
     "shell": "node --no-warnings scripts/shell.mjs",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
     "concat": "node ./scripts/concat.ts",
-    "dev": "wrangler dev && node --no-warnings scripts/shell.mjs --dev",
+    "dev": "wrangler dev --log-level error & npm run shell:dev",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:dev": "jest --watchAll",
     "test:coverage": "jest --coverage",

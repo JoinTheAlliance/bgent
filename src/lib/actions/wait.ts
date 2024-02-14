@@ -10,9 +10,8 @@ export default {
     "Do nothing and wait for another person to reply to the last message, or to continue their thought",
   handler: async (
     _runtime: BgentRuntime,
-    message: Message,
+    _message: Message,
   ): Promise<boolean> => {
-    console.log("Waiting after: ", message);
     return true;
   },
   condition: "The agent wants to wait for the user to respond",
