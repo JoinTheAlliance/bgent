@@ -29,14 +29,7 @@ describe('Relationships Module', () => {
 
         const relationship = await createRelationship({ supabase: runtime.supabase, userA, userB });
 
-        expect(relationship).toBeDefined();
-
-        if (relationship?.length === 0) {
-            throw new Error('No relationship was created');
-        }
-
-        expect(relationship[0].user_a).toBe(userA);
-        expect(relationship[0].user_b).toBe(userB);
+        expect(relationship).toBe(true);
     });
 
     test('getRelationship retrieves an existing relationship', async () => {
