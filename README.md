@@ -31,7 +31,12 @@ npm install bgent
 ## Try the agent
 
 ```
-npm run dev
+# evaluation mode
+npm run shell
+
+# for development
+npm run dev # start the server
+npm run shell:dev # start the shell in another terminal
 ```
 
 ## Database setup

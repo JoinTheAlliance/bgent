@@ -10,6 +10,8 @@ import { createClient } from '@supabase/supabase-js'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import readline from 'readline'
+import figlet from 'figlet'
+
 dotenv.config()
 
 // check args for --dev
@@ -68,13 +70,11 @@ const getMe = async (session) => {
 }
 
 const checkAndUpdateAccount = async (user) => {
-  console.log('checkAndUpdateAccount', user)
   const supabase = getSupabase(user.access_token)
   const response = await supabase
     .from('accounts')
     .select('*')
     .eq('id', user.id)
-    console.log('response', response)
   let { data: accounts, error: accountsError } = response
   if (accountsError) {
     console.error(chalk.red(`Failed to fetch accounts: ${accountsError.message}`))
@@ -125,19 +125,16 @@ async function loginUser(retry = false) {
 
   const supabase = getSupabase()
 
-  const {data, error} = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: credentials.email,
     password: credentials.password
   })
-
-  console.log('response.data', data)
 
   const { session } = data;
 
   if (error) {
     await loginUser(true) // Recursively call loginUser to retry
   } else {
-    console.log('session', session)
     fs.writeFileSync(configFile, JSON.stringify({ session }))
     console.log(chalk.green('Login successful! Configuration saved.'))
     await startApplication() // Start the application after login
@@ -145,8 +142,15 @@ async function loginUser(retry = false) {
 }
 
 
-async function startApplication () {
-  console.log(chalk.green('Starting application...'))
+async function startApplication() {
+  figlet("bgent", function (err, data) {
+    if (err) {
+      console.log("Something went wrong...");
+      console.dir(err);
+      return;
+    }
+    console.log(chalk.cyan(data) + '\n');
+  });
 
   // Assuming session information is stored in the .cjrc file
   const userData = JSON.parse(fs.readFileSync(configFile).toString())
@@ -154,11 +158,8 @@ async function startApplication () {
   await checkAndUpdateAccount(session.user) // Check and update account after login
 
   const supabase = getSupabase(session?.access_token)
-  
 
   const userId = session.user?.id
-
-  console.log('userId', userId)
 
   // get all entries from 'rooms' where there are two particants (entries in the partipants table) where the user and agent ids match the participant user_id field
   // this will require a join between the rooms and participants table
@@ -249,7 +250,7 @@ async function startApplication () {
     rl.prompt(true)
   }
 
-  console.log(chalk.green('Application started. You can now start chatting.'))
+  console.log(chalk.green('Application started. You can now start chatting.') + ' ' + chalk.yellow('Press Ctrl+C to exit.'))
 
   process.stdin.resume()
   readline.emitKeypressEvents(process.stdin)
@@ -271,13 +272,11 @@ async function startApplication () {
     process.exit() // Forcefully exits the process
   }
 
-  console.log(chalk.yellow('Press Ctrl+C to exit.'))
-
   process.on('SIGINT', cleanup) // Modified to use the cleanup function
 }
 
 // Function to handle user login or signup
-async function handleUserInteraction () {
+async function handleUserInteraction() {
   let user
 
   if (fs.existsSync(configFile)) {
@@ -305,14 +304,14 @@ async function handleUserInteraction () {
     }
   } else {
     console.log(
-      chalk.green('Configuration file found. You are already logged in.')
+      chalk.yellow('Configuration file found at ~/.cjrc. You are already logged in.')
     )
-    await startApplication() // Start the application if already logged in
+    await startApplication()
   }
 }
 
 // Function to sign up the user
-async function signupUser () {
+async function signupUser() {
   const credentials = await inquirer.prompt([
     {
       type: 'input',
