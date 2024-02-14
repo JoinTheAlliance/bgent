@@ -10,7 +10,7 @@ export async function createRelationship({
   supabase: SupabaseClient;
   userA: UUID;
   userB: UUID;
-}) {
+}): Promise<Relationship[]> {
   const { data, error } = await supabase.from("relationships").upsert({
     user_a: userA,
     user_b: userB,
@@ -20,7 +20,7 @@ export async function createRelationship({
     throw new Error(error.message);
   }
 
-  return data;
+  return data as unknown as Relationship[];
 }
 
 export async function getRelationship({
