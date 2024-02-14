@@ -86,6 +86,7 @@ Extract any claims from the conversation in the ACTUAL scene that are not alread
 - Status is pertinent to the current scene or character's immediate situation, also includes the character's thoughts, feelings, judgments or recommendations
 - Response should be a JSON object array inside a JSON markdown block
 - Ignore the examples when considering facts
+- Include any factual detail, including where the user lives, works, or goes to school, what they do for a living, their hobbies, and any other relevant information
 
 Correct response format:
 \`\`\`json
@@ -112,7 +113,16 @@ Scene Dialog:
 {{recentMessages}}
 \`\`\`
 
-INSTRUCTIONS: Extract any claims from the conversation in the scene that are not already present in the list of facts.`;
+INSTRUCTIONS: Extract ALL claims from the conversation in the scene that are not already present in the list of facts.
+
+Correct response format:
+\`\`\`json
+[
+  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
+  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
+  ...
+]
+\`\`\``;
 
 async function handler(runtime: BgentRuntime, message: Message) {
   const state = (await runtime.composeState(message)) as State;
@@ -150,13 +160,13 @@ async function handler(runtime: BgentRuntime, message: Message) {
     template,
   });
 
-  if (runtime.debugMode) {
+  // if (runtime.debugMode) {
     logger.log(context, {
       title: "Reflection context",
       frame: true,
       color: "cyan",
     });
-  }
+  // }
 
   let reflections = null;
 
@@ -165,6 +175,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
       context,
       stop: [],
     });
+    console.log('reflectionText', reflectionText)
     const parsedReflections = parseJsonArrayFromText(reflectionText);
     if (parsedReflections) {
       reflections = parsedReflections;

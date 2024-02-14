@@ -115,13 +115,11 @@ describe("User Profile", () => {
     const result = (await handler(runtime, message)) as string[];
     const resultConcatenated = result.join("\n");
 
-    const state = await runtime.composeState(message);
+    // const state = await runtime.composeState(message);
+    // console.log("************ state.recentMessages\n", state.recentMessages);
+    // console.log("************ resultConcatenated\n", resultConcatenated);
 
-    console.log("************ state.recentMessages\n", state.recentMessages);
-    console.log("************ resultConcatenated\n", resultConcatenated);
-
-    console.log("Expecting the facts to contain programmer and Jim");
-
+    // console.log("Expecting the facts to contain programmer and Jim");
     expect(resultConcatenated.toLowerCase()).toMatch(/programmer|startup/);
     expect(resultConcatenated.toLowerCase()).toMatch(/jim/);
 
@@ -138,15 +136,16 @@ describe("User Profile", () => {
     const result2 = (await handler(runtime, message)) as string[];
     const resultConcatenated2 = result2.join("\n");
 
-    const state2 = await runtime.composeState(message);
+    // const state2 = await runtime.composeState(message);
+    // console.log("************ state.recentMessages\n", state2.recentMessages);
+    // console.log("************ resultConcatenated2\n", resultConcatenated2);
+    // console.log("Expecting the facts to contain francisco");
 
-    console.log("************ state.recentMessages\n", state2.recentMessages);
-    console.log("************ resultConcatenated2\n", resultConcatenated2);
-    console.log("Expecting the facts to contain francisco");
+    // expect result to ignore 'francisco' and '38' since they are already known
+    expect(resultConcatenated2.toLowerCase()).not.toMatch(/francisco/);
+    expect(resultConcatenated2.toLowerCase()).not.toMatch(/38/);
 
-    // expect result to not match 38
-    expect(resultConcatenated2.toLowerCase()).toMatch(/francisco/);
-    expect(resultConcatenated2.toLowerCase()).toMatch(/38/);
+    // expect result to contain 'married' since it is not already known
     expect(resultConcatenated2.toLowerCase()).toMatch(/married/);
   }, 60000);
 });

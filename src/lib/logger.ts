@@ -658,7 +658,7 @@ const applyStyle = (self: { (...arguments_: any[]): any;[x: string]: any; "__@GE
 Object.defineProperties(createChalk.prototype, styles2);
 
 const chalk = createChalk({ level: 0 });
-export const chalkStderr = createChalk({ level: stderrColor ? (stderrColor as { level?: number}).level : 0 });
+export const chalkStderr = createChalk({ level: stderrColor ? (stderrColor as { level?: number }).level : 0 });
 
 export {
 	stdoutColor as supportsColor,
@@ -700,25 +700,16 @@ class Logger {
 
 	frameMessage(message: string, title: string) {
 		const lines = message.split("\n");
-		const maxLength = Math.max(
-			...lines.map((line: string) => line.length),
-			title.length,
-		);
-		const topFrame = title
-			? this.frameChar.repeat(maxLength + 4) +
-			"\n" +
+		const frameHorizontalLength = 30;
+		const topFrame = this.frameChar.repeat(frameHorizontalLength + 4) +
+			" " +
 			this.frameChar +
 			" " +
-			title +
-			" ".repeat(maxLength - title.length + 1) +
-			this.frameChar
-			: this.frameChar.repeat(maxLength + 4);
-		const bottomFrame = this.frameChar.repeat(maxLength + 4);
-		const framedLines = lines.map(
-			(line: string) =>
-				`${this.frameChar} ${line} ${" ".repeat(maxLength - line.length)} ${this.frameChar}`,
-		);
-		return [topFrame, ...framedLines, bottomFrame].join("\n");
+			(title ?? 'log') +
+				" ".repeat(frameHorizontalLength - (title as string ?? 'log' as string).length + 1) +
+				this.frameChar.repeat(frameHorizontalLength + 4);
+		const bottomFrame = this.frameChar.repeat(frameHorizontalLength + 4);
+		return [topFrame, ...lines, bottomFrame].join("\n");
 	}
 }
 
