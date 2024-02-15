@@ -12,7 +12,7 @@ import {
   jimProfileExample2,
 } from "../../../../test/data";
 
-import { BgentRuntime } from "@/lib";
+import { BgentRuntime } from "../../../../lib/runtime";
 import { User } from "@supabase/supabase-js";
 import {
   getCachedEmbedding,

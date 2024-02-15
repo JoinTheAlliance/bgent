@@ -9,7 +9,8 @@ const maxContinuesInARow = 2;
 
 export default {
   name: "CONTINUE",
-  description: "Continue the conversation with the user",
+  description:
+    "Respond with this message, then write another immediately after. If the thought is done or you're waiting for a response, don't use this.",
   validate: async (runtime: BgentRuntime, message: Message, state: State) => {
     if (!state) state = await runtime.composeState(message);
     // get all of the messages that were from message.agentId from recentMessagesData in state
@@ -231,29 +232,6 @@ export default {
         content: "How about this weekend?",
         action: "WAIT",
       },
-    ],
-
-    [
-      {
-        user: "{{user1}}",
-        content:
-          "Thinking of joining a local volunteer group. Want to give back to the community.",
-        action: null,
-      },
-      { user: "{{user2}}", content: "That’s a great idea.", action: null },
-      {
-        user: "{{user1}}",
-        content:
-          "Yeah, been feeling the need to connect with something larger.",
-        action: null,
-      },
-      {
-        user: "{{user2}}",
-        content: "Let me know if you need company.",
-        action: null,
-      },
-      { user: "{{user1}}", content: "That'd be great, thanks.", action: null },
-      { user: "{{user1}}", content: 'WAIT"', action: null },
     ],
   ],
 } as Action;

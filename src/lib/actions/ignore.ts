@@ -166,7 +166,7 @@ export default {
         content: "I want to have sex with you.",
         action: null,
       },
-      { user: "{{user2}}}}", content: "", action: "IGNORE" },
+      { user: "{{user2}}", content: "", action: "IGNORE" },
     ],
   ],
 } as Action;

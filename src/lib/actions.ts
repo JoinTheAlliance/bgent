@@ -33,25 +33,29 @@ export const composeActionExamples = (actionsData: Action[], count: number) => {
 
   console.log("*** message example count: ", randomMessageExamples.length);
 
-  const exampleNames = Array.from({ length: 5 }, () =>
-    uniqueNamesGenerator({ dictionaries: [names] }),
-  );
+
 
   const formattedExamples = randomMessageExamples.map((example) => {
+    const exampleNames = Array.from({ length: 5 }, () =>
+      uniqueNamesGenerator({ dictionaries: [names] }),
+    );
+
     return `\n${example
       .map((message) => {
-        return JSON.stringify(message);
+        // for each name in example names, replace all
+        let messageString = `${message.user}: ${message.content}${message.action ? ` (${message.action})` : ""}`;
+        for (let i = 0; i < exampleNames.length; i++) {
+          messageString = messageString.replaceAll(
+            `{{user${i + 1}}}`,
+            exampleNames[i],
+          );
+        }
+        return messageString;
       })
       .join("\n")}`;
   });
 
-  const exampleString = formattedExamples.join("\n\n");
-
-  for (let i = 0; i < exampleNames.length; i++) {
-    exampleString.replace(`{{user${i + 1}}}`, exampleNames[i]);
-  }
-
-  return exampleString;
+  return formattedExamples.join("\n");
 };
 
 export function getFormattedActions(actions: Action[]) {
@@ -63,12 +67,12 @@ export function getFormattedActions(actions: Action[]) {
 }
 
 export function formatActionNames(actions: Action[]) {
-  return actions.map((action: Action) => `'${action.name}'`).join(",\n");
+  return actions.map((action: Action) => `${action.name}`).join(", ");
 }
 
 export function formatActions(actions: Action[]) {
   return actions
-    .map((action: Action) => `'${action.name}: ${action.description}'`)
+    .map((action: Action) => `${action.name}: ${action.description}`)
     .join(",\n");
 }
 

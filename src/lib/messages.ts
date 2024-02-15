@@ -34,7 +34,7 @@ export async function getMessageActors({
 
 export function formatMessageActors({ actors }: { actors: Actor[] }) {
   const actorStrings = actors.map((actor: Actor) => {
-    const header = `${actor.name}: ${actor.details.tagline}\n${actor.details.summary}`;
+    const header = `${actor.name}${actor.details.tagline ? ": " + actor.details.tagline : ""}\n${actor.details.summary || "No information available"}`;
     return header;
   });
   const finalActorStrings = actorStrings.join("\n");
@@ -55,7 +55,7 @@ export const formatMessages = ({
       const sender = actors.find(
         (actor: Actor) => actor.id === message.user_id,
       )!;
-      return `{ "user": "${sender.name}", "content": "${(message.content as Content).content || (message.content as string)}", ${(message.content as Content).action ? `"action": "${(message.content as Content).action}"` : ""} }`;
+      return `${sender.name}: ${(message.content as Content).content || (message.content as string)} ${(message.content as Content).action && (message.content as Content).action !== 'null' ? `(${(message.content as Content).action})` : ""}`;
     })
     .join("\n");
   return messageStrings;

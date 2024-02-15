@@ -1,9 +1,9 @@
-export const requestHandlerTemplate = `## Example Messages
+export const requestHandlerTemplate = `{{flavor}}
+
+## Example Messages
 json\`\`\`
 {{actionExamples}}
 \`\`\`
-
-{{flavor}}
 
 # Scene Facts
 {{recentSummarizations}}
