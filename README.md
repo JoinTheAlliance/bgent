@@ -23,7 +23,7 @@ Alexible, scalable and customizable agent to do your bidding.
 - Retrievable memory and document store
 - Serverless artchitecture, deployable in minutes at scale with Cloudflare and Supabase
 - Multi-agent and room support
-- Reflection and summarization
+- Summarization and summarization
 - Goal-directed behavior
 
 ## Installation

@@ -59,7 +59,7 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
 
   const { name, age, location, gender } = responseData;
 
-  console.log('responseData', responseData)
+  console.log("responseData", responseData);
 
   const response = await runtime.supabase
     .from("accounts")

@@ -1,5 +1,5 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
-import { defaultActions } from "./actions";
+import { DefaultActions, defaultActions } from "./actions";
 import { composeContext } from "./context";
 import {
   defaultEvaluators,
@@ -13,30 +13,29 @@ import { MemoryManager, embeddingZeroVector } from "./memory";
 import { requestHandlerTemplate } from "./templates";
 import {
   Content,
+  Goal,
   State,
   type Action,
   type Evaluator,
   type Message,
-  Goal,
 } from "./types";
 import { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";
 
 import {
+  composeActionExamples,
   formatActionConditions,
-  formatActionExamples,
   formatActionNames,
   formatActions,
 } from "./actions";
 // import { formatGoalsAsString, getGoals } from "./goals";
+import { formatGoalsAsString, getGoals } from "./goals";
 import {
   formatMessageActors,
   formatMessages,
-  formatReflections,
   getMessageActors,
-  getRandomMessageExamples,
 } from "./messages";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
-import { formatGoalsAsString, getGoals } from "./goals";
+import { formatSummarizations } from "./evaluators/summarization";
 export interface AgentRuntimeOpts {
   recentMessageCount?: number; // number of messages to hold in the recent message cache
   token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
@@ -65,9 +64,9 @@ export class BgentRuntime {
     tableName: "descriptions",
   });
 
-  reflectionManager: MemoryManager = new MemoryManager({
+  summarizationManager: MemoryManager = new MemoryManager({
     runtime: this,
-    tableName: "reflections",
+    tableName: "summarizations",
   });
 
   actions: Action[] = [];
@@ -274,7 +273,10 @@ export class BgentRuntime {
     }
 
     if (!responseContent) {
-      responseContent = { content: "I'm sorry, I don't have a response for that", action: 'wait' };
+      responseContent = {
+        content: "I'm sorry, I don't have a response for that",
+        action: DefaultActions.WAIT,
+      };
     }
 
     await this.saveRequestMessage(message, state, responseContent);
@@ -314,7 +316,7 @@ export class BgentRuntime {
     )!;
 
     if (!action) {
-      return console.warn('No action found for', data.action)
+      return console.warn("No action found for", data.action);
     }
 
     if (!action.handler) {
@@ -430,28 +432,23 @@ export class BgentRuntime {
 
     const { supabase } = this;
     const recentMessageCount = this.getRecentMessageCount();
-    const recentReflectionsCount = this.getRecentMessageCount() / 2;
-    const relevantReflectionsCount = this.getRecentMessageCount() / 2;
+    const recentSummarizationsCount = this.getRecentMessageCount() / 2;
+    const relevantSummarizationsCount = this.getRecentMessageCount() / 2;
 
     const [
       actorsData,
       recentMessagesData,
-      recentReflectionsData,
+      recentSummarizationsData,
       goalsData,
-    ]: [
-      Actor[],
-      Memory[],
-      Memory[],
-      Goal[],
-  ] = await Promise.all([
+    ]: [Actor[], Memory[], Memory[], Goal[]] = await Promise.all([
       getMessageActors({ supabase, userIds: userIds! }),
       this.messageManager.getMemoriesByIds({
         userIds: userIds!,
         count: recentMessageCount,
       }),
-      this.reflectionManager.getMemoriesByIds({
+      this.summarizationManager.getMemoriesByIds({
         userIds: userIds!,
-        count: recentReflectionsCount,
+        count: recentSummarizationsCount,
       }),
       getGoals({
         supabase,
@@ -463,20 +460,21 @@ export class BgentRuntime {
 
     const goals = await formatGoalsAsString({ goals: goalsData });
 
-    let relevantReflectionsData: Memory[] = [];
+    let relevantSummarizationsData: Memory[] = [];
 
-    if (recentReflectionsData.length > recentReflectionsCount) {
-      relevantReflectionsData = (
-        await this.reflectionManager.searchMemoriesByEmbedding(
-          recentReflectionsData[0].embedding!,
+    if (recentSummarizationsData.length > recentSummarizationsCount) {
+      relevantSummarizationsData = (
+        await this.summarizationManager.searchMemoriesByEmbedding(
+          recentSummarizationsData[0].embedding!,
           {
             userIds: userIds!,
-            count: relevantReflectionsCount,
+            count: relevantSummarizationsCount,
           },
         )
-      ).filter((reflection: Memory) => {
-        return !recentReflectionsData.find(
-          (recentReflection: Memory) => recentReflection.id === reflection.id,
+      ).filter((summarization: Memory) => {
+        return !recentSummarizationsData.find(
+          (recentSummarization: Memory) =>
+            recentSummarization.id === summarization.id,
         );
       });
     }
@@ -492,8 +490,10 @@ export class BgentRuntime {
       }),
     });
 
-    const recentReflections = formatReflections(recentReflectionsData);
-    const relevantReflections = formatReflections(relevantReflectionsData);
+    const recentSummarizations = formatSummarizations(recentSummarizationsData);
+    const relevantSummarizations = formatSummarizations(
+      relevantSummarizationsData,
+    );
 
     const senderName = actorsData?.find(
       (actor: Actor) => actor.id === senderId,
@@ -515,21 +515,20 @@ export class BgentRuntime {
       flavor: this.flavor,
       recentMessages,
       recentMessagesData,
-      recentReflections,
-      recentReflectionsData,
-      relevantReflections,
-      relevantReflectionsData,
-      messageExamples: getRandomMessageExamples(5),
+      recentSummarizations,
+      recentSummarizationsData,
+      relevantSummarizations,
+      relevantSummarizationsData,
     };
 
-    const actionsData = await this.getValidActions(message, initialState)
+    const actionsData = await this.getValidActions(message, initialState);
 
     const actionState = {
       actionNames: formatActionNames(actionsData),
       actionConditions: formatActionConditions(actionsData),
-      actionExamples: formatActionExamples(actionsData),
       actions: formatActions(actionsData),
-    } 
+      actionExamples: composeActionExamples(actionsData, 10),
+    };
 
     return { ...initialState, ...actionState };
   }

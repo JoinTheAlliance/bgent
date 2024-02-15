@@ -16,6 +16,12 @@ export interface Content {
   action?: string;
 }
 
+export interface ContentExample {
+  user: string;
+  content: string;
+  action?: string;
+}
+
 export interface Actor {
   name: string;
   details: { tagline: string; summary: string; quote: string };
@@ -60,14 +66,14 @@ export interface State {
   goalsData?: Goal[];
   recentMessages: string;
   recentMessagesData: Memory[];
-  recentReflections?: string;
-  recentReflectionsData?: Memory[];
-  relevantReflections?: string;
-  relevantReflectionsData?: Memory[];
+  recentSummarizations?: string;
+  recentSummarizationsData?: Memory[];
+  relevantSummarizations?: string;
+  relevantSummarizationsData?: Memory[];
   actionNames?: string;
   actions?: string;
   actionsData?: Action[];
-  messageExamples: string;
+  actionExamples?: string;
   responseData?: Content;
   [key: string]: unknown;
 }
@@ -89,6 +95,7 @@ export interface MessageExample {
 export type Handler = (
   runtime: BgentRuntime,
   message: Message,
+  state?: State,
 ) => Promise<unknown>;
 
 export type Validator = (
@@ -101,7 +108,7 @@ export interface Action {
   name: string;
   description: string;
   condition: string;
-  examples: string[];
+  examples: ContentExample[][];
   validate: Validator;
   handler: Handler | undefined;
 }

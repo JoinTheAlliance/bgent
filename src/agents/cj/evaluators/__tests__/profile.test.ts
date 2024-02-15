@@ -162,7 +162,10 @@ describe("User Profile", () => {
 
       expect(result.toLowerCase().includes("francisco")).toBe(true);
 
-      expect(result.toLowerCase().includes("startup") || result.toLowerCase().includes("programmer")).toBe(true);
+      expect(
+        result.toLowerCase().includes("startup") ||
+          result.toLowerCase().includes("programmer"),
+      ).toBe(true);
 
       const descriptions = await runtime.descriptionManager.getMemoriesByIds({
         userIds: [message.senderId, message.agentId] as UUID[],

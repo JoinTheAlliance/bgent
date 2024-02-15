@@ -21,7 +21,7 @@ export async function createRelationship({
     throw new Error(error.message);
   }
 
-  return true
+  return true;
 }
 
 export async function getRelationship({

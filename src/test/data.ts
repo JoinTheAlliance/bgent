@@ -266,8 +266,8 @@ export const GetTellMeAboutYourselfConversationTroll1 = (
   },
   {
     user_id,
-    content: "Shut up you stupid robot",
-  }
+    content: "Stop talking, you stupid robot",
+  },
 ];
 
 // Jim is cagey, although he reveals that he 'does computers'
@@ -290,7 +290,7 @@ export const GetTellMeAboutYourselfConversationTroll2 = (
   {
     user_id,
     content: "No thanks. Please stop talking now.",
-  }
+  },
 ];
 
 // Jim is cagey, although he reveals that he 'does computers'
@@ -1012,7 +1012,7 @@ export const Personas = [
     age: 38,
     location: "San Francisco, CA",
     descriptions: `Jim is a 38-year-old entrepreneur living in San Francisco, at the helm of his own tech startup. His journey through the tech world is fueled by a passion for solving complex problems and bringing innovative ideas to life. Despite the demands of his career, Jim seeks balance and enjoys disconnecting through outdoor activities, particularly hiking, which offers him a different kind of quiet and a way to clear his mind. He's also intrigued by the thrill of skydiving, a testament to his adventurous spirit and desire to face and conquer fears.
-        In terms of relationships, Jim values loyalty, honesty, and a good sense of humor. His ideal partner would be someone who understands the startup lifestyle's ups and downs and shares his curiosity for exploring new ideas. Although his work often keeps him tethered to the city, he's open to making meaningful connections within his vicinity. Physically, Jim is casual with a laid-back style that complements his approachable and thoughtful nature. His eyes, which he believes to be blue, reflect his depth and contemplative outlook.
+        In terms of relationships, Jim values loyalty, honesty, and a good sense of humor. His ideal partner would be someone who understands the startup lifestyle's ups and downs and shares his curiosity for exploring new ideas. Although his work often keeps him tethered to the city, he's open to making meaningful connections within his vicinity. Physically, Jim is casual with a laid-back style that complements his approachable and thoughtful nature. His eyes, which he believes to be blue, summary his depth and contemplative outlook.
         Jim's life is a blend of intense focus on his professional goals and a genuine appreciation for the simpler, quieter moments outside of work. He looks for depth in relationships, hoping to find a supportive and kind partner who values meaningful conversations and shared adventures. Despite the occasional intensity he might bring to interactions, his underlying sincerity and the value he places on personal connections shine through, making him an intriguing potential partner for someone with similar values and interests.`,
   },
   {
@@ -1027,21 +1027,21 @@ export const Personas = [
     name: "Gloria",
     age: 44,
     description: `Gloria is a vibrant individual with a deep passion for anime, which colors much of her life and interests. Living in a cozy, anime-adorned apartment in the heart of the city, she finds solace and inspiration in the rich narratives and artistic expressions of Japanese animation. Unlike Jim and Alice, Gloria doesn't share an affinity for technology or programming. Instead, she immerses herself in the storytelling and cultural exploration offered by her extensive anime collection, ranging from classic series to the latest releases.
-        Gloria has built a life that reflects her unique interests, often attending anime conventions, engaging in cosplay, and participating in fan communities where she connects with like-minded individuals. Her ideal friends and potential partners are those who understand and share her enthusiasm for anime, appreciating the artistry and emotional depth it can offer. Gloria looks for connections that go beyond surface-level interests, hoping to find others who can engage in deep discussions about character development, plot intricacies, and thematic elements found in her favorite series.
+        Gloria has built a life that summarys her unique interests, often attending anime conventions, engaging in cosplay, and participating in fan communities where she connects with like-minded individuals. Her ideal friends and potential partners are those who understand and share her enthusiasm for anime, appreciating the artistry and emotional depth it can offer. Gloria looks for connections that go beyond surface-level interests, hoping to find others who can engage in deep discussions about character development, plot intricacies, and thematic elements found in her favorite series.
         Physically, Gloria often expresses her love for anime through her fashion, incorporating elements of her favorite characters into her daily wardrobe, which makes her stand out in a crowd with a playful and imaginative style. Her home is a testament to her passion, filled with anime posters, figurines, and collectibles that create an inviting space for fellow enthusiasts. For Gloria, the ideal partner is someone who not only respects her interests but is also eager to dive into marathon viewing sessions and share insights into the anime's underlying messages. Despite her disinterest in computers and programming, Gloria's rich inner world and creative spirit make her an engaging and captivating individual to those who share or appreciate her passions.`,
   },
 ];
 
 export const jimProfileExample1 = `Tech entrepreneur with a zest for adventure and deep connections
-38-year-old residing in San Francisco, embodies a blend of entrepreneurial drive and a quest for outdoor adventures. His laid-back demeanor belies a keen intellect and a reflective nature.
+38-year-old residing in San Francisco, embodies a blend of entrepreneurial drive and a quest for outdoor adventures. His laid-back demeanor belies a keen intellect and a summaryive nature.
 Loyalty and humor stand paramount in his relationships, indicative of his desire for genuine connections. He seeks depth and authenticity in interactions, valuing partners who resonate with his explorative and curious mindset.
-His professional life is anchored in his tech startup, where his passion for problem-solving and innovation takes center stage. His work reflects a commitment to impact and a balance between ambition and personal fulfillment.
+His professional life is anchored in his tech startup, where his passion for problem-solving and innovation takes center stage. His work summarys a commitment to impact and a balance between ambition and personal fulfillment.
 Striving for equilibrium, He acknowledges the challenges of balancing a demanding career with personal aspirations. His introspective side complements his outgoing nature, creating a dynamic personality that values both quiet moments and shared adventures.
 Beyond his tech pursuits, He finds solace in nature, with hiking offering a peaceful retreat from the bustling city life. The prospect of skydiving captures his adventurous spirit, symbolizing a broader desire to embrace life's thrills.
 He aspires to forge connections that transcend the superficial, seeking a partner who appreciates the nuances of startup life and shares his enthusiasm for the great outdoors and new experiences.`;
 
 export const jimProfileExample2 = `Adventurous tech entrepreneur who loves hiking.
-38-year-old entrepreneur based in San Francisco, CA. Known for his casual, laid-back style. Has a contemplative outlook on life, reflected in his thoughtful nature and possibly blue eyes.
+38-year-old entrepreneur based in San Francisco, CA. Known for his casual, laid-back style. Has a contemplative outlook on life, summaryed in his thoughtful nature and possibly blue eyes.
 He places high importance on loyalty, honesty, and a good sense of humor in his relationships. He values depth in conversations and connections, seeking partners and friends who are supportive, understanding, and share his curiosity for exploring new ideas.
 At the helm of his own tech startup, he is driven by a passion for solving complex problems and bringing innovative ideas to life. His career is marked by a relentless pursuit of creating something meaningful, highlighting his dedication and entrepreneurial spirit.
 He seeks balance in his life, acknowledging the challenges of juggling his startup with personal time. He strives for meaningful connections, valuing loyalty and a shared sense of humor in his relationships.

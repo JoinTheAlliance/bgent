@@ -1,7 +1,6 @@
-import { type Actor, type Content, type Memory } from "./types";
-import { messageExamples } from "./messageExamples";
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
+import { type Actor, type Content, type Memory } from "./types";
 
 export async function getMessageActors({
   supabase,
@@ -42,32 +41,6 @@ export function formatMessageActors({ actors }: { actors: Actor[] }) {
   return finalActorStrings;
 }
 
-export const getRandomMessageExamples = (count: number) => {
-  const examples: Array<
-    Array<
-      | { user: string; content: string; action: null | undefined }
-      | { user: string; content: string; action: string }
-    >
-  > = [];
-  while (examples.length < count && examples.length < messageExamples.length) {
-    const randomIndex = Math.floor(Math.random() * messageExamples.length);
-    const randomExample = messageExamples[randomIndex];
-    if (!examples.includes(randomExample)) {
-      examples.push(randomExample);
-    }
-  }
-
-  const formattedExamples = examples.map((example) => {
-    return `\n${example
-      .map((message) => {
-        return JSON.stringify(message);
-      })
-      .join("\n")}`;
-  });
-
-  return formattedExamples.join("\n");
-};
-
 export const formatMessages = ({
   messages,
   actors,
@@ -86,15 +59,4 @@ export const formatMessages = ({
     })
     .join("\n");
   return messageStrings;
-};
-
-export const formatReflections = (reflections: Memory[]) => {
-  const messageStrings = reflections
-    .reverse()
-    .map(
-      (reflection: Memory) =>
-        `${(reflection.content as Content)?.content ?? (reflection.content as string)}`,
-    );
-  const finalMessageStrings = messageStrings.join("\n");
-  return finalMessageStrings;
 };

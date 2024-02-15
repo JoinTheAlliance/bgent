@@ -12,7 +12,7 @@ import {
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
-import evaluator from "../reflect";
+import evaluator from "../summarization";
 
 dotenv.config();
 
@@ -44,7 +44,7 @@ describe("User Profile", () => {
   });
 
   async function cleanup() {
-    await runtime.reflectionManager.removeAllMemoriesByUserIds([
+    await runtime.summarizationManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);
@@ -83,14 +83,15 @@ describe("User Profile", () => {
   async function addFacts(facts: string[]) {
     for (const fact of facts) {
       const existingEmbedding = getCachedEmbedding(fact);
-      const bakedMemory = await runtime.reflectionManager.addEmbeddingToMemory({
-        user_id: user?.id as UUID,
-        user_ids: [user?.id as UUID, zeroUuid],
-        content: fact,
-        room_id: room_id as UUID,
-        embedding: existingEmbedding,
-      });
-      await runtime.reflectionManager.createMemory(bakedMemory);
+      const bakedMemory =
+        await runtime.summarizationManager.addEmbeddingToMemory({
+          user_id: user?.id as UUID,
+          user_ids: [user?.id as UUID, zeroUuid],
+          content: fact,
+          room_id: room_id as UUID,
+          embedding: existingEmbedding,
+        });
+      await runtime.summarizationManager.createMemory(bakedMemory);
       if (!existingEmbedding) {
         writeCachedEmbedding(fact, bakedMemory.embedding as number[]);
         await new Promise((resolve) => setTimeout(resolve, 200));

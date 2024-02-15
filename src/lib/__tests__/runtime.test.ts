@@ -17,7 +17,10 @@ describe("Agent Runtime", () => {
 
   // Helper function to clear memories
   async function clearMemories() {
-    await runtime.messageManager.removeAllMemoriesByUserIds([user?.id as UUID, zeroUuid]);
+    await runtime.messageManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid,
+    ]);
   }
 
   // Helper function to create memories
@@ -28,7 +31,7 @@ describe("Agent Runtime", () => {
     ];
 
     for (const { userId, content } of memories) {
-      let embedding = getCachedEmbedding(content);
+      const embedding = getCachedEmbedding(content);
       const memory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: userId,
         user_ids: [user?.id as UUID, zeroUuid],
@@ -81,9 +84,9 @@ describe("Agent Runtime", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user.id as UUID, zeroUuid],
-      content: 'test message',
-      room_id: room_id as UUID
-    }
+      content: "test message",
+      room_id: room_id as UUID,
+    };
 
     const state = await runtime.composeState(message);
 

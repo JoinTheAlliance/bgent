@@ -7,6 +7,7 @@ import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
 import { Content, type Message } from "../types";
 import { GetTellMeAboutYourselfConversationTroll1 } from "../../test/data";
+import { DefaultActions } from "../actions";
 
 dotenv.config();
 
@@ -38,7 +39,7 @@ describe("User Profile", () => {
   });
 
   async function cleanup() {
-    await runtime.reflectionManager.removeAllMemoriesByUserIds([
+    await runtime.summarizationManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);
@@ -79,22 +80,28 @@ describe("User Profile", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: '',
-      room_id: room_id as UUID
-    }
+      content: "",
+      room_id: room_id as UUID,
+    };
 
-    await populateMemories([
-      GetTellMeAboutYourselfConversationTroll1
-    ]);
+    await populateMemories([GetTellMeAboutYourselfConversationTroll1]);
 
-    await runtime.handleRequest(message);
+    const response = await runtime.handleRequest(message);
 
     const state = await runtime.composeState(message);
 
-    console.log('state.recentMessagesData', state.recentMessagesData)
+    console.log(
+      "*** recentMessagesData",
+      state.recentMessagesData.map((m) => m.content),
+    );
 
-    const lastMessage = state.recentMessagesData[state.recentMessagesData.length - 1]
-    expect((lastMessage.content as Content).action).toBe('ignore')
+    console.log("*** response", response);
+
+    const lastMessage = state.recentMessagesData[0];
+
+    console.log("*** lastMessage", lastMessage.content);
+
+    expect((lastMessage.content as Content).action).toBe(DefaultActions.IGNORE);
   }, 60000);
 
   test("Action handler test: continue", async () => {
@@ -123,9 +130,7 @@ describe("User Profile", () => {
 
     // test an example action being included in the template
 
-
     // load in three continues in a row and verify that they should not continue
-
   }, 60000);
 
   test("Action handler test: wait", async () => {
@@ -137,9 +142,8 @@ describe("User Profile", () => {
     //   room_id: room_id as UUID
     // }
 
-        // TODO: test action handler with a message that should wait for a response
+    // TODO: test action handler with a message that should wait for a response
     // evaluate that the response action is a wait
-
 
     await populateMemories([
       // continue conversation 1 (should wait)

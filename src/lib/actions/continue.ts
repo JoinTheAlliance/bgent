@@ -1,3 +1,4 @@
+import { DefaultActions } from "../actions";
 import { composeContext } from "../context";
 import logger from "../logger";
 import { type BgentRuntime } from "../runtime";
@@ -5,25 +6,27 @@ import { requestHandlerTemplate } from "../templates";
 import { Content, State, type Action, type Message } from "../types";
 import { parseJSONObjectFromText } from "../utils";
 
-const maxContinuesInARow = 3;
+const maxContinuesInARow = 2;
 
 export default {
-  name: "continue",
+  name: DefaultActions.CONTINUE,
   description: "Continue the conversation with the user",
   validate: async (runtime: BgentRuntime, message: Message, state: State) => {
     if (!state) state = await runtime.composeState(message);
     // get all of the messages that were from message.agentId from recentMessagesData in state
     const { recentMessagesData } = state;
 
-    const agentMessages = recentMessagesData.filter(
-      (m) => m.user_id === message.agentId,
-    ).map((m) => (m as Content).action);
+    const agentMessages = recentMessagesData
+      .filter((m) => m.user_id === message.agentId)
+      .map((m) => (m as Content).action);
 
     // check if the last messages were all continues
     if (agentMessages) {
       const lastMessages = agentMessages.slice(-maxContinuesInARow);
       if (lastMessages.length === maxContinuesInARow) {
-        const allContinues = lastMessages.every((m) => m === "continue");
+        const allContinues = lastMessages.every(
+          (m) => m === DefaultActions.CONTINUE,
+        );
         if (allContinues) {
           return false;
         }
@@ -114,11 +117,146 @@ export default {
   condition:
     "The agent wants to continue speaking and say something else as a continuation of the last thought",
   examples: [
-    JSON.stringify({
-      user: "CJ",
-      content:
-        "The comet passing over tonight is going to be a sight to behold. Are you excited about it?",
-      action: "continue",
-    }),
+    [
+      {
+        user: "{{user1}}",
+        content:
+          "Planning a solo trip soon. I've always wanted to try backpacking.",
+      },
+      {
+        user: "{{user2}}",
+        content: "Adventurous",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user2}}",
+        content: "Any particular destination?",
+        action: DefaultActions.WAIT,
+      },
+    ],
+
+    [
+      {
+        user: "{{user1}}",
+        content: "I started learning the guitar this month!",
+        action: DefaultActions.WAIT,
+      },
+      {
+        user: "{{user2}}",
+        content: "How’s that going?",
+        action: DefaultActions.WAIT,
+      },
+      {
+        user: "{{user1}}",
+        content: "Challenging, but rewarding.",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user1}}",
+        content: "My fingers hurt though.",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user1}}",
+        content: "Seriously lol it hurts to type",
+        action: DefaultActions.WAIT,
+      },
+    ],
+
+    [
+      {
+        user: "{{user1}}",
+        content:
+          "I've been summarying a lot on what happiness means to me lately.",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user1}}",
+        content: "That it’s more about moments than things.",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user2}}",
+        content:
+          "Like the best things that have ever happened were things that happened, or moments that I had with someone.",
+        action: DefaultActions.CONTINUE,
+      },
+    ],
+
+    [
+      {
+        user: "{{user1}}",
+        content: "I found some incredible art today.",
+        action: DefaultActions.WAIT,
+      },
+      {
+        user: "{{user2}}",
+        content: "Who's the artist?",
+        action: DefaultActions.WAIT,
+      },
+      {
+        user: "{{user1}}",
+        content: "Not sure lol, they are anon",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user1}}",
+        content:
+          "But the pieces are just so insane looking. Once sec, let me grab a link.",
+        action: DefaultActions.CONTINUE,
+      },
+    ],
+
+    [
+      {
+        user: "{{user1}}",
+        content:
+          "The new exhibit downtown is thought-provoking. It's all about tribalism in online spaces.",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user1}}",
+        content: "Really challenges your perceptions. Highly recommend it!",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user2}}",
+        content: "I’m in. When are you free to go?",
+        action: DefaultActions.WAIT,
+      },
+      {
+        user: "{{user1}}",
+        content: "Hmm, let me check.",
+        action: DefaultActions.CONTINUE,
+      },
+      {
+        user: "{{user1}}",
+        content: "How about this weekend?",
+        action: DefaultActions.WAIT,
+      },
+    ],
+
+    [
+      {
+        user: "{{user1}}",
+        content:
+          "Thinking of joining a local volunteer group. Want to give back to the community.",
+        action: null,
+      },
+      { user: "{{user2}}", content: "That’s a great idea.", action: null },
+      {
+        user: "{{user1}}",
+        content:
+          "Yeah, been feeling the need to connect with something larger.",
+        action: null,
+      },
+      {
+        user: "{{user2}}",
+        content: "Let me know if you need company.",
+        action: null,
+      },
+      { user: "{{user1}}", content: "That'd be great, thanks.", action: null },
+      { user: "{{user1}}", content: 'WAIT"', action: null },
+    ],
   ],
 } as Action;

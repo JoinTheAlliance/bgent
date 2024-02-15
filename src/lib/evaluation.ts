@@ -1,8 +1,8 @@
-import reflect from "./evaluators/reflect";
+import summarization from "./evaluators/summarization";
 import { type Evaluator } from "./types";
 
 export const defaultEvaluators: Evaluator[] = [
-  reflect,
+  summarization,
   // goal,
 ];
 

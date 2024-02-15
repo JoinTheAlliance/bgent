@@ -2,8 +2,26 @@ import { composeContext } from "../context";
 import logger from "../logger";
 import { formatMessageActors, getMessageActors } from "../messages";
 import { type BgentRuntime } from "../runtime";
-import { type Action, type Actor, type Message, type State } from "../types";
+import {
+  Content,
+  Memory,
+  type Action,
+  type Actor,
+  type Message,
+  type State,
+} from "../types";
 import { parseJsonArrayFromText } from "../utils";
+
+export const formatSummarizations = (summarizations: Memory[]) => {
+  const messageStrings = summarizations
+    .reverse()
+    .map(
+      (summarization: Memory) =>
+        `${(summarization.content as Content)?.content ?? (summarization.content as string)}`,
+    );
+  const finalMessageStrings = messageStrings.join("\n");
+  return finalMessageStrings;
+};
 
 const template = `TASK: Fact Summarization
 Extract what happened in the scene as an array of claims in JSON format.
@@ -102,8 +120,8 @@ Correct response format:
 # START OF ACTUAL TASK INFORMATION
 
 Facts about the scene:
-{{recentReflections}}
-{{relevantReflections}}
+{{recentSummarizations}}
+{{relevantSummarizations}}
 
 Actors in the Scene:
 {{actors}}
@@ -161,73 +179,73 @@ async function handler(runtime: BgentRuntime, message: Message) {
   });
 
   // if (runtime.debugMode) {
-    logger.log(context, {
-      title: "Reflection context",
-      frame: true,
-      color: "cyan",
-    });
+  logger.log(context, {
+    title: "Summarization context",
+    frame: true,
+    color: "cyan",
+  });
   // }
 
-  let reflections = null;
+  let summarizations = null;
 
   for (let i = 0; i < 3; i++) {
-    const reflectionText: string = await runtime.completion({
+    const summarizationText: string = await runtime.completion({
       context,
       stop: [],
     });
-    console.log('reflectionText', reflectionText)
-    const parsedReflections = parseJsonArrayFromText(reflectionText);
-    if (parsedReflections) {
-      reflections = parsedReflections;
+    console.log("summarizationText", summarizationText);
+    const parsedSummarizations = parseJsonArrayFromText(summarizationText);
+    if (parsedSummarizations) {
+      summarizations = parsedSummarizations;
       break;
     }
   }
 
-  if (!reflections) {
+  if (!summarizations) {
     if (runtime.debugMode) {
-      logger.warn("No reflection generated", { color: "yellow" });
+      logger.warn("No summarization generated", { color: "yellow" });
     }
     return [];
   }
 
   if (runtime.debugMode) {
-    logger.log(JSON.stringify(reflections), {
-      title: "Reflection Output",
+    logger.log(JSON.stringify(summarizations), {
+      title: "Summarization Output",
       frame: true,
       color: "cyan",
     });
   }
 
-  const filteredReflections = reflections
-    .filter((reflection) => {
+  const filteredSummarizations = summarizations
+    .filter((summarization) => {
       return (
-        !reflection.already_known &&
-        reflection.type === "fact" &&
-        !reflection.in_bio &&
-        reflection.claim &&
-        reflection.claim.trim() !== ""
+        !summarization.already_known &&
+        summarization.type === "fact" &&
+        !summarization.in_bio &&
+        summarization.claim &&
+        summarization.claim.trim() !== ""
       );
     })
-    .map((reflection) => reflection.claim);
+    .map((summarization) => summarization.claim);
 
-  for (const reflection of filteredReflections) {
-    const reflectionMemory =
-      await runtime.reflectionManager.addEmbeddingToMemory({
+  for (const summarization of filteredSummarizations) {
+    const summarizationMemory =
+      await runtime.summarizationManager.addEmbeddingToMemory({
         user_ids: userIds,
         user_id: agentId!,
-        content: reflection,
+        content: summarization,
         room_id,
       });
 
-    await runtime.reflectionManager.createMemory(reflectionMemory, true);
+    await runtime.summarizationManager.createMemory(summarizationMemory, true);
 
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
-  return filteredReflections;
+  return filteredSummarizations;
 }
 
 export default {
-  name: "REFLECT",
+  name: "SUMMARIZE",
   validate: async (
     _runtime: BgentRuntime,
     _message: Message,

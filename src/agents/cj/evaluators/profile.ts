@@ -225,9 +225,5 @@ export default {
   condition:
     "The user has revealed new personal information in the conversation which is important to update in their profile.",
   handler,
-  examples: [
-    `{
-
-    }`,
-  ],
+  examples: [],
 } as Evaluator;

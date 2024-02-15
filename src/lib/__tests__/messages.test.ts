@@ -4,12 +4,11 @@ import { createRuntime } from "../../test/createRuntime";
 import {
   formatMessageActors,
   formatMessages,
-  formatReflections,
   getMessageActors,
-  getRandomMessageExamples,
 } from "../messages";
 import { type BgentRuntime } from "../runtime";
-import { type Content, type Actor, type Memory } from "../types";
+import { type Actor, type Content, type Memory } from "../types";
+import { formatSummarizations } from "../evaluators/summarization";
 
 describe("Messages Library", () => {
   let runtime: BgentRuntime, user: User, actors: Actor[];
@@ -43,13 +42,6 @@ describe("Messages Library", () => {
       expect(formattedActors).toContain(actor.name);
     });
   });
-  
-
-  test("getRandomMessageExamples should return a specified number of random message examples", () => {
-    const examples = getRandomMessageExamples(3);
-    console.log("*** examples", examples);
-    expect(examples.split("\n\n").length).toBe(3);
-  });
 
   test("formatMessages should format messages into a readable string", async () => {
     const messages: Memory[] = [
@@ -75,8 +67,8 @@ describe("Messages Library", () => {
     });
   });
 
-  test("formatReflections should format reflections into a readable string", async () => {
-    const reflections: Memory[] = [
+  test("formatSummarizations should format summarizations into a readable string", async () => {
+    const summarizations: Memory[] = [
       {
         content: "Reflecting on the day",
         user_id: user.id as UUID,
@@ -90,9 +82,9 @@ describe("Messages Library", () => {
         room_id: "00000000-0000-0000-0000-000000000000room",
       },
     ];
-    const formattedReflections = formatReflections(reflections);
-    reflections.forEach((reflection) => {
-      expect(formattedReflections).toContain(reflection.content);
+    const formattedSummarizations = formatSummarizations(summarizations);
+    summarizations.forEach((summarization) => {
+      expect(formattedSummarizations).toContain(summarization.content);
     });
   });
 });

@@ -7,7 +7,8 @@ import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
-import action from "../wait";  // Import the wait action
+import action from "../wait"; // Import the wait action
+import { DefaultActions } from "@/lib/actions";
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ describe("Wait Action Behavior", () => {
   });
 
   async function cleanup() {
-    await runtime.reflectionManager.removeAllMemoriesByUserIds([
+    await runtime.summarizationManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);
@@ -82,7 +83,7 @@ describe("Wait Action Behavior", () => {
       userIds: [user?.id as UUID, zeroUuid],
       content: {
         content: "Please wait a moment, I need to think about this...",
-        action: "wait",
+        action: DefaultActions.WAIT,
       },
       room_id: room_id as UUID,
     };
@@ -92,9 +93,9 @@ describe("Wait Action Behavior", () => {
     await populateMemories([GetTellMeAboutYourselfConversation1]);
 
     const result = (await handler(runtime, message)) as string[];
-    // Expectation depends on the implementation of the wait action. 
-    // For instance, it might be that there's no immediate output, 
+    // Expectation depends on the implementation of the wait action.
+    // For instance, it might be that there's no immediate output,
     // or the output indicates waiting, so adjust the expectation accordingly.
-    expect(result).toEqual(true);  // Update this line based on the expected behavior of the wait action
+    expect(result).toEqual(true); // Update this line based on the expected behavior of the wait action
   }, 60000);
 });

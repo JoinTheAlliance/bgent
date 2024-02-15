@@ -1,13 +1,13 @@
 export const requestHandlerTemplate = `## Example Messages
 json\`\`\`
-{{messageExamples}}
+{{actionExamples}}
 \`\`\`
 
 {{flavor}}
 
 # Scene Facts
-{{recentReflections}}
-{{relevantReflections}}
+{{recentSummarizations}}
+{{relevantSummarizations}}
 
 # Goals for {{agentName}}
 {{goals}}

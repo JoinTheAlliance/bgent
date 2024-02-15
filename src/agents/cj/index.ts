@@ -1,13 +1,42 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
+import { DefaultActions } from "../../lib/actions";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
-import { type Content, type Message, type State } from "../../lib/types";
-import { shouldSkipMessage } from "../../lib/utils";
+import {
+  type Content,
+  type Memory,
+  type Message,
+  type State,
+} from "../../lib/types";
 import actions from "./actions";
 import evaluators from "./evaluators";
 import flavor from "./flavor";
+
+export function shouldSkipMessage(state: State, agentId: string): boolean {
+  if (state.recentMessagesData && state.recentMessagesData.length > 2) {
+    const currentMessages = state.recentMessagesData ?? [];
+    const lastThreeMessages = currentMessages.slice(-3);
+    const lastThreeMessagesFromAgent = lastThreeMessages.filter(
+      (message: Memory) => message.user_id === agentId,
+    );
+    if (lastThreeMessagesFromAgent.length === 3) {
+      return true;
+    }
+
+    const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2);
+    const lastTwoMessagesFromAgentWithWaitAction =
+      lastTwoMessagesFromAgent.filter(
+        (message: Memory) =>
+          (message.content as Content).action === DefaultActions.WAIT,
+      );
+    if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
+      return true;
+    }
+  }
+  return false;
+}
 
 const onMessage = async (
   message: Message,

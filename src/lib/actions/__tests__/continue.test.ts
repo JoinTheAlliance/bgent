@@ -8,6 +8,7 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../continue";
+import { DefaultActions } from "@/lib/actions";
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ describe("User Profile", () => {
   });
 
   async function cleanup() {
-    await runtime.reflectionManager.removeAllMemoriesByUserIds([
+    await runtime.summarizationManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);
@@ -83,7 +84,7 @@ describe("User Profile", () => {
       content: {
         content:
           "Hmm, let think for a second, I was going to tell you about something...",
-        action: "continue",
+        action: DefaultActions.CONTINUE,
       },
       room_id: room_id as UUID,
     };

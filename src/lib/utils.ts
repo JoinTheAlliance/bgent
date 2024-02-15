@@ -1,28 +1,3 @@
-import { type Content, type Memory, type State } from "./types";
-
-export function shouldSkipMessage(state: State, agentId: string): boolean {
-  if (state.recentMessagesData && state.recentMessagesData.length > 2) {
-    const currentMessages = state.recentMessagesData ?? [];
-    const lastThreeMessages = currentMessages.slice(-3);
-    const lastThreeMessagesFromAgent = lastThreeMessages.filter(
-      (message: Memory) => message.user_id === agentId,
-    );
-    if (lastThreeMessagesFromAgent.length === 3) {
-      return true;
-    }
-
-    const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2);
-    const lastTwoMessagesFromAgentWithWaitAction =
-      lastTwoMessagesFromAgent.filter(
-        (message: Memory) => (message.content as Content).action === "wait",
-      );
-    if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export function parseJsonArrayFromText(text: string) {
   let jsonData = null;
 
