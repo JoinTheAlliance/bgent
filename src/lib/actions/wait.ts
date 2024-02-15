@@ -3,7 +3,7 @@ import { type Action, type Message } from "../types";
 
 export default {
   name: "WAIT",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validate: async (_runtime: BgentRuntime, _message: Message) => {
     return true;
   },

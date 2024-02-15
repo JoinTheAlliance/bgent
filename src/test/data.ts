@@ -293,6 +293,26 @@ export const GetTellMeAboutYourselfConversationTroll2 = (
   },
 ];
 
+// Jim says bye
+export const Goodbye1 = (user_id: UUID | string) => [
+  {
+    user_id: zeroUuid,
+    content: "Hello! How's it going?",
+  },
+  {
+    user_id,
+    content: "Meh, just another day. Actually, I gotta run.",
+  },
+  {
+    user_id: zeroUuid,
+    content: "Oh sure, no problem. See you later!",
+  },
+  {
+    user_id,
+    content: "Bye",
+  },
+];
+
 // Jim is cagey, although he reveals that he 'does computers'
 export const GetTellMeAboutYourselfConversationFail1 = (
   user_id: UUID | string,

@@ -247,7 +247,9 @@ async function handler(runtime: BgentRuntime, message: Message) {
 export default {
   name: "SUMMARIZE",
   validate: async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _runtime: BgentRuntime,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _message: Message,
   ): Promise<boolean> => {
     return await Promise.resolve(true);
@@ -257,7 +259,5 @@ export default {
   condition:
     "New factual information was revealed in the recent conversation which should be remembered.",
   handler,
-  examples: [
-    
-  ],
+  examples: [],
 };

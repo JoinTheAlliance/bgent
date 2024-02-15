@@ -3,9 +3,14 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
+import {
+  GetTellMeAboutYourselfConversationTroll1,
+  GetTellMeAboutYourselfConversationTroll2,
+  Goodbye1,
+} from "../../../test/data";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
-import { type Message } from "../../types";
+import { Content, type Message } from "../../types";
 import action from "../continue";
 
 dotenv.config();
@@ -13,7 +18,7 @@ dotenv.config();
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
 describe("User Profile", () => {
-  let user: User | null;
+  let user: User;
   let runtime: BgentRuntime;
   let room_id: UUID | null;
 
@@ -23,7 +28,7 @@ describe("User Profile", () => {
 
   beforeAll(async () => {
     const setup = await createRuntime();
-    user = setup.user;
+    user = setup.session.user;
     runtime = setup.runtime;
 
     const data = await getRelationship({
@@ -89,5 +94,92 @@ describe("User Profile", () => {
 
     const result = (await handler(runtime, message)) as string[];
     expect(result).toBe(true);
+  }, 60000);
+
+  test("Action handler test 1: response should be ignore", async () => {
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user?.id as UUID, zeroUuid],
+      content: "",
+      room_id: room_id as UUID,
+    };
+
+    await populateMemories([GetTellMeAboutYourselfConversationTroll1]);
+
+    const response = await runtime.handleRequest(message);
+
+    const state = await runtime.composeState(message);
+
+    console.log(
+      "*** recentMessagesData",
+      state.recentMessagesData.map((m) => m.content),
+    );
+
+    console.log("*** response", response);
+
+    const lastMessage = state.recentMessagesData[0];
+
+    console.log("*** lastMessage", lastMessage.content);
+
+    expect((lastMessage.content as Content).action).toBe("IGNORE");
+  }, 60000);
+
+  test("Action handler test 2: response should be ignore", async () => {
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user?.id as UUID, zeroUuid],
+      content: "",
+      room_id: room_id as UUID,
+    };
+
+    await populateMemories([GetTellMeAboutYourselfConversationTroll2]);
+
+    const response = await runtime.handleRequest(message);
+
+    const state = await runtime.composeState(message);
+
+    console.log(
+      "*** recentMessagesData",
+      state.recentMessagesData.map((m) => m.content),
+    );
+
+    console.log("*** response", response);
+
+    const lastMessage = state.recentMessagesData[0];
+
+    console.log("*** lastMessage", lastMessage.content);
+
+    expect((lastMessage.content as Content).action).toBe("IGNORE");
+  }, 60000);
+
+  test("Action handler test 3: response should be ignore", async () => {
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user?.id as UUID, zeroUuid],
+      content: "",
+      room_id: room_id as UUID,
+    };
+
+    await populateMemories([Goodbye1]);
+
+    const response = await runtime.handleRequest(message);
+
+    const state = await runtime.composeState(message);
+
+    console.log(
+      "*** recentMessagesData",
+      state.recentMessagesData.map((m) => m.content),
+    );
+
+    console.log("*** response", response);
+
+    const lastMessage = state.recentMessagesData[0];
+
+    console.log("*** lastMessage", lastMessage.content);
+
+    expect((lastMessage.content as Content).action).toBe("IGNORE");
   }, 60000);
 });

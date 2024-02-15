@@ -97,7 +97,9 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
 export default {
   name: "INTRODUCE",
   validate: async (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _runtime: BgentRuntime,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _message: Message,
   ): Promise<boolean> => {
     return await Promise.resolve(true);

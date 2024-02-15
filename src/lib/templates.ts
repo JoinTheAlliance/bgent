@@ -19,6 +19,9 @@ json\`\`\`
 # Actors
 {{actors}}
 
+Current Scene Dialog:
+{{recentMessages}}
+
 # INSTRUCTIONS:
 - Generate the next message in the scene for {{agentName}}
 - Include content and action in the response
@@ -29,10 +32,4 @@ json\`\`\`
 Response format should be formatted in a JSON block like this:
 \`\`\`json
 { "user": {{agentName}}, "content": string, "action": string }
-\`\`\`
-
-Current Scene Dialog:
-\`\`\`json
-{{recentMessages}}
-{ "user": "{{senderName}}", "content": "{{senderContent}}", "action": "{{senderAction}}" }
 \`\`\``;

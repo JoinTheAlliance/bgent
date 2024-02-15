@@ -3,16 +3,14 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
-import { GetTellMeAboutYourselfConversationTroll1 } from "../../test/data";
 import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
-import { Content, type Message } from "../types";
 
 dotenv.config();
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
-describe("User Profile", () => {
+describe("Actions", () => {
   let user: User;
   let runtime: BgentRuntime;
   let room_id: UUID;
@@ -73,35 +71,6 @@ describe("User Profile", () => {
       }
     }
   }
-
-  test("Action handler test: ignore", async () => {
-    const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
-      content: "",
-      room_id: room_id as UUID,
-    };
-
-    await populateMemories([GetTellMeAboutYourselfConversationTroll1]);
-
-    const response = await runtime.handleRequest(message);
-
-    const state = await runtime.composeState(message);
-
-    console.log(
-      "*** recentMessagesData",
-      state.recentMessagesData.map((m) => m.content),
-    );
-
-    console.log("*** response", response);
-
-    const lastMessage = state.recentMessagesData[0];
-
-    console.log("*** lastMessage", lastMessage.content);
-
-    expect((lastMessage.content as Content).action).toBe("IGNORE");
-  }, 60000);
 
   test("Action handler test: continue", async () => {
     // TODO: test action handler with a message that should continue the conversation
