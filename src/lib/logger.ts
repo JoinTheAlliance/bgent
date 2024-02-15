@@ -1,4 +1,4 @@
-import chalk, { ForegroundColorName } from "chalk";
+import chalk, { ForegroundColor } from "chalk";
 
 class Logger {
   frameChar = "*";
@@ -12,7 +12,7 @@ class Logger {
     }: {
       title?: string;
       frame?: boolean;
-      color?: ForegroundColorName;
+      color?: typeof ForegroundColor;
     },
   ): void {
     const coloredMessage = chalk[color](message);
