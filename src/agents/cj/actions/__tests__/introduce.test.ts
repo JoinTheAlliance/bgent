@@ -19,7 +19,7 @@ import {
 } from "../../../../test/cache";
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
+const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Introduce Action", () => {
   test("Introduce the user", async () => {

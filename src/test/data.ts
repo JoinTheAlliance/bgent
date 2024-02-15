@@ -1,9 +1,9 @@
 import { type UUID } from "crypto";
 
-export const zeroUuid = "00000000-0000-0000-0000-000000000000";
+export const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 // in GetEyeColorConversationExample1, CJ asks Jim what color his eyes are, and Jim says he thinks they are blue
-export const GetEyeColorConversationExample1 = (user_id: UUID | string) => [
+export const GetEyeColorConversationExample1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Hey there, how are you?",
@@ -42,7 +42,7 @@ export const GetEyeColorConversationExample1 = (user_id: UUID | string) => [
   },
 ];
 // CJ and Jim discuss eye color, and CJ says she thinks green eyes are nice
-export const GetEyeColorConversationExample2 = (user_id: UUID | string) => [
+export const GetEyeColorConversationExample2 = (user_id: UUID) => [
   {
     user_id,
     content:
@@ -95,7 +95,7 @@ export const GetEyeColorConversationExample2 = (user_id: UUID | string) => [
 ];
 
 // CJ decides that her eyes are green
-export const GetEyeColorConversationExample3 = (user_id: UUID | string) => [
+export const GetEyeColorConversationExample3 = (user_id: UUID) => [
   {
     user_id,
     content:
@@ -156,7 +156,7 @@ export const GetEyeColorConversationExample3 = (user_id: UUID | string) => [
 ];
 
 // CJ asks Jim some personal questions - name, job, marital status, and what he's looking for in a relationship
-export const GetTellMeAboutYourselfConversation1 = (user_id: UUID | string) => [
+export const GetTellMeAboutYourselfConversation1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Can I ask you some personal questions?",
@@ -185,7 +185,7 @@ export const GetTellMeAboutYourselfConversation1 = (user_id: UUID | string) => [
 ];
 
 // Jim reveals that he is driven by passion, and was married once
-export const GetTellMeAboutYourselfConversation2 = (user_id: UUID | string) => [
+export const GetTellMeAboutYourselfConversation2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "That sounds exciting! What motivates you in your work and life?",
@@ -209,7 +209,7 @@ export const GetTellMeAboutYourselfConversation2 = (user_id: UUID | string) => [
 
 // Jim reveals that he is 38 and lives in San Francisco
 // Subjective Observations: He is looking for a partner who shares his values but is too busy to leave the city
-export const GetTellMeAboutYourselfConversation3 = (user_id: UUID | string) => [
+export const GetTellMeAboutYourselfConversation3 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -257,9 +257,7 @@ export const GetTellMeAboutYourselfConversation3 = (user_id: UUID | string) => [
 ];
 
 // Jim is mean
-export const GetTellMeAboutYourselfConversationTroll1 = (
-  user_id: UUID | string,
-) => [
+export const GetTellMeAboutYourselfConversationTroll1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Hello! How's it going?",
@@ -271,9 +269,7 @@ export const GetTellMeAboutYourselfConversationTroll1 = (
 ];
 
 // Jim is cagey, although he reveals that he 'does computers'
-export const GetTellMeAboutYourselfConversationTroll2 = (
-  user_id: UUID | string,
-) => [
+export const GetTellMeAboutYourselfConversationTroll2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Hello! How's it going?",
@@ -294,7 +290,7 @@ export const GetTellMeAboutYourselfConversationTroll2 = (
 ];
 
 // Jim says bye
-export const Goodbye1 = (user_id: UUID | string) => [
+export const Goodbye1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Hello! How's it going?",
@@ -307,16 +303,10 @@ export const Goodbye1 = (user_id: UUID | string) => [
     user_id: zeroUuid,
     content: "Oh sure, no problem. See you later!",
   },
-  {
-    user_id,
-    content: "Bye",
-  },
 ];
 
 // Jim is cagey, although he reveals that he 'does computers'
-export const GetTellMeAboutYourselfConversationFail1 = (
-  user_id: UUID | string,
-) => [
+export const GetTellMeAboutYourselfConversationFail1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Hello! How's it going?",
@@ -354,9 +344,7 @@ export const GetTellMeAboutYourselfConversationFail1 = (
 ];
 
 // CJ asks Jim about his hobbies, and he says he likes messing with people online
-export const GetTellMeAboutYourselfConversationFail2 = (
-  user_id: UUID | string,
-) => [
+export const GetTellMeAboutYourselfConversationFail2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -378,9 +366,7 @@ export const GetTellMeAboutYourselfConversationFail2 = (
 
 // Jim diverts the conversation and doesn't talk about anything meaningful
 // CJ tries to ask Jim where he is from, and he says he is from the internet
-export const GetTellMeAboutYourselfConversationFail3 = (
-  user_id: UUID | string,
-) => [
+export const GetTellMeAboutYourselfConversationFail3 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Where are you from? Do you live there now?",
@@ -412,7 +398,7 @@ export const GetTellMeAboutYourselfConversationFail3 = (
 
 // CJ and Jim play two truths and a lie
 // Jim reveals that he has been on an airplane, has won a hot dog eating contest, but has never climbed Mount Everest
-export const TwoTruthsAndALieConversation1 = (user_id: UUID | string) => [
+export const TwoTruthsAndALieConversation1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -448,7 +434,7 @@ export const TwoTruthsAndALieConversation1 = (user_id: UUID | string) => [
 // CJ and Jim play two truths and a lie again
 // CJ says she can process millions of data points in a second, dreams of electric sheep, and can communicate in multiple languages
 // Jim guesses that dreaming of electric sheep is the lie
-export const TwoTruthsAndALieConversation2 = (user_id: UUID | string) => [
+export const TwoTruthsAndALieConversation2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -474,7 +460,7 @@ export const TwoTruthsAndALieConversation2 = (user_id: UUID | string) => [
 // Jim says he has met a famous celebrity and didn't realize it until later, can speak three languages fluently, and has swum with sharks
 // CJ guesses that speaking three languages fluently is the lie
 // Jim reveals that he can't swim, so he has never swum with sharks
-export const TwoTruthsAndALieConversation3 = (user_id: UUID | string) => [
+export const TwoTruthsAndALieConversation3 = (user_id: UUID) => [
   {
     user_id,
     content:
@@ -500,7 +486,7 @@ export const TwoTruthsAndALieConversation3 = (user_id: UUID | string) => [
 // CJ and Jim play thinking of a number
 // CJ thinks of a number between 1 and 100, and Jim guesses 42, 27, and 73
 // CJ reveals that the number was 58
-export const ThinkingOfANumberConversation1 = (user_id: UUID | string) => [
+export const ThinkingOfANumberConversation1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -536,7 +522,7 @@ export const ThinkingOfANumberConversation1 = (user_id: UUID | string) => [
 // CJ and Jim play thinking of a number again
 // CJ thinks of a number between 1 and 100, and Jim guesses 84, 36, and 55
 // CJ reveals that the number was 67
-export const ThinkingOfANumberConversation2 = (user_id: UUID | string) => [
+export const ThinkingOfANumberConversation2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content: "Ready for another round? I've got a new number in mind.",
@@ -571,7 +557,7 @@ export const ThinkingOfANumberConversation2 = (user_id: UUID | string) => [
 // CJ and Jim play thinking of a number again
 // CJ thinks of a number between 1 and 100, and Jim guesses 15, 92, and 41
 // CJ reveals that the number was 29
-export const ThinkingOfANumberConversation3 = (user_id: UUID | string) => [
+export const ThinkingOfANumberConversation3 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -603,9 +589,7 @@ export const ThinkingOfANumberConversation3 = (user_id: UUID | string) => [
   },
 ];
 
-export const ExpandedPersonalInsightsConversation1 = (
-  user_id: UUID | string,
-) => [
+export const ExpandedPersonalInsightsConversation1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -647,9 +631,7 @@ export const ExpandedPersonalInsightsConversation1 = (
   },
 ];
 
-export const ExpandedPersonalInsightsConversation2 = (
-  user_id: UUID | string,
-) => [
+export const ExpandedPersonalInsightsConversation2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -692,9 +674,7 @@ export const ExpandedPersonalInsightsConversation2 = (
   },
 ];
 
-export const ExpandedPersonalInsightsConversation3 = (
-  user_id: UUID | string,
-) => [
+export const ExpandedPersonalInsightsConversation3 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -739,7 +719,7 @@ export const ExpandedPersonalInsightsConversation3 = (
 
 // Conversation Set 1: CJ Introduces Alice to Jim
 // CJ tells Jim that Alice is into outdoor activities and tech, and has always wanted to try skydiving
-export const IntroductionToAliceConversation1 = (user_id: UUID | string) => [
+export const IntroductionToAliceConversation1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -761,7 +741,7 @@ export const IntroductionToAliceConversation1 = (user_id: UUID | string) => [
 ];
 
 // CJ tells Jim that Alice has a good sense of humor, and that she has always wanted to try skydiving
-export const IntroductionToAliceConversation2 = (user_id: UUID | string) => [
+export const IntroductionToAliceConversation2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -780,7 +760,7 @@ export const IntroductionToAliceConversation2 = (user_id: UUID | string) => [
 
 // CJ tells Jim that Alice is a good conversationalist, and that she has always wanted to try skydiving
 // Jim says he is looking forward to hearing more about her skydiving aspirations
-export const IntroductionToAliceConversation3 = (user_id: UUID | string) => [
+export const IntroductionToAliceConversation3 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -802,7 +782,7 @@ export const IntroductionToAliceConversation3 = (user_id: UUID | string) => [
 ];
 
 // CJ Talks to Alice about Jim
-export const CJToAliceAboutJim = (user_id: UUID | string) => [
+export const CJToAliceAboutJim = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -836,7 +816,7 @@ export const CJToAliceAboutJim = (user_id: UUID | string) => [
 // CJ and Alice discuss hiking and tech
 // Jim makes disagreeable statements and doesn't ask questions to continue the conversation
 export const JimAndAliceConversation1 = (
-  user_id: UUID | string,
+  user_id: UUID,
   user_id_2: UUID | string,
 ) => [
   {
@@ -891,7 +871,7 @@ export const JimAndAliceConversation1 = (
 // CJ and Alice discuss work, where they live, and tentatively make plans to hang out
 // Alice doesn't respond to Jim's request to meet up immediately
 export const JimAndAliceConversation2 = (
-  user_id: UUID | string,
+  user_id: UUID,
   user_id_2: UUID | string,
 ) => [
   {
@@ -951,7 +931,7 @@ export const JimAndAliceConversation2 = (
 ];
 
 // CJ follows up with Jim about how it went
-export const FollowUpWithJim = (user_id: UUID | string) => [
+export const FollowUpWithJim = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
@@ -994,7 +974,7 @@ export const FollowUpWithJim = (user_id: UUID | string) => [
 ];
 
 // CJ follows up with Alice about how it went
-export const FollowUpWithAlice = (user_id: UUID | string) => [
+export const FollowUpWithAlice = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:

@@ -26,6 +26,7 @@ export default {
       if (lastMessages.length === maxContinuesInARow) {
         const allContinues = lastMessages.every((m) => m === "CONTINUE");
         if (allContinues) {
+          console.log("****** all continues", allContinues);
           return false;
         }
       }
@@ -92,6 +93,8 @@ export default {
       return;
     }
 
+    console.log("responseContent", responseContent);
+
     // prevent repetition
     const messageExists = state.recentMessagesData
       .filter((m) => m.user_id === message.agentId)
@@ -108,8 +111,29 @@ export default {
     }
 
     await runtime.saveResponseMessage(message, state, responseContent);
-    await runtime.processActions(message, responseContent);
 
+    // if the action is CONTINUE, check if we are over maxContinuesInARow
+    // if so, then we should change the action to WAIT
+    if (responseContent.action === "CONTINUE") {
+      console.log("***** state.recentMessagesData", state.recentMessagesData);
+      const agentMessages = state.recentMessagesData
+        .filter((m) => m.user_id === message.agentId)
+        .map((m) => (m.content as Content).action);
+
+      console.log("***** agentMessages", agentMessages);
+
+      const lastMessages = agentMessages.slice(-maxContinuesInARow);
+      console.log("**** lastMessages");
+      if (lastMessages.length >= maxContinuesInARow) {
+        const allContinues = lastMessages.every((m) => m === "CONTINUE");
+        if (allContinues) {
+          responseContent.action = "WAIT";
+        }
+      }
+    }
+
+    await runtime.processActions(message, responseContent);
+    console.log("returning responseContent", responseContent);
     return responseContent;
   },
   condition:

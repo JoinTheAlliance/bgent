@@ -1,14 +1,14 @@
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
 import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
+import { populateMemories } from "../../test/populateMemories";
 
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
+const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Actions", () => {
   let user: User;
@@ -46,32 +46,6 @@ describe("Actions", () => {
     ]);
   }
 
-  async function populateMemories(
-    conversations: Array<
-      (user_id: string) => Array<{ user_id: string; content: string }>
-    >,
-  ) {
-    for (const conversation of conversations) {
-      for (const c of conversation(user?.id as UUID)) {
-        const existingEmbedding = getCachedEmbedding(c.content);
-        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content,
-          },
-          room_id: room_id as UUID,
-          embedding: existingEmbedding,
-        });
-        await runtime.messageManager.createMemory(bakedMemory);
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        }
-      }
-    }
-  }
-
   test("Action handler test: continue", async () => {
     // TODO: test action handler with a message that should continue the conversation
     // evaluate that the response action is a continue
@@ -84,7 +58,7 @@ describe("Actions", () => {
     //   room_id: room_id as UUID
     // }
 
-    await populateMemories([
+    await populateMemories(runtime, user, room_id, [
       // continue conversation 1 (should continue)
     ]);
 
@@ -113,7 +87,7 @@ describe("Actions", () => {
     // TODO: test action handler with a message that should wait for a response
     // evaluate that the response action is a wait
 
-    await populateMemories([
+    await populateMemories(runtime, user, room_id, [
       // continue conversation 1 (should wait)
     ]);
 

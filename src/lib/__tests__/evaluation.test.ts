@@ -7,7 +7,7 @@ import { type UUID } from "crypto";
 describe("Evaluation Process", () => {
   let runtime: BgentRuntime;
   let user: User;
-  const zeroUuid = "00000000-0000-0000-0000-000000000000";
+  const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
   beforeAll(async () => {
     const setup = await createRuntime();

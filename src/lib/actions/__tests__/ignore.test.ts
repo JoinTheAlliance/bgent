@@ -1,7 +1,6 @@
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
 import {
   GetTellMeAboutYourselfConversationTroll1,
@@ -12,15 +11,16 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../continue";
+import { populateMemories } from "../../../test/populateMemories";
 
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
+export const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("User Profile", () => {
   let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID | null;
+  let room_id: UUID;
 
   afterAll(async () => {
     await cleanup();
@@ -53,32 +53,6 @@ describe("User Profile", () => {
     ]);
   }
 
-  async function populateMemories(
-    conversations: Array<
-      (user_id: string) => Array<{ user_id: string; content: string }>
-    >,
-  ) {
-    for (const conversation of conversations) {
-      for (const c of conversation(user?.id as UUID)) {
-        const existingEmbedding = getCachedEmbedding(c.content);
-        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content,
-          },
-          room_id: room_id as UUID,
-          embedding: existingEmbedding,
-        });
-        await runtime.messageManager.createMemory(bakedMemory);
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        }
-      }
-    }
-  }
-
   test("Test ignore action", async () => {
     const message: Message = {
       senderId: zeroUuid as UUID,
@@ -88,7 +62,7 @@ describe("User Profile", () => {
       room_id: room_id as UUID,
     };
 
-    await populateMemories([]);
+    await populateMemories(runtime, user, room_id, []);
 
     const handler = action.handler!;
 
@@ -105,7 +79,7 @@ describe("User Profile", () => {
       room_id: room_id as UUID,
     };
 
-    await populateMemories([GetTellMeAboutYourselfConversationTroll1]);
+    await populateMemories(runtime, user, room_id, [GetTellMeAboutYourselfConversationTroll1]);
 
     const response = await runtime.handleRequest(message);
 
@@ -134,7 +108,7 @@ describe("User Profile", () => {
       room_id: room_id as UUID,
     };
 
-    await populateMemories([GetTellMeAboutYourselfConversationTroll2]);
+    await populateMemories(runtime, user, room_id, [GetTellMeAboutYourselfConversationTroll2]);
 
     const response = await runtime.handleRequest(message);
 
@@ -154,16 +128,16 @@ describe("User Profile", () => {
     expect((lastMessage.content as Content).action).toBe("IGNORE");
   }, 60000);
 
-  test("Action handler test 3: response should be ignore", async () => {
+  test("Expect ignore", async () => {
     const message: Message = {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "",
+      content: "Bye",
       room_id: room_id as UUID,
     };
 
-    await populateMemories([Goodbye1]);
+    await populateMemories(runtime, user, room_id, [Goodbye1]);
 
     const response = await runtime.handleRequest(message);
 

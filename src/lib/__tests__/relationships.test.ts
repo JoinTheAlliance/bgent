@@ -11,7 +11,7 @@ import { BgentRuntime } from "../runtime";
 
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
+const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Relationships Module", () => {
   let runtime: BgentRuntime;

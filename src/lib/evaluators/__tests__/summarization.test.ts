@@ -13,15 +13,16 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import evaluator from "../summarization";
+import { populateMemories } from "test/populateMemories";
 
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
+const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Factual Summarization", () => {
-  let user: User | null;
+  let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID | null;
+  let room_id: UUID;
 
   afterAll(async () => {
     await cleanup();
@@ -29,7 +30,7 @@ describe("Factual Summarization", () => {
 
   beforeAll(async () => {
     const setup = await createRuntime();
-    user = setup.user;
+    user = setup.session.user;
     runtime = setup.runtime;
 
     const data = await getRelationship({
@@ -52,32 +53,6 @@ describe("Factual Summarization", () => {
       user?.id as UUID,
       zeroUuid,
     ]);
-  }
-
-  async function populateMemories(
-    conversations: Array<
-      (user_id: string) => Array<{ user_id: string; content: string }>
-    >,
-  ) {
-    for (const conversation of conversations) {
-      for (const c of conversation(user?.id as UUID)) {
-        const existingEmbedding = getCachedEmbedding(c.content);
-        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content,
-          },
-          room_id: room_id as UUID,
-          embedding: existingEmbedding,
-        });
-        await runtime.messageManager.createMemory(bakedMemory);
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        }
-      }
-    }
   }
 
   async function addFacts(facts: string[]) {
@@ -110,7 +85,9 @@ describe("Factual Summarization", () => {
 
     const handler = evaluator.handler!;
 
-    await populateMemories([GetTellMeAboutYourselfConversation1]);
+    await populateMemories(runtime, user, room_id, [
+      GetTellMeAboutYourselfConversation1,
+    ]);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const result = (await handler(runtime, message)) as string[];

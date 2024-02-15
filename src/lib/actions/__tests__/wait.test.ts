@@ -8,15 +8,16 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../wait"; // Import the wait action
+import { populateMemories } from "test/populateMemories";
 
 dotenv.config();
 
-const zeroUuid = "00000000-0000-0000-0000-000000000000";
+const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Wait Action Behavior", () => {
-  let user: User | null;
+  let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID | null;
+  let room_id: UUID;
 
   afterAll(async () => {
     await cleanup();
@@ -24,7 +25,7 @@ describe("Wait Action Behavior", () => {
 
   beforeAll(async () => {
     const setup = await createRuntime();
-    user = setup.user;
+    user = setup.session.user;
     runtime = setup.runtime;
 
     const data = await getRelationship({
@@ -49,32 +50,6 @@ describe("Wait Action Behavior", () => {
     ]);
   }
 
-  async function populateMemories(
-    conversations: Array<
-      (user_id: string) => Array<{ user_id: string; content: string }>
-    >,
-  ) {
-    for (const conversation of conversations) {
-      for (const c of conversation(user?.id as UUID)) {
-        const existingEmbedding = getCachedEmbedding(c.content);
-        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content,
-          },
-          room_id: room_id as UUID,
-          embedding: existingEmbedding,
-        });
-        await runtime.messageManager.createMemory(bakedMemory);
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        }
-      }
-    }
-  }
-
   test("Test wait action behavior", async () => {
     const message: Message = {
       senderId: zeroUuid as UUID,
@@ -89,7 +64,7 @@ describe("Wait Action Behavior", () => {
 
     const handler = action.handler!;
 
-    await populateMemories([GetTellMeAboutYourselfConversation1]);
+    await populateMemories(runtime, user, room_id, [GetTellMeAboutYourselfConversation1]);
 
     const result = (await handler(runtime, message)) as string[];
     // Expectation depends on the implementation of the wait action.
