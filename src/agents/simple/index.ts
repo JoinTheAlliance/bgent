@@ -31,6 +31,7 @@ interface HandlerArgs {
     SUPABASE_URL: string;
     SUPABASE_SERVICE_API_KEY: string;
     OPENAI_API_KEY: string;
+    NODE_ENV: string;
   };
   match?: RegExpMatchArray;
   userId: UUID;
@@ -64,8 +65,10 @@ const routes: Route[] = [
       // parse the body from the request
       const message = await req.json();
 
+      console.log("NODE_ENV", env.NODE_ENV);
+
       const runtime = new BgentRuntime({
-        debugMode: false,
+        debugMode: env.NODE_ENV === "development",
         serverUrl: "https://api.openai.com/v1",
         supabase,
         token: env.OPENAI_API_KEY,
@@ -104,6 +107,7 @@ async function handleRequest(
     SUPABASE_URL: string;
     SUPABASE_SERVICE_API_KEY: string;
     OPENAI_API_KEY: string;
+    NODE_ENV: string;
   },
 ) {
   const { pathname } = new URL(req.url);
@@ -189,6 +193,7 @@ export const fetch = async (
     SUPABASE_URL: string;
     SUPABASE_SERVICE_API_KEY: string;
     OPENAI_API_KEY: string;
+    NODE_ENV: string;
   },
 ) => {
   try {

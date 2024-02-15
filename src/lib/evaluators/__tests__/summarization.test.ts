@@ -18,7 +18,7 @@ dotenv.config();
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000";
 
-describe("User Profile", () => {
+describe("Factual Summarization", () => {
   let user: User | null;
   let runtime: BgentRuntime;
   let room_id: UUID | null;

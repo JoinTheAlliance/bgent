@@ -257,5 +257,7 @@ export default {
   condition:
     "New factual information was revealed in the recent conversation which should be remembered.",
   handler,
-  examples: [],
+  examples: [
+    
+  ],
 };

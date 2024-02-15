@@ -8,7 +8,6 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../wait"; // Import the wait action
-import { DefaultActions } from "@/lib/actions";
 
 dotenv.config();
 
@@ -83,7 +82,7 @@ describe("Wait Action Behavior", () => {
       userIds: [user?.id as UUID, zeroUuid],
       content: {
         content: "Please wait a moment, I need to think about this...",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
       room_id: room_id as UUID,
     };

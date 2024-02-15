@@ -3,11 +3,10 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
+import { GetTellMeAboutYourselfConversationTroll1 } from "../../test/data";
 import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
 import { Content, type Message } from "../types";
-import { GetTellMeAboutYourselfConversationTroll1 } from "../../test/data";
-import { DefaultActions } from "../actions";
 
 dotenv.config();
 
@@ -101,7 +100,7 @@ describe("User Profile", () => {
 
     console.log("*** lastMessage", lastMessage.content);
 
-    expect((lastMessage.content as Content).action).toBe(DefaultActions.IGNORE);
+    expect((lastMessage.content as Content).action).toBe("IGNORE");
   }, 60000);
 
   test("Action handler test: continue", async () => {

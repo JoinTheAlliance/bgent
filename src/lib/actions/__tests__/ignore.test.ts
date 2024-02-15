@@ -7,7 +7,6 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../continue";
-import { DefaultActions } from "@/lib/actions";
 
 dotenv.config();
 
@@ -80,7 +79,7 @@ describe("User Profile", () => {
       senderId: zeroUuid as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: { content: "", action: DefaultActions.CONTINUE },
+      content: { content: "", action: "CONTINUE" },
       room_id: room_id as UUID,
     };
 

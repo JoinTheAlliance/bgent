@@ -1,4 +1,3 @@
-import { DefaultActions } from "../actions";
 import { composeContext } from "../context";
 import logger from "../logger";
 import { type BgentRuntime } from "../runtime";
@@ -9,7 +8,7 @@ import { parseJSONObjectFromText } from "../utils";
 const maxContinuesInARow = 2;
 
 export default {
-  name: DefaultActions.CONTINUE,
+  name: "CONTINUE",
   description: "Continue the conversation with the user",
   validate: async (runtime: BgentRuntime, message: Message, state: State) => {
     if (!state) state = await runtime.composeState(message);
@@ -24,9 +23,7 @@ export default {
     if (agentMessages) {
       const lastMessages = agentMessages.slice(-maxContinuesInARow);
       if (lastMessages.length === maxContinuesInARow) {
-        const allContinues = lastMessages.every(
-          (m) => m === DefaultActions.CONTINUE,
-        );
+        const allContinues = lastMessages.every((m) => m === "CONTINUE");
         if (allContinues) {
           return false;
         }
@@ -126,12 +123,12 @@ export default {
       {
         user: "{{user2}}",
         content: "Adventurous",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user2}}",
         content: "Any particular destination?",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
     ],
 
@@ -139,27 +136,27 @@ export default {
       {
         user: "{{user1}}",
         content: "I started learning the guitar this month!",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
       {
         user: "{{user2}}",
         content: "How’s that going?",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
       {
         user: "{{user1}}",
         content: "Challenging, but rewarding.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user1}}",
         content: "My fingers hurt though.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user1}}",
         content: "Seriously lol it hurts to type",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
     ],
 
@@ -168,18 +165,18 @@ export default {
         user: "{{user1}}",
         content:
           "I've been summarying a lot on what happiness means to me lately.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user1}}",
         content: "That it’s more about moments than things.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user2}}",
         content:
           "Like the best things that have ever happened were things that happened, or moments that I had with someone.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
     ],
 
@@ -187,23 +184,23 @@ export default {
       {
         user: "{{user1}}",
         content: "I found some incredible art today.",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
       {
         user: "{{user2}}",
         content: "Who's the artist?",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
       {
         user: "{{user1}}",
         content: "Not sure lol, they are anon",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user1}}",
         content:
           "But the pieces are just so insane looking. Once sec, let me grab a link.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
     ],
 
@@ -212,27 +209,27 @@ export default {
         user: "{{user1}}",
         content:
           "The new exhibit downtown is thought-provoking. It's all about tribalism in online spaces.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user1}}",
         content: "Really challenges your perceptions. Highly recommend it!",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user2}}",
         content: "I’m in. When are you free to go?",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
       {
         user: "{{user1}}",
         content: "Hmm, let me check.",
-        action: DefaultActions.CONTINUE,
+        action: "CONTINUE",
       },
       {
         user: "{{user1}}",
         content: "How about this weekend?",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       },
     ],
 

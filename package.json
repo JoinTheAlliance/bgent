@@ -16,7 +16,7 @@
     "build": "rollup -c && npm run build:types",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "lint": "eslint --ext .ts --ext .js . --fix",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev -- --dev",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
     "concat": "node ./scripts/concat.mjs",
     "shell:cloud": "node --no-warnings scripts/shell.mjs",

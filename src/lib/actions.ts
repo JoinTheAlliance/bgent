@@ -5,12 +5,6 @@ import cont from "./actions/continue";
 import ignore from "./actions/ignore";
 import wait from "./actions/wait";
 
-export enum DefaultActions {
-  WAIT = "WAIT",
-  CONTINUE = "CONTINUE",
-  IGNORE = "IGNORE",
-}
-
 export const defaultActions: Action[] = [cont, wait, ignore];
 
 export const composeActionExamples = (actionsData: Action[], count: number) => {

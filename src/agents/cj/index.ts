@@ -1,7 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
-import { DefaultActions } from "../../lib/actions";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
 import {
@@ -28,8 +27,7 @@ export function shouldSkipMessage(state: State, agentId: string): boolean {
     const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2);
     const lastTwoMessagesFromAgentWithWaitAction =
       lastTwoMessagesFromAgent.filter(
-        (message: Memory) =>
-          (message.content as Content).action === DefaultActions.WAIT,
+        (message: Memory) => (message.content as Content).action === "WAIT",
       );
     if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
       return true;
@@ -64,6 +62,7 @@ interface HandlerArgs {
     SUPABASE_URL: string;
     SUPABASE_SERVICE_API_KEY: string;
     OPENAI_API_KEY: string;
+    NODE_ENV: string;
   };
   match?: RegExpMatchArray;
   userId: UUID;
@@ -96,8 +95,10 @@ const routes: Route[] = [
 
       const message = await req.json();
 
+      console.log("NODE_ENV", env.NODE_ENV);
+
       const runtime = new BgentRuntime({
-        debugMode: false,
+        debugMode: env.NODE_ENV === "development",
         serverUrl: "https://api.openai.com/v1",
         supabase,
         token: env.OPENAI_API_KEY,
@@ -176,6 +177,7 @@ async function handleRequest(
     SUPABASE_URL: string;
     SUPABASE_SERVICE_API_KEY: string;
     OPENAI_API_KEY: string;
+    NODE_ENV: string;
   },
 ) {
   const { pathname } = new URL(req.url);
@@ -260,6 +262,7 @@ export const fetch = async (
     SUPABASE_URL: string;
     SUPABASE_SERVICE_API_KEY: string;
     OPENAI_API_KEY: string;
+    NODE_ENV: string;
   },
 ) => {
   try {

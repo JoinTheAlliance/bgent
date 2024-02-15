@@ -1,5 +1,5 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
-import { DefaultActions, defaultActions } from "./actions";
+import { defaultActions } from "./actions";
 import { composeContext } from "./context";
 import {
   defaultEvaluators,
@@ -28,6 +28,7 @@ import {
   formatActions,
 } from "./actions";
 // import { formatGoalsAsString, getGoals } from "./goals";
+import { formatSummarizations } from "./evaluators/summarization";
 import { formatGoalsAsString, getGoals } from "./goals";
 import {
   formatMessageActors,
@@ -35,7 +36,6 @@ import {
   getMessageActors,
 } from "./messages";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
-import { formatSummarizations } from "./evaluators/summarization";
 export interface AgentRuntimeOpts {
   recentMessageCount?: number; // number of messages to hold in the recent message cache
   token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
@@ -275,7 +275,7 @@ export class BgentRuntime {
     if (!responseContent) {
       responseContent = {
         content: "I'm sorry, I don't have a response for that",
-        action: DefaultActions.WAIT,
+        action: "WAIT",
       };
     }
 
