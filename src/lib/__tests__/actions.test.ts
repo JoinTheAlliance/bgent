@@ -46,59 +46,9 @@ describe("Actions", () => {
     ]);
   }
 
-  test("Action handler test: continue", async () => {
-    // TODO: test action handler with a message that should continue the conversation
-    // evaluate that the response action is a continue
+  // TODO: 1. Test that actions are being loaded into context properly
 
-    // const message: Message = {
-    //   senderId: user.id as UUID,
-    //   agentId: zeroUuid,
-    //   userIds: [user?.id as UUID, zeroUuid],
-    //   content: '',
-    //   room_id: room_id as UUID
-    // }
+  // TODO: 2. Test that actions are validated properply, for example we know that the continue action is always valid
 
-    await populateMemories(runtime, user, room_id, [
-      // continue conversation 1 (should continue)
-    ]);
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    // const result = (await handler(runtime, message)) as string[]
-    // const resultConcatenated = result.join('\n')
-
-    // const state = await runtime.composeState(message)
-
-    // test continue, ignore, wait at expected times
-
-    // test an example action being included in the template
-
-    // load in three continues in a row and verify that they should not continue
-  }, 60000);
-
-  test("Action handler test: wait", async () => {
-    // const message: Message = {
-    //   senderId: user.id as UUID,
-    //   agentId: zeroUuid,
-    //   userIds: [user?.id as UUID, zeroUuid],
-    //   content: '',
-    //   room_id: room_id as UUID
-    // }
-
-    // TODO: test action handler with a message that should wait for a response
-    // evaluate that the response action is a wait
-
-    await populateMemories(runtime, user, room_id, [
-      // continue conversation 1 (should wait)
-    ]);
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    // const result = (await handler(runtime, message)) as string[]
-    // const resultConcatenated = result.join('\n')
-
-    // const state = await runtime.composeState(message)
-
-    // test continue, ignore, wait at expected times
-
-    // test an example action being included in the template
-  }, 60000);
+  // TODO 3. Test that action handlers are being called properly
 });

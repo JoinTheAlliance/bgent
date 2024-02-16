@@ -10,7 +10,7 @@ const maxContinuesInARow = 2;
 export default {
   name: "CONTINUE",
   description:
-    "Use the CONTINUE action when the message necessitates a follow up. Do not continue unless following up or adding more to the original thought. Do not use continue when asking a question (use WAIT instead). Do not use continue when the conversation is done or the user does not wish to speak (use IGNORE instead).",
+    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message was a continue, and the user has not responded, use WAIT instead. Use sparingly!",
   validate: async (runtime: BgentRuntime, message: Message) => {
     const recentMessagesData = await runtime.messageManager.getMemoriesByIds({
       userIds: message.userIds!,
@@ -168,11 +168,6 @@ export default {
         content: "Challenging, but rewarding.",
         action: "CONTINUE",
       },
-      // {
-      //   user: "{{user1}}",
-      //   content: "My fingers hurt though.",
-      //   action: "CONTINUE",
-      // },
       {
         user: "{{user1}}",
         content: "Seriously lol it hurts to type",

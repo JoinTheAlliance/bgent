@@ -68,19 +68,4 @@ describe("Relationships Module", () => {
       relationships.some((r) => r.user_a === userA || r.user_b === userA),
     ).toBeTruthy();
   });
-
-  //   test('formatRelationships formats relationships correctly', async () => {
-  //     const userA = uuidv4();
-  //     const userB = uuidv4();
-  //     const userC = uuidv4();
-
-  //     await createRelationship({ supabase, userA, userB });
-  //     await createRelationship({ supabase, userA, userC });
-
-  //     const formattedRelationships = await formatRelationships({ supabase, userId: userA });
-  //     expect(formattedRelationships).toBeDefined();
-  //     expect(formattedRelationships.length).toBeGreaterThan(0);
-  //     expect(formattedRelationships).toContain(userB);
-  //     expect(formattedRelationships).toContain(userC);
-  //   });
 });

@@ -223,6 +223,8 @@ export class BgentRuntime {
   }
 
   async handleRequest(message: Message, state?: State) {
+    await this.saveRequestMessage(message, state as State);
+
     if (!state) {
       state = (await this.composeState(message)) as State;
     }
@@ -287,7 +289,6 @@ export class BgentRuntime {
       };
     }
 
-    await this.saveRequestMessage(message, state, responseContent);
     await this.saveResponseMessage(message, state, responseContent);
     await this.processActions(message, responseContent);
 
@@ -319,11 +320,7 @@ export class BgentRuntime {
     await action.handler(this, message);
   }
 
-  async saveRequestMessage(
-    message: Message,
-    state: State,
-    responseContent: Content,
-  ) {
+  async saveRequestMessage(message: Message, state: State) {
     const { content: senderContent, senderId, userIds, room_id } = message;
 
     const _senderContent = (
@@ -340,7 +337,7 @@ export class BgentRuntime {
         room_id,
         embedding: embeddingZeroVector,
       });
-      await this.evaluate(message, { ...state, responseContent });
+      await this.evaluate(message, state);
     }
   }
 
