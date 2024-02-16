@@ -247,10 +247,12 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+      console.log("*** context");
       const response = await this.completion({
         context,
         stop: [],
       });
+      console.log("*** response");
 
       console.log("*** runtime response");
       console.log(response);
@@ -290,28 +292,6 @@ export class BgentRuntime {
     await this.processActions(message, responseContent);
 
     return responseContent;
-  }
-
-  async getValidActions(message: Message, state?: State) {
-    if (!state) state = await this.composeState(message);
-    const actionPromises = this.getActions().map(async (action: Action) => {
-      if (!action.handler) {
-        console.log("no handler");
-        return;
-      }
-
-      const result = await action.validate(this, message, state);
-      if (result) {
-        console.log("ACTION", action.name, "VALIDATED");
-        return action;
-      }
-      console.log("ACTION", action.name, "NOT VALIDATED");
-      return null;
-    });
-
-    const resolvedActions = await Promise.all(actionPromises);
-    const actionsData = resolvedActions.filter(Boolean) as Action[];
-    return actionsData;
   }
 
   async processActions(message: Message, data: Content) {
@@ -530,7 +510,21 @@ export class BgentRuntime {
       relevantSummarizationsData,
     };
 
-    const actionsData = await this.getValidActions(message, initialState);
+    const actionPromises = this.getActions().map(async (action: Action) => {
+      if (!action.handler) {
+        console.log("no handler");
+        return;
+      }
+
+      const result = await action.validate(this, message);
+      if (result) {
+        return action;
+      }
+      return null;
+    });
+
+    const resolvedActions = await Promise.all(actionPromises);
+    const actionsData = resolvedActions.filter(Boolean) as Action[];
 
     const actionState = {
       actionNames: formatActionNames(actionsData),

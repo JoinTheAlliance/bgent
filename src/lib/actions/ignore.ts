@@ -1,5 +1,5 @@
 import { type BgentRuntime } from "../runtime";
-import { State, type Action, type Message } from "../types";
+import { type Action, type Message } from "../types";
 
 export default {
   name: "IGNORE",
@@ -8,13 +8,11 @@ export default {
     _runtime: BgentRuntime,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _message: Message,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _state: State,
   ) => {
     return true;
   },
   description:
-    "Ignore the user and do not respond, use this if your role involves being sassy, or mad at user. If the user is mean, aggressive, creepy or is simply done with the conversation, use the ignore action.",
+    "Ignore the user and do not continue respond. If the user is aggressive, creepy or is simply finished with the conversation, use this action. Or, if both you and the user have already said goodbye, use this action instead of saying bye again. Use IGNORE any time the conversaiton has naturally ended.",
   handler: async (
     runtime: BgentRuntime,
     message: Message,

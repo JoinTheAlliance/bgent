@@ -10,9 +10,8 @@ const maxContinuesInARow = 2;
 export default {
   name: "CONTINUE",
   description:
-    "Respond with this message, then write another immediately after. If the thought is done or you're waiting for a response, don't use this.",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validate: async (runtime: BgentRuntime, message: Message, _state: State) => {
+    "Use the CONTINUE action when the message necessitates a follow up. Do not continue unless following up or adding more to the original thought. Do not use continue when asking a question (use WAIT instead). Do not use continue when the conversation is done or the user does not wish to speak (use IGNORE instead).",
+  validate: async (runtime: BgentRuntime, message: Message) => {
     const recentMessagesData = await runtime.messageManager.getMemoriesByIds({
       userIds: message.userIds!,
       count: 10,
@@ -22,14 +21,15 @@ export default {
       (m) => m.user_id === message.agentId,
     );
 
-    // check if the last messages were all continues
+    // check if the last messages were all continues=
     if (agentMessages) {
-      const lastMessages = agentMessages.slice(maxContinuesInARow);
+      const lastMessages = agentMessages.slice(0, maxContinuesInARow);
       if (lastMessages.length >= maxContinuesInARow) {
         const allContinues = lastMessages.every(
           (m) => (m.content as Content).action === "CONTINUE",
         );
         if (allContinues) {
+          console.log("returning all continues");
           return false;
         }
       }
@@ -44,9 +44,6 @@ export default {
       state,
       template: requestHandlerTemplate,
     });
-
-    console.log("*** context");
-    console.log(context);
 
     if (runtime.debugMode) {
       logger.log(context, {
@@ -64,8 +61,6 @@ export default {
         context,
         stop: [],
       });
-
-      console.log("response:", triesLeft, "\n", response);
 
       runtime.supabase
         .from("logs")
@@ -99,8 +94,6 @@ export default {
       return;
     }
 
-    console.log("responseContent", responseContent);
-
     // prevent repetition
     const messageExists = state.recentMessagesData
       .filter((m) => m.user_id === message.agentId)
@@ -113,7 +106,7 @@ export default {
           color: "red",
         });
       }
-      console.log("*** messageExists", messageExists);
+
       return responseContent;
     }
 
@@ -126,7 +119,7 @@ export default {
         .filter((m) => m.user_id === message.agentId)
         .map((m) => (m.content as Content).action);
 
-      const lastMessages = agentMessages.slice(maxContinuesInARow);
+      const lastMessages = agentMessages.slice(0, maxContinuesInARow);
       if (lastMessages.length >= maxContinuesInARow) {
         const allContinues = lastMessages.every((m) => m === "CONTINUE");
         if (allContinues) {
@@ -136,7 +129,6 @@ export default {
     }
 
     await runtime.processActions(message, responseContent);
-    console.log("returning responseContent", responseContent);
     return responseContent;
   },
   condition:

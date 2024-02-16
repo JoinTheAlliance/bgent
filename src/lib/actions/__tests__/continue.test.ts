@@ -13,6 +13,27 @@ dotenv.config();
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const GetContinueExample1 = (_user_id: UUID) => [
+  {
+    user_id: zeroUuid,
+    content:
+      "Hmm, let think for a second, I was going to tell you about something...",
+    action: "CONTINUE",
+  },
+  {
+    user_id: zeroUuid,
+    content:
+      "I remember now, I was going to tell you about my favorite food, which is pizza.",
+    action: "CONTINUE",
+  },
+  {
+    user_id: zeroUuid,
+    content: "I love pizza, it's so delicious.",
+    action: "CONTINUE",
+  },
+];
+
 describe("User Profile", () => {
   let user: User;
   let runtime: BgentRuntime;
@@ -54,6 +75,43 @@ describe("User Profile", () => {
   }
 
   // test validate function response
+  test("Test validate function response", async () => {
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user.id as UUID, zeroUuid],
+      content: {
+        content: "Hello",
+      },
+      room_id: room_id as UUID,
+    };
+
+    const validate = action.validate!;
+
+    const result = await validate(runtime, message);
+
+    expect(result).toBe(true);
+
+    // try again with GetContinueExample1, expect to be false
+    await populateMemories(runtime, user, room_id, [GetContinueExample1]);
+
+    const message2: Message = {
+      senderId: zeroUuid as UUID,
+      agentId: zeroUuid,
+      userIds: [user.id as UUID, zeroUuid],
+      content: {
+        content: "Hello",
+        action: "CONTINUE",
+      },
+      room_id: room_id as UUID,
+    };
+
+    const result2 = await validate(runtime, message2);
+
+    console.log("result2", result2);
+
+    expect(result2).toBe(false);
+  }, 20000);
 
   test("Test repetition check on continue", async () => {
     const message: Message = {
@@ -69,27 +127,6 @@ describe("User Profile", () => {
     };
 
     const handler = action.handler!;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const GetContinueExample1 = (_user_id: UUID) => [
-      {
-        user_id: zeroUuid,
-        content:
-          "Hmm, let think for a second, I was going to tell you about something...",
-        action: "CONTINUE",
-      },
-      {
-        user_id: zeroUuid,
-        content:
-          "I remember now, I was going to tell you about my favorite food, which is pizza.",
-        action: "CONTINUE",
-      },
-      {
-        user_id: zeroUuid,
-        content: "I love pizza, it's so delicious.",
-        action: "CONTINUE",
-      },
-    ];
 
     await populateMemories(runtime, user, room_id, [GetContinueExample1]);
 

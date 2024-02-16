@@ -8,7 +8,7 @@ export default {
     return true;
   },
   description:
-    "Do nothing and wait for another person to reply to the last message, or to continue their thought",
+    "Do nothing and wait for another person to reply to the last message, or to continue their thought. For cases such as if the actors have already said goodbye to each other, use the ignore action instead.",
   handler: async (
     runtime: BgentRuntime,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
