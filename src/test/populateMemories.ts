@@ -3,6 +3,7 @@ import { type UUID } from "crypto";
 import { zeroUuid } from "../lib/actions/__tests__/ignore.test";
 import { type BgentRuntime } from "../lib/runtime";
 import { getCachedEmbedding, writeCachedEmbedding } from "./cache";
+import { ContentExample } from "lib/types";
 
 export async function populateMemories(
   runtime: BgentRuntime,
@@ -20,6 +21,7 @@ export async function populateMemories(
         user_ids: [user?.id as UUID, zeroUuid],
         content: {
           content: c.content,
+          action: (c as unknown as ContentExample).action as string,
         },
         room_id: room_id as UUID,
         embedding: existingEmbedding,

@@ -55,7 +55,7 @@ export const formatMessages = ({
       const sender = actors.find(
         (actor: Actor) => actor.id === message.user_id,
       )!;
-      return `${sender.name}: ${(message.content as Content).content || (message.content as string)} ${(message.content as Content).action && (message.content as Content).action !== 'null' ? `(${(message.content as Content).action})` : ""}`;
+      return `${sender.name}: ${(message.content as Content).content || (message.content as string)} ${(message.content as Content).action && (message.content as Content).action !== "null" ? `(${(message.content as Content).action})` : ""}`;
     })
     .join("\n");
   return messageStrings;

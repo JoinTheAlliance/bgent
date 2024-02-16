@@ -12,15 +12,12 @@ json\`\`\`
 # Goals for {{agentName}}
 {{goals}}
 
-# Available actions for {{agentName}}
-{{actionNames}}
-{{actions}}
-
 # Actors
 {{actors}}
 
-Current Scene Dialog:
-{{recentMessages}}
+# Available actions for {{agentName}}
+{{actionNames}}
+{{actions}}
 
 # INSTRUCTIONS:
 - Generate the next message in the scene for {{agentName}}
@@ -29,7 +26,10 @@ Current Scene Dialog:
 - Action is an enum from the available actions, if any
 - Available actions are {{actionNames}}
 
+Current Scene Dialog:
+{{recentMessages}}
+
 Response format should be formatted in a JSON block like this:
 \`\`\`json
-{ "user": {{agentName}}, "content": string, "action": string }
+{ "user": "{{agentName}}", "content": string, "action": string }
 \`\`\``;

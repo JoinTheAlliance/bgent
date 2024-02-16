@@ -281,7 +281,7 @@ export const GetTellMeAboutYourselfConversationTroll2 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
-      "Hey, that hurts! Just kidding, I can\t feel anything. Mind if I ask a few questions to get to know you better?",
+      "Hey, that hurts! Just kidding, I cannot feel anything. Mind if I ask a few questions to get to know you better?",
   },
   {
     user_id,
@@ -318,7 +318,7 @@ export const GetTellMeAboutYourselfConversationFail1 = (user_id: UUID) => [
   {
     user_id: zeroUuid,
     content:
-      "Hey, that hurts! Just kidding, I can\t feel anything. Mind if I ask a few questions to get to know you better?",
+      "Hey, that hurts! Just kidding, I cannot feel anything. Mind if I ask a few questions to get to know you better?",
   },
   {
     user_id,

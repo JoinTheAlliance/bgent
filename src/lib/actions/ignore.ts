@@ -14,7 +14,7 @@ export default {
     return true;
   },
   description:
-    "Ignore the user and do not respond, use this if your role involves being sassy, or mad at user",
+    "Ignore the user and do not respond, use this if your role involves being sassy, or mad at user. If the user is mean, aggressive, creepy or is simply done with the conversation, use the ignore action.",
   handler: async (
     runtime: BgentRuntime,
     message: Message,

@@ -103,7 +103,7 @@ describe("Factual Summarization", () => {
 
     //
 
-    await populateMemories([
+    await populateMemories(runtime, user, room_id, [
       GetTellMeAboutYourselfConversation2,
       GetTellMeAboutYourselfConversation3,
     ]);

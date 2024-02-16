@@ -38,6 +38,10 @@ describe("User Profile", () => {
     await cleanup();
   });
 
+  beforeEach(async () => {
+    await cleanup();
+  });
+
   async function cleanup() {
     await runtime.summarizationManager.removeAllMemoriesByUserIds([
       user.id as UUID,
@@ -48,6 +52,8 @@ describe("User Profile", () => {
       zeroUuid,
     ]);
   }
+
+  // test validate function response
 
   test("Test repetition check on continue", async () => {
     const message: Message = {
@@ -89,10 +95,8 @@ describe("User Profile", () => {
 
     const result = (await handler(runtime, message)) as Content;
 
-    console.log("result", result);
-
     expect(result.action).not.toBe("CONTINUE");
-  }, 60000);
+  }, 20000);
 
   test("Test if not continue", async () => {
     // this is basically the same test as the one in ignore.test.ts
@@ -113,7 +117,7 @@ describe("User Profile", () => {
     console.log("IGNORE result", result);
 
     expect(result.action).toBe("IGNORE");
-  }, 60000);
+  }, 20000);
 
   // test conditions where we would expect a wait or an ignore
 });

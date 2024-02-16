@@ -31,10 +31,6 @@ export const composeActionExamples = (actionsData: Action[], count: number) => {
     }
   }
 
-  console.log("*** message example count: ", randomMessageExamples.length);
-
-
-
   const formattedExamples = randomMessageExamples.map((example) => {
     const exampleNames = Array.from({ length: 5 }, () =>
       uniqueNamesGenerator({ dictionaries: [names] }),

@@ -1,7 +1,6 @@
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
 import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
 import { getRelationship } from "../../relationships";
@@ -20,6 +19,10 @@ describe("Wait Action Behavior", () => {
   let room_id: UUID;
 
   afterAll(async () => {
+    await cleanup();
+  });
+
+  beforeEach(async () => {
     await cleanup();
   });
 
@@ -64,7 +67,9 @@ describe("Wait Action Behavior", () => {
 
     const handler = action.handler!;
 
-    await populateMemories(runtime, user, room_id, [GetTellMeAboutYourselfConversation1]);
+    await populateMemories(runtime, user, room_id, [
+      GetTellMeAboutYourselfConversation1,
+    ]);
 
     const result = (await handler(runtime, message)) as string[];
     // Expectation depends on the implementation of the wait action.

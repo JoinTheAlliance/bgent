@@ -11,22 +11,25 @@ export default {
   name: "CONTINUE",
   description:
     "Respond with this message, then write another immediately after. If the thought is done or you're waiting for a response, don't use this.",
-  validate: async (runtime: BgentRuntime, message: Message, state: State) => {
-    if (!state) state = await runtime.composeState(message);
-    // get all of the messages that were from message.agentId from recentMessagesData in state
-    const { recentMessagesData } = state;
-
-    const agentMessages = recentMessagesData
-      .filter((m) => m.user_id === message.agentId)
-      .map((m) => (m as Content).action);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  validate: async (runtime: BgentRuntime, message: Message, _state: State) => {
+    const recentMessagesData = await runtime.messageManager.getMemoriesByIds({
+      userIds: message.userIds!,
+      count: 10,
+      unique: false,
+    });
+    const agentMessages = recentMessagesData.filter(
+      (m) => m.user_id === message.agentId,
+    );
 
     // check if the last messages were all continues
     if (agentMessages) {
-      const lastMessages = agentMessages.slice(-maxContinuesInARow);
-      if (lastMessages.length === maxContinuesInARow) {
-        const allContinues = lastMessages.every((m) => m === "CONTINUE");
+      const lastMessages = agentMessages.slice(maxContinuesInARow);
+      if (lastMessages.length >= maxContinuesInARow) {
+        const allContinues = lastMessages.every(
+          (m) => (m.content as Content).action === "CONTINUE",
+        );
         if (allContinues) {
-          console.log("****** all continues", allContinues);
           return false;
         }
       }
@@ -35,14 +38,15 @@ export default {
     return true;
   },
   handler: async (runtime: BgentRuntime, message: Message, state: State) => {
-    if (!state) {
-      state = (await runtime.composeState(message)) as State;
-    }
+    state = (await runtime.composeState(message)) as State;
 
     const context = composeContext({
       state,
       template: requestHandlerTemplate,
     });
+
+    console.log("*** context");
+    console.log(context);
 
     if (runtime.debugMode) {
       logger.log(context, {
@@ -60,6 +64,8 @@ export default {
         context,
         stop: [],
       });
+
+      console.log("response:", triesLeft, "\n", response);
 
       runtime.supabase
         .from("logs")
@@ -98,7 +104,7 @@ export default {
     // prevent repetition
     const messageExists = state.recentMessagesData
       .filter((m) => m.user_id === message.agentId)
-      .slice(-maxContinuesInARow)
+      .slice(0, maxContinuesInARow)
       .some((m) => m.content === message.content);
 
     if (messageExists) {
@@ -107,6 +113,7 @@ export default {
           color: "red",
         });
       }
+      console.log("*** messageExists", messageExists);
       return responseContent;
     }
 
@@ -115,15 +122,11 @@ export default {
     // if the action is CONTINUE, check if we are over maxContinuesInARow
     // if so, then we should change the action to WAIT
     if (responseContent.action === "CONTINUE") {
-      console.log("***** state.recentMessagesData", state.recentMessagesData);
       const agentMessages = state.recentMessagesData
         .filter((m) => m.user_id === message.agentId)
         .map((m) => (m.content as Content).action);
 
-      console.log("***** agentMessages", agentMessages);
-
-      const lastMessages = agentMessages.slice(-maxContinuesInARow);
-      console.log("**** lastMessages");
+      const lastMessages = agentMessages.slice(maxContinuesInARow);
       if (lastMessages.length >= maxContinuesInARow) {
         const allContinues = lastMessages.every((m) => m === "CONTINUE");
         if (allContinues) {
@@ -137,7 +140,7 @@ export default {
     return responseContent;
   },
   condition:
-    "The agent wants to continue speaking and say something else as a continuation of the last thought",
+    "The agent wants to continue speaking and say something else as a continuation of the last thought. If the conversation is done, the agent is waiting for the user to respond, or the user does not want to continue, do not use the continue action.",
   examples: [
     [
       {
@@ -173,11 +176,11 @@ export default {
         content: "Challenging, but rewarding.",
         action: "CONTINUE",
       },
-      {
-        user: "{{user1}}",
-        content: "My fingers hurt though.",
-        action: "CONTINUE",
-      },
+      // {
+      //   user: "{{user1}}",
+      //   content: "My fingers hurt though.",
+      //   action: "CONTINUE",
+      // },
       {
         user: "{{user1}}",
         content: "Seriously lol it hurts to type",
@@ -226,6 +229,11 @@ export default {
         content:
           "But the pieces are just so insane looking. Once sec, let me grab a link.",
         action: "CONTINUE",
+      },
+      {
+        user: "{{user1}}",
+        content: "DMed it to you",
+        action: "WAIT",
       },
     ],
 

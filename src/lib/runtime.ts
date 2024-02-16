@@ -232,6 +232,9 @@ export class BgentRuntime {
       template: requestHandlerTemplate,
     });
 
+    console.log("*** runtime context");
+    console.log(context);
+
     if (this.debugMode) {
       logger.log(context, {
         title: "Response Context",
@@ -248,6 +251,9 @@ export class BgentRuntime {
         context,
         stop: [],
       });
+
+      console.log("*** runtime response");
+      console.log(response);
 
       this.supabase
         .from("logs")
@@ -274,8 +280,8 @@ export class BgentRuntime {
 
     if (!responseContent) {
       responseContent = {
-        content: "I'm sorry, I don't have a response for that",
-        action: "WAIT",
+        content: "",
+        action: "IGNORE",
       };
     }
 
@@ -296,8 +302,10 @@ export class BgentRuntime {
 
       const result = await action.validate(this, message, state);
       if (result) {
+        console.log("ACTION", action.name, "VALIDATED");
         return action;
       }
+      console.log("ACTION", action.name, "NOT VALIDATED");
       return null;
     });
 
@@ -445,6 +453,7 @@ export class BgentRuntime {
       this.messageManager.getMemoriesByIds({
         userIds: userIds!,
         count: recentMessageCount,
+        unique: false,
       }),
       this.summarizationManager.getMemoriesByIds({
         userIds: userIds!,
