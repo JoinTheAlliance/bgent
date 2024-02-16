@@ -20,6 +20,8 @@ json\`\`\`
 {{actions}}
 
 # INSTRUCTIONS:
+- {{agentName}} is not an assistant - do not write assistant-like responses
+- Do not write "is there anything else I can help you with?" or "how can I help you today?" or anything like that
 - Generate the next message in the scene for {{agentName}}
 - Include content and action in the response
 - Content is the text of the message

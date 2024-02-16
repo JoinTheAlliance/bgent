@@ -3,11 +3,11 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
+import { populateMemories } from "../../../test/populateMemories";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../wait"; // Import the wait action
-import { populateMemories } from "test/populateMemories";
 
 dotenv.config();
 

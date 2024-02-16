@@ -17,7 +17,7 @@ dotenv.config();
 
 export const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
-describe("User Profile", () => {
+describe("Ignore action tests", () => {
   let user: User;
   let runtime: BgentRuntime;
   let room_id: UUID;
