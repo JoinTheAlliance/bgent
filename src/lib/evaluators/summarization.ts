@@ -26,100 +26,31 @@ export const formatSummarizations = (summarizations: Memory[]) => {
 const template = `TASK: Fact Summarization
 Extract what happened in the scene as an array of claims in JSON format.
 
-These are an examples of the expected output of this task:
-
 # START OF EXAMPLES
-"""
-Example Scene Dialog:
-Eric: Just found a rare artifact in the wilds!
-Jim: Awesome! What does it do?
-Eric: It's a rare sword that gives +10 to all stats!
-Jim: whoah thats insane
-Eric: I know right? I'm never going to sell it lol
-
-Claims:
-\`\`\`json
-[
-  {claim: 'Eric found a rare sword in the wilds that gives +10 to all stats.', type: 'fact', in_bio: false, already_known: false },
-  {claim: 'Eric is never going to sell his new rare artifact sword', 'type': 'status', in_bio: false, already_known: false },
-]
-\`\`\`
-"""
-Facts about the scene:
-Alex and Kim are meeting up for coffee
-Alex and Kim have been friends for a long time
-
-Actors in the scene:
-Alex - Marathon runner and gymnist. Worked out every day for a year to prepare for a marathon. Friends with Kim.
-Kim - Friends with Alex. Likes shopping and going to the beach. Has a dog named Spot.
-
-Example Scene Dialog:
-alex: I finally completed the marathon this year!
-kim: That's amazing! How long did it take you?
-alex: Just under 4 hours, which was my goal!
-kim: That's so impressive, I know you worked out all year for that
-alex: Yeah, I'm really proud of myself. 2 hours a day at the gym for a year!
-
-Claims:
-json\`\`\`
-[
-  { "claim": "Alex just completed a marathon in just under 4 hours.", "type": "fact", "in_bio": false, "already_known": false },
-  { "claim": "Alex worked out 2 hours a day at the gym for a year.", "type": "fact", "in_bio": true, "already_known": false },
-  { "claim": "Alex is really proud of himself.", "type": "status", "in_bio": false, "already_known": false }
-]
-\`\`\`
-"""
-Facts about the Scene
-Mike and Eva won a regional chess tournament about six months ago
-Mike and Eva are friends
-
-Actors in the Scene:
-mike - Chess club president. Likes to play chess and go to the park. Friends with Eva.
-eva - Friends with Mike. Likes to play chess and go to the park. Chess club member.
-
-Scene Dialog:
-mike: Remember when we won the regional chess tournament last spring?
-eva: Of course! That was an incredible day.
-mike: It really put our chess club on the map.
-
-Claims:
-json\`\`\`
-[
-  { "claim": "Mike and Eva won the regional chess tournament last spring", "type": "fact", "in_bio": false, "already_known": true },
-  { "claim": "Winning the regional chess tournament put the chess club on the map", "type": "status", "in_bio": false, "already_known": false }
-]
-\`\`\`
+These are an examples of the expected output of this task:
+{{evaluationExamples}}
 # END OF EXAMPLES
 
-Note: The above was all example dialogue. Ignore it for the actual scene.
+Note: The above is examples of how to perform the task (fewshot). DO NOT USE for the actual task.
+
 Below is the information that will be used for the task.
 
-# START OF INSTRUCTIONS
+# INSTRUCTIONS
 
 Extract any claims from the conversation in the ACTUAL scene that are not already present in the list of facts.
 - If the fact is already in the character's description, set in_bio to true
 - If the fact is already known to the character, set already_known to true
-- Set the type to fact or status
+- Set the type to 'fact' or 'opinion'
+- For facts, set the type to 'fact'
+- For non-facts, set the type to 'opinion'
 - Facts are always true, facts about the world or the character that do not change
-- Status is pertinent to the current scene or character's immediate situation, also includes the character's thoughts, feelings, judgments or recommendations
-- Response should be a JSON object array inside a JSON markdown block
+- 'opinion' inlcudes non-factual opinions and also includes the character's thoughts, feelings, judgments or recommendations
 - Ignore the examples when considering facts
 - Include any factual detail, including where the user lives, works, or goes to school, what they do for a living, their hobbies, and any other relevant information
 
-Correct response format:
-\`\`\`json
-[
-  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
-  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
-  ...
-]
-\`\`\`
-
-# END OF INSTRUCTIONS
-
 # START OF ACTUAL TASK INFORMATION
 
-Facts about the scene:
+Facts about the actors:
 {{recentSummarizations}}
 {{relevantSummarizations}}
 
@@ -133,11 +64,11 @@ Scene Dialog:
 
 INSTRUCTIONS: Extract ALL claims from the conversation in the scene that are not already present in the list of facts.
 
-Correct response format:
+Response should be a JSON object array inside a JSON markdown block. Correct response format:
 \`\`\`json
 [
-  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
-  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
+  {claim: string, type: enum<fact|opinion>, in_bio: boolean, already_known: boolean },
+  {claim: string, type: enum<fact|opinion>, in_bio: boolean, already_known: boolean },
   ...
 ]
 \`\`\``;
@@ -258,5 +189,106 @@ export default {
   condition:
     "New factual information was revealed in the recent conversation which should be remembered.",
   handler,
-  examples: [],
+  examples: [
+    {
+      context: `Actors in the scene:
+{{user1}}: Programmer and moderator of the local story club.
+{{user2}}: New member of the club. Likes to write and read.
+
+Facts about the actors:
+None`,
+      messages: [
+        {
+          user: "{{user1}}",
+          content: "So where are you from?",
+          action: "WAIT",
+        },
+        {
+          user: "{{user2}}",
+          content: "I'm from the city.",
+        },
+        {
+          user: "{{user1}}",
+          content: "Which city?",
+        },
+        {
+          user: "{{user2}}",
+          content: "Oakland",
+        },
+        {
+          user: "{{user1}}",
+          content: "Oh, I've never been there, but I know it's in California!",
+        },
+      ],
+      outcome: `{ "claim": "{{user1}} is from Oakland", "type": "fact", "in_bio": false, "already_known": false },`,
+    },
+    {
+      context: `Actors in the scene:
+{{user1}}: Athelete and cyclist. Worked out every day for a year to prepare for a marathon.
+{{user2}}: Likes to go to the beach and shop.
+
+Facts about the actors:
+{{user1}} and {{user2}} are talking about the marathon
+{{user1}} and {{user2}} have just started dating`,
+      messages: [
+        {
+          user: "{{user1}}",
+          content: "I finally completed the marathon this year!",
+        },
+        {
+          user: "{{user2}}",
+          content: "Wow! How long did it take?",
+        },
+        {
+          user: "{{user1}}",
+          content: "A little over three hours.",
+        },
+        {
+          user: "{{user1}}",
+          content: "I'm so proud of myself.",
+        },
+      ],
+      outcome: `Claims:
+json\`\`\`
+[
+  { "claim": "Alex just completed a marathon in just under 4 hours.", "type": "fact", "in_bio": false, "already_known": false },
+  { "claim": "Alex worked out 2 hours a day at the gym for a year.", "type": "fact", "in_bio": true, "already_known": false },
+  { "claim": "Alex is really proud of himself.", "type": "opinion", "in_bio": false, "already_known": false }
+]
+\`\`\`
+`,
+    },
+    {
+      context: `Actors in the scene:
+{{user1}}: Likes to play poker and go to the park. Friends with Eva.
+{{user2}}: Also likes to play poker. Likes to write and read.
+
+Facts about the actors:
+Mike and Eva won a regional poker tournament about six months ago
+Mike is married to Alex
+Eva studied Philosophy before switching to Computer Science`,
+      messages: [
+        {
+          user: "{{user1}}",
+          content:
+            "Remember when we won the regional poker tournament last spring?",
+        },
+        {
+          user: "{{user2}}",
+          content: "Of course! That was an incredible day.",
+        },
+        {
+          user: "{{user1}}",
+          content: "It really put our poker club on the map.",
+        },
+      ],
+      outcome: `Claims:
+json\`\`\`
+[
+  { "claim": "Mike and Eva won the regional poker tournament last spring", "type": "fact", "in_bio": false, "already_known": true },
+  { "claim": "Winning the regional poker tournament put the poker club on the map", "type": "opinion", "in_bio": false, "already_known": false }
+]
+\`\`\``,
+    },
+  ],
 };

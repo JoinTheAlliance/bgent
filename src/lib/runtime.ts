@@ -5,6 +5,7 @@ import {
   defaultEvaluators,
   evaluationTemplate,
   formatEvaluatorConditions,
+  formatEvaluatorExamples,
   formatEvaluatorNames,
   formatEvaluators,
 } from "./evaluation";
@@ -118,6 +119,10 @@ export class BgentRuntime {
 
   getActions() {
     return [...new Set(this.actions)];
+  }
+
+  getEvaluators() {
+    return [...new Set(this.evaluators)];
   }
 
   registerEvaluator(evaluator: Evaluator) {
@@ -401,10 +406,7 @@ export class BgentRuntime {
     const parsedResult = parseJsonArrayFromText(result);
 
     this.evaluators
-      .filter(
-        (evaluator: Evaluator) =>
-          evaluator.handler && parsedResult?.includes(evaluator.name),
-      )
+      .filter((evaluator: Evaluator) => parsedResult?.includes(evaluator.name))
       .forEach((evaluator: Evaluator) => {
         if (!evaluator?.handler) return;
 
@@ -507,11 +509,6 @@ export class BgentRuntime {
     };
 
     const actionPromises = this.getActions().map(async (action: Action) => {
-      if (!action.handler) {
-        console.log("no handler");
-        return;
-      }
-
       const result = await action.validate(this, message);
       if (result) {
         return action;
@@ -519,7 +516,24 @@ export class BgentRuntime {
       return null;
     });
 
+    const evaluatorPromises = this.getEvaluators().map(async (evaluator) => {
+      const result = await evaluator.validate(this, message, initialState);
+      if (result) {
+        return evaluator;
+      }
+      return null;
+    });
+
+    const resolvedEvaluators = await Promise.all(evaluatorPromises);
+
+    const evaluatorsData = resolvedEvaluators.filter(Boolean) as Evaluator[];
+    const evaluators = formatEvaluators(evaluatorsData);
+    const evaluatorNames = formatEvaluatorNames(evaluatorsData);
+    const evaluatorConditions = formatEvaluatorConditions(evaluatorsData);
+    const evaluatorExamples = formatEvaluatorExamples(evaluatorsData);
+
     const resolvedActions = await Promise.all(actionPromises);
+
     const actionsData = resolvedActions.filter(Boolean) as Action[];
 
     const actionState = {
@@ -527,6 +541,11 @@ export class BgentRuntime {
       actionConditions: formatActionConditions(actionsData),
       actions: formatActions(actionsData),
       actionExamples: composeActionExamples(actionsData, 10),
+      evaluatorsData,
+      evaluators,
+      evaluatorNames,
+      evaluatorConditions,
+      evaluatorExamples,
     };
 
     return { ...initialState, ...actionState };

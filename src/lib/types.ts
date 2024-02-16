@@ -105,12 +105,25 @@ export type Validator = (
 ) => Promise<boolean>;
 
 export interface Action {
-  name: string;
-  description: string;
   condition: string;
+  description: string;
   examples: ContentExample[][];
+  handler: Handler;
+  name: string;
   validate: Validator;
-  handler: Handler | undefined;
 }
 
-export interface Evaluator extends Action {}
+export type EvaluationExample = {
+  context: string;
+  messages: Array<ContentExample>;
+  outcome: string;
+};
+
+export interface Evaluator {
+  condition: string;
+  description: string;
+  examples: EvaluationExample[];
+  handler: Handler;
+  name: string;
+  validate: Validator;
+}

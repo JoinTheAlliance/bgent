@@ -6,11 +6,17 @@ import {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
 } from "./constants";
+import { Evaluator } from "../lib/types";
 
-export async function createRuntime(
-  env: Record<string, string> | NodeJS.ProcessEnv = process.env,
-  recentMessageCount = 32,
-) {
+export async function createRuntime({
+  env = process.env,
+  recentMessageCount,
+  evaluators = [],
+}: {
+  env?: Record<string, string> | NodeJS.ProcessEnv;
+  recentMessageCount?: number;
+  evaluators?: Evaluator[];
+}) {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
 
   const {
@@ -30,6 +36,7 @@ export async function createRuntime(
     supabase,
     recentMessageCount,
     token: env.OPENAI_API_KEY!,
+    evaluators: evaluators ?? [],
   });
 
   return { user, session, runtime };
