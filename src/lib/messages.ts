@@ -1,15 +1,15 @@
-import { type SupabaseClient } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
+import { BgentRuntime } from "./runtime";
 import { type Actor, type Content, type Memory } from "./types";
 
 export async function getMessageActors({
-  supabase,
+  runtime,
   userIds,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userIds: UUID[];
 }) {
-  const response = await supabase
+  const response = await runtime.supabase
     .from("accounts")
     .select("*")
     .in("id", userIds);

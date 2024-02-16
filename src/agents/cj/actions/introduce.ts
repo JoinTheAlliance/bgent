@@ -85,7 +85,7 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
 
   if (responseData?.userA && responseData.userB) {
     await createRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: responseData.userA,
       userB: responseData.userB,
     });

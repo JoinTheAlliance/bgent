@@ -147,8 +147,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   const { userIds, senderId, agentId, room_id } = state;
 
-  const actors =
-    (await getMessageActors({ supabase: runtime.supabase, userIds })) ?? [];
+  const actors = (await getMessageActors({ runtime, userIds })) ?? [];
 
   const senderName = actors?.find(
     (actor: Actor) => actor.id === senderId,

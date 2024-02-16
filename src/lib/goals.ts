@@ -1,26 +1,29 @@
-import { type SupabaseClient } from "@supabase/supabase-js";
-import { type Goal, type Objective } from "./types";
 import { type UUID } from "crypto";
+import { BgentRuntime } from "./runtime";
+import { type Goal, type Objective } from "./types";
 
 export const getGoals = async ({
-  supabase,
+  runtime,
   userIds,
   userId = null,
   onlyInProgress = true,
   count = 5,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userIds: string[];
   userId?: string | null;
   onlyInProgress?: boolean;
   count?: number;
 }) => {
-  const { data: goals, error } = await supabase.rpc("get_goals_by_user_ids", {
-    query_user_ids: userIds,
-    query_user_id: userId,
-    only_in_progress: onlyInProgress,
-    row_count: count,
-  });
+  const { data: goals, error } = await runtime.supabase.rpc(
+    "get_goals_by_user_ids",
+    {
+      query_user_ids: userIds,
+      query_user_id: userId,
+      only_in_progress: onlyInProgress,
+      row_count: count,
+    },
+  );
 
   if (error) {
     throw new Error(error.message);
@@ -41,16 +44,16 @@ export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
 };
 
 export const updateGoals = async ({
-  supabase,
+  runtime,
   userIds,
   goals,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userIds: UUID[];
   goals: Goal[];
 }) => {
   for (const goal of goals) {
-    await supabase
+    await runtime.supabase
       .from("goals")
       .update(goal)
       .match({ id: goal.id })
@@ -59,17 +62,17 @@ export const updateGoals = async ({
 };
 
 export const createGoal = async ({
-  supabase,
+  runtime,
   goal,
   userIds,
   userId,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   goal: Goal;
   userIds: string[];
   userId: string;
 }) => {
-  const { error } = await supabase
+  const { error } = await runtime.supabase
     .from("goals")
     .upsert({ ...goal, user_ids: userIds, user_id: userId });
 
@@ -79,38 +82,41 @@ export const createGoal = async ({
 };
 
 export const cancelGoal = async ({
-  supabase,
+  runtime,
   goalId,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   goalId: UUID;
 }) => {
-  await supabase
+  await runtime.supabase
     .from("goals")
     .update({ status: "FAILED" })
     .match({ id: goalId });
 };
 
 export const finishGoal = async ({
-  supabase,
+  runtime,
   goalId,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   goalId: UUID;
 }) => {
-  await supabase.from("goals").update({ status: "DONE" }).match({ id: goalId });
+  await runtime.supabase
+    .from("goals")
+    .update({ status: "DONE" })
+    .match({ id: goalId });
 };
 
 export const finishGoalObjective = async ({
-  supabase,
+  runtime,
   goalId,
   objectiveId,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   goalId: UUID;
   objectiveId: string;
 }) => {
-  const { data: goal, error } = await supabase
+  const { data: goal, error } = await runtime.supabase
     .from("goals")
     .select("*")
     .match({ id: goalId })
@@ -127,7 +133,7 @@ export const finishGoalObjective = async ({
     return objective;
   });
 
-  await supabase
+  await runtime.supabase
     .from("goals")
     .update({ objectives: updatedObjectives })
     .match({ id: goalId });

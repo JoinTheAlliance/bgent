@@ -32,7 +32,7 @@ describe("Ignore action tests", () => {
     runtime = setup.runtime;
 
     const data = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });

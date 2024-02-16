@@ -34,7 +34,7 @@ describe("Factual Summarization", () => {
     runtime = setup.runtime;
 
     const data = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });

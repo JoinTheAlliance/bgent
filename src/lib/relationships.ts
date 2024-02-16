@@ -1,17 +1,17 @@
-import { type SupabaseClient } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
+import { type BgentRuntime } from "./runtime";
 import { type Relationship } from "./types";
 
 export async function createRelationship({
-  supabase,
+  runtime,
   userA,
   userB,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userA: UUID;
   userB: UUID;
 }): Promise<boolean> {
-  const { error } = await supabase.from("relationships").upsert({
+  const { error } = await runtime.supabase.from("relationships").upsert({
     user_a: userA,
     user_b: userB,
     user_id: userA,
@@ -25,15 +25,15 @@ export async function createRelationship({
 }
 
 export async function getRelationship({
-  supabase,
+  runtime,
   userA,
   userB,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userA: string;
   userB: string;
 }) {
-  const { data, error } = await supabase.rpc("get_relationship", {
+  const { data, error } = await runtime.supabase.rpc("get_relationship", {
     usera: userA,
     userb: userB,
   });
@@ -46,13 +46,13 @@ export async function getRelationship({
 }
 
 export async function getRelationships({
-  supabase,
+  runtime,
   userId,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userId: string;
 }) {
-  const { data, error } = await supabase
+  const { data, error } = await runtime.supabase
     .from("relationships")
     .select("*")
     .or(`user_a.eq.${userId},user_b.eq.${userId}`)
@@ -66,13 +66,13 @@ export async function getRelationships({
 }
 
 export async function formatRelationships({
-  supabase,
+  runtime,
   userId,
 }: {
-  supabase: SupabaseClient;
+  runtime: BgentRuntime;
   userId: string;
 }) {
-  const relationships = await getRelationships({ supabase, userId });
+  const relationships = await getRelationships({ runtime, userId });
 
   const formattedRelationships = relationships.map(
     (relationship: Relationship) => {

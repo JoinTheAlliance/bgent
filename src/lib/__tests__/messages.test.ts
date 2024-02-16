@@ -18,14 +18,14 @@ describe("Messages Library", () => {
     runtime = setup.runtime;
     user = setup.session.user;
     actors = await getMessageActors({
-      supabase: runtime.supabase,
+      runtime,
       userIds: [user.id as UUID, "00000000-0000-0000-0000-000000000000"],
     });
   });
 
   test("getMessageActors should return actors based on given userIds", async () => {
     const result = await getMessageActors({
-      supabase: runtime.supabase,
+      runtime,
       userIds: [user.id as UUID, "00000000-0000-0000-0000-000000000000"],
     });
     expect(result.length).toBeGreaterThan(0);

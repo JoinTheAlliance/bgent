@@ -137,7 +137,7 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
 
     // find the room_id in 'relationships' where user_a is the agent and user_b is the user, OR vice versa
     const relationshipRecord = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA,
       userB,
     });

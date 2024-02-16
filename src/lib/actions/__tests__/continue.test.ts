@@ -49,7 +49,7 @@ describe("User Profile", () => {
     runtime = setup.runtime;
 
     const data = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: user.id,
       userB: zeroUuid,
     });

@@ -21,7 +21,7 @@ describe("Memory", () => {
     user = result.session.user;
 
     const data = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });
@@ -208,7 +208,7 @@ describe("Memory - Basic tests", () => {
     user = result.session.user;
 
     const data = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });
@@ -298,7 +298,7 @@ describe("Memory - Extended Tests", () => {
     user = result.session.user;
 
     const data = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA: user.id as UUID,
       userB: zeroUuid,
     });

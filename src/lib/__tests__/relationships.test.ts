@@ -28,7 +28,7 @@ describe("Relationships Module", () => {
     const userB = zeroUuid;
 
     const relationship = await createRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA,
       userB,
     });
@@ -40,10 +40,10 @@ describe("Relationships Module", () => {
     const userA = user?.id as UUID;
     const userB = zeroUuid;
 
-    await createRelationship({ supabase: runtime.supabase, userA, userB });
+    await createRelationship({ runtime, userA, userB });
 
     const relationship = await getRelationship({
-      supabase: runtime.supabase,
+      runtime,
       userA,
       userB,
     });
@@ -56,10 +56,10 @@ describe("Relationships Module", () => {
     const userA = user?.id as UUID;
     const userB = zeroUuid;
 
-    await createRelationship({ supabase: runtime.supabase, userA, userB });
+    await createRelationship({ runtime, userA, userB });
 
     const relationships = await getRelationships({
-      supabase: runtime.supabase,
+      runtime,
       userId: userA,
     });
     expect(relationships).toBeDefined();

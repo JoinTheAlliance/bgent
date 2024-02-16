@@ -415,7 +415,6 @@ export class BgentRuntime {
   async composeState(message: Message) {
     const { senderId, agentId, userIds, room_id } = message;
 
-    const { supabase } = this;
     const recentMessageCount = this.getRecentMessageCount();
     const recentSummarizationsCount = this.getRecentMessageCount() / 2;
     const relevantSummarizationsCount = this.getRecentMessageCount() / 2;
@@ -426,7 +425,7 @@ export class BgentRuntime {
       recentSummarizationsData,
       goalsData,
     ]: [Actor[], Memory[], Memory[], Goal[]] = await Promise.all([
-      getMessageActors({ supabase, userIds: userIds! }),
+      getMessageActors({ runtime: this, userIds: userIds! }),
       this.messageManager.getMemoriesByIds({
         userIds: userIds!,
         count: recentMessageCount,
@@ -437,7 +436,7 @@ export class BgentRuntime {
         count: recentSummarizationsCount,
       }),
       getGoals({
-        supabase,
+        runtime: this,
         count: 10,
         onlyInProgress: true,
         userIds: userIds!,
