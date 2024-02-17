@@ -74,6 +74,7 @@ export class BgentRuntime {
   evaluators: Evaluator[] = [];
 
   constructor(opts: AgentRuntimeOpts) {
+    console.log("opts are", opts);
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
@@ -86,27 +87,17 @@ export class BgentRuntime {
 
     this.token = opts.token;
 
-    defaultActions.forEach((action) => {
-      this.registerAction(action);
-    });
-
-    const actions = opts.actions ?? [];
-    actions.forEach((action: Action) => {
-      if (!this.getActions().includes(action)) {
+    [...defaultActions, ...((opts.actions ?? []) as Action[])].forEach(
+      (action) => {
         this.registerAction(action);
-      }
-    });
+      },
+    );
 
-    defaultEvaluators.forEach((evaluator) => {
-      this.registerEvaluator(evaluator);
-    });
-
-    const evaluators = opts.evaluators ?? [];
-    evaluators.forEach((evaluator: Evaluator) => {
-      if (!this.evaluators.includes(evaluator)) {
-        this.evaluators.push(evaluator);
-      }
-    });
+    [...defaultEvaluators, ...((opts.evaluators ?? []) as Evaluator[])].forEach(
+      (evaluator) => {
+        this.registerEvaluator(evaluator);
+      },
+    );
   }
 
   getRecentMessageCount() {
@@ -114,23 +105,12 @@ export class BgentRuntime {
   }
 
   registerAction(action: Action) {
+    console.log("register action", action.name);
     this.actions.push(action);
-  }
-
-  getActions() {
-    return [...new Set(this.actions)];
-  }
-
-  getEvaluators() {
-    return [...new Set(this.evaluators)];
   }
 
   registerEvaluator(evaluator: Evaluator) {
     this.evaluators.push(evaluator);
-  }
-
-  getEvaluationHandlers() {
-    return [...new Set(this.evaluators)];
   }
 
   async completion({
@@ -161,7 +141,7 @@ export class BgentRuntime {
     };
 
     try {
-      console.log('this.serverUrl', this.serverUrl)
+      console.log("this.serverUrl", this.serverUrl);
       const response = await fetch(
         `${this.serverUrl}/chat/completions`,
         requestOptions,
@@ -306,7 +286,7 @@ export class BgentRuntime {
       return;
     }
 
-    const action = this.getActions().find(
+    const action = this.actions.find(
       (a: { name: string }) => a.name === data.action,
     )!;
 
@@ -509,15 +489,17 @@ export class BgentRuntime {
       relevantSummarizationsData,
     };
 
-    const actionPromises = this.getActions().map(async (action: Action) => {
+    const actionPromises = this.actions.map(async (action: Action) => {
       const result = await action.validate(this, message);
       if (result) {
+        console.log("action", action.name, "validated");
         return action;
       }
+      console.log("action", action.name, "not validated");
       return null;
     });
 
-    const evaluatorPromises = this.getEvaluators().map(async (evaluator) => {
+    const evaluatorPromises = this.evaluators.map(async (evaluator) => {
       const result = await evaluator.validate(this, message, initialState);
       if (result) {
         return evaluator;

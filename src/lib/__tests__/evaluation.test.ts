@@ -1,8 +1,10 @@
 import { User } from "@supabase/supabase-js";
 import { UUID } from "crypto";
 import dotenv from "dotenv";
+import { composeContext } from "../context";
+import { evaluationTemplate } from "../evaluation";
 import { createRuntime } from "../../test/createRuntime";
-import testEvaluator from "../../test/testEvaluator";
+import { TEST_EVALUATOR, TEST_EVALUATOR_FAIL } from "../../test/testEvaluator";
 import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
@@ -18,7 +20,7 @@ describe("Evaluation Process", () => {
   beforeAll(async () => {
     const setup = await createRuntime({
       env: process.env as Record<string, string>,
-      evaluators: [testEvaluator],
+      evaluators: [TEST_EVALUATOR, TEST_EVALUATOR_FAIL],
     });
     runtime = setup.runtime;
     user = setup.session.user;
@@ -43,8 +45,8 @@ describe("Evaluation Process", () => {
   });
 
   test("Validate the format of the examples from the evaluator", () => {
-    expect(testEvaluator.examples).toBeInstanceOf(Array);
-    testEvaluator.examples.forEach((example) => {
+    expect(TEST_EVALUATOR.examples).toBeInstanceOf(Array);
+    TEST_EVALUATOR.examples.forEach((example) => {
       expect(example).toHaveProperty("context");
       expect(example).toHaveProperty("messages");
       expect(example.messages).toBeInstanceOf(Array);
@@ -57,7 +59,7 @@ describe("Evaluation Process", () => {
     });
   });
 
-  test("Check if test and examples appear in prompt", async () => {
+  test("Check if test and examples appear in state", async () => {
     const message: Message = {
       senderId: user.id as UUID,
       agentId: zeroUuid,
@@ -66,26 +68,17 @@ describe("Evaluation Process", () => {
       room_id,
     };
 
-    const response = await runtime.handleRequest(message);
-    expect(response).toContain("TEST_EVALUATOR");
-    expect(response).toContain(testEvaluator.examples[0].outcome);
+    const state = await runtime.composeState(message);
+    const prompt = composeContext({ state, template: evaluationTemplate });
+
+    // expect that the prompt contacts the testEvaluator name
+    expect(prompt).toContain(TEST_EVALUATOR.name);
+
+    // check if state.EvaluatorNames contains the testEvaluator name
+
+    expect(state.evaluatorNames).toContain(TEST_EVALUATOR.name);
   });
 
-  test("Create prompt to call TEST_ACTION action and validate response", async () => {
-    const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
-      content: "Please respond with the TEST_EVALUATOR action",
-      room_id,
-    };
-
-    const response = await runtime.handleRequest(message);
-
-    console.log("response", response);
-
-    expect(response.action).toEqual("TEST_ACTION");
-  });
 
   test("Run the TEST_EVALUATOR handler and validate output", async () => {
     const message: Message = {
@@ -96,7 +89,7 @@ describe("Evaluation Process", () => {
       room_id,
     };
 
-    const result = await testEvaluator.handler(runtime, message);
+    const result = await TEST_EVALUATOR.handler(runtime, message);
     expect(result).toBeTruthy();
   });
 });

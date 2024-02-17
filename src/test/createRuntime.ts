@@ -32,6 +32,8 @@ export async function createRuntime({
     throw new Error("Session not found");
   }
 
+  console.log('*** creating runtime with action', actions, 'and evaluators', evaluators)
+
   const runtime = new BgentRuntime({
     debugMode: false,
     serverUrl: "https://api.openai.com/v1",

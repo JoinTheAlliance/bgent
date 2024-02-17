@@ -86,13 +86,10 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   const agentName = actors?.find((actor: Actor) => actor.id === agentId)?.name;
 
-  const actionNames = runtime
-    .getActions()
-    .map((a: Action) => a.name)
-    .join(", ");
-
-  const actions = runtime
-    .getActions()
+  const actionNames = runtime.actions.map((a: Action) => a.name).join(", ");
+  console.log("actionNames", actionNames);
+  
+  const actions = runtime.actions
     .map((a: Action) => `${a.name}: ${a.description}`)
     .join("\n");
 

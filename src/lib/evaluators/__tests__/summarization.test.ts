@@ -9,11 +9,11 @@ import {
   GetTellMeAboutYourselfConversation3,
   jimFacts,
 } from "../../../test/data";
+import { populateMemories } from "../../../test/populateMemories";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import evaluator from "../summarization";
-import { populateMemories } from "test/populateMemories";
 
 dotenv.config();
 
