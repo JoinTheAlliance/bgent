@@ -44,7 +44,9 @@ describe("User Profile", () => {
   });
 
   beforeAll(async () => {
-    const setup = await createRuntime();
+    const setup = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     user = setup.session.user;
     runtime = setup.runtime;
 

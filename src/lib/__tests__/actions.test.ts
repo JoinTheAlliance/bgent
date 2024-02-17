@@ -19,9 +19,11 @@ describe("Actions", () => {
   });
 
   beforeAll(async () => {
-    const setup = await createRuntime();
-    user = setup.session.user;
-    runtime = setup.runtime;
+    const { session, runtime: _runtime } = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
+    user = session.user;
+    runtime = _runtime;
 
     // const data = await getRelationship({
     //   runtime,
@@ -55,7 +57,9 @@ describe("Actions", () => {
     });
 
     beforeAll(async () => {
-      const setup = await createRuntime();
+      const setup = await createRuntime({
+        env: process.env as Record<string, string>,
+      });
       user = setup.session.user;
       runtime = setup.runtime;
 

@@ -28,7 +28,9 @@ let user: User;
 
 describe("User Profile", () => {
   beforeAll(async () => {
-    const result = await createRuntime();
+    const result = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     runtime = result.runtime;
     user = result.session.user;
   });
@@ -56,9 +58,9 @@ describe("User Profile", () => {
   });
 
   test("Get user profile", async () => {
-    const { user, runtime } = await createRuntime(
-      process.env as Record<string, string>,
-    );
+    const { user, runtime } = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
 
     const data = await getRelationship({
       runtime,
@@ -164,7 +166,7 @@ describe("User Profile", () => {
 
       expect(
         result.toLowerCase().includes("startup") ||
-          result.toLowerCase().includes("programmer"),
+        result.toLowerCase().includes("programmer"),
       ).toBe(true);
 
       const descriptions = await runtime.descriptionManager.getMemoriesByIds({

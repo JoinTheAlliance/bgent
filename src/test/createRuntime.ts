@@ -9,7 +9,7 @@ import {
 import { Evaluator } from "../lib/types";
 
 export async function createRuntime({
-  env = process.env,
+  env,
   recentMessageCount,
   evaluators = [],
 }: {
@@ -35,7 +35,7 @@ export async function createRuntime({
     serverUrl: "https://api.openai.com/v1",
     supabase,
     recentMessageCount,
-    token: env.OPENAI_API_KEY!,
+    token: env!.OPENAI_API_KEY!,
     evaluators: evaluators ?? [],
   });
 

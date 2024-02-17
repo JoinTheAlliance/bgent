@@ -1,10 +1,13 @@
 import { User } from "@supabase/supabase-js";
 import { UUID } from "crypto";
+import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import testEvaluator from "../../test/testEvaluator";
 import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
+
+dotenv.config();
 
 describe("Evaluation Process", () => {
   let runtime: BgentRuntime;
@@ -13,7 +16,10 @@ describe("Evaluation Process", () => {
   const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
 
   beforeAll(async () => {
-    const setup = await createRuntime({ evaluators: [testEvaluator] });
+    const setup = await createRuntime({
+      env: process.env as Record<string, string>,
+      evaluators: [testEvaluator],
+    });
     runtime = setup.runtime;
     user = setup.session.user;
 
@@ -33,7 +39,6 @@ describe("Evaluation Process", () => {
     //   content: "Test message",
     //   room_id,
     // });
-
     // expect(state.evaluators).toContain(testEvaluator.name);
   });
 

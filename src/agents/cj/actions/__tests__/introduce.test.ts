@@ -23,9 +23,9 @@ const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Introduce Action", () => {
   test("Introduce the user", async () => {
-    const { user, runtime } = await createRuntime(
-      process.env as Record<string, string>,
-    );
+    const { user, runtime } = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
 
     const data = await getRelationship({
       runtime,
