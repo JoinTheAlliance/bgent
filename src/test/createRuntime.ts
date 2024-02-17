@@ -6,16 +6,18 @@ import {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
 } from "./constants";
-import { Evaluator } from "../lib/types";
+import { Action, Evaluator } from "../lib/types";
 
 export async function createRuntime({
   env,
   recentMessageCount,
   evaluators = [],
+  actions = [],
 }: {
   env?: Record<string, string> | NodeJS.ProcessEnv;
   recentMessageCount?: number;
   evaluators?: Evaluator[];
+  actions?: Action[];
 }) {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
 
@@ -36,6 +38,7 @@ export async function createRuntime({
     supabase,
     recentMessageCount,
     token: env!.OPENAI_API_KEY!,
+    actions: actions ?? [],
     evaluators: evaluators ?? [],
   });
 

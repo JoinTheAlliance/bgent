@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
+import { type Message } from "../types";
+import { TEST_ACTION, TEST_ACTION_FAIL } from "../../test/testAction";
 
 dotenv.config();
 
@@ -21,6 +23,7 @@ describe("Actions", () => {
   beforeAll(async () => {
     const { session, runtime: _runtime } = await createRuntime({
       env: process.env as Record<string, string>,
+      actions: [TEST_ACTION, TEST_ACTION_FAIL]
     });
     user = session.user;
     runtime = _runtime;
@@ -117,6 +120,20 @@ describe("Actions", () => {
           "Continue action or its validation function is undefined",
         );
       }
+    });
+
+    test("Create prompt to call TEST_ACTION action and validate response", async () => {
+      const message: Message = {
+        senderId: user.id as UUID,
+        agentId: zeroUuid,
+        userIds: [user.id as UUID, zeroUuid],
+        content: "Please respond with the TEST_EVALUATOR action",
+        room_id,
+      };
+
+      const response = await runtime.handleRequest(message);
+
+      expect(response.action).toEqual("TEST_ACTION");
     });
 
     // Test that action handlers are being called properly

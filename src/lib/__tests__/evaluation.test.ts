@@ -71,17 +71,20 @@ describe("Evaluation Process", () => {
     expect(response).toContain(testEvaluator.examples[0].outcome);
   });
 
-  test("Create prompt to call TEST_EVALUATOR action and validate response", async () => {
+  test("Create prompt to call TEST_ACTION action and validate response", async () => {
     const message: Message = {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user.id as UUID, zeroUuid],
-      content: "Trigger TEST_EVALUATOR",
+      content: "Please respond with the TEST_EVALUATOR action",
       room_id,
     };
 
     const response = await runtime.handleRequest(message);
-    expect(response.action).toEqual("TEST_EVALUATOR");
+
+    console.log("response", response);
+
+    expect(response.action).toEqual("TEST_ACTION");
   });
 
   test("Run the TEST_EVALUATOR handler and validate output", async () => {

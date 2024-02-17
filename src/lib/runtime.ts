@@ -161,6 +161,7 @@ export class BgentRuntime {
     };
 
     try {
+      console.log('this.serverUrl', this.serverUrl)
       const response = await fetch(
         `${this.serverUrl}/chat/completions`,
         requestOptions,
