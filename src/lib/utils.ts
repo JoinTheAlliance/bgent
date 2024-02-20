@@ -23,12 +23,9 @@ export function parseJsonArrayFromText(text: string) {
     }
   }
 
-  if (
-    Array.isArray(jsonData) &&
-    jsonData.every(
-      (item) => typeof item === "object" && "claim" in item && "type" in item,
-    )
-  ) {
+  console.log("jsonData", jsonData);
+
+  if (Array.isArray(jsonData)) {
     return jsonData;
   } else {
     return null;

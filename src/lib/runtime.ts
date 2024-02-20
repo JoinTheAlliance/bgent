@@ -74,7 +74,6 @@ export class BgentRuntime {
   evaluators: Evaluator[] = [];
 
   constructor(opts: AgentRuntimeOpts) {
-    console.log("opts are", opts);
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
@@ -105,7 +104,6 @@ export class BgentRuntime {
   }
 
   registerAction(action: Action) {
-    console.log("register action", action.name);
     this.actions.push(action);
   }
 
@@ -141,7 +139,6 @@ export class BgentRuntime {
     };
 
     try {
-      console.log("this.serverUrl", this.serverUrl);
       const response = await fetch(
         `${this.serverUrl}/chat/completions`,
         requestOptions,
@@ -165,7 +162,7 @@ export class BgentRuntime {
       }
       return content;
     } catch (error) {
-      console.log("e", error);
+      console.error("ERROR:", error);
       throw new Error(error as string);
     }
   }
@@ -203,7 +200,7 @@ export class BgentRuntime {
 
       return data?.data?.[0].embedding;
     } catch (e) {
-      console.log("e", e);
+      console.error(e);
       throw e;
     }
   }
@@ -220,9 +217,6 @@ export class BgentRuntime {
       template: requestHandlerTemplate,
     });
 
-    console.log("*** runtime context");
-    console.log(context);
-
     if (this.debugMode) {
       logger.log(context, {
         title: "Response Context",
@@ -235,15 +229,10 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      console.log("*** context");
       const response = await this.completion({
         context,
         stop: [],
       });
-      console.log("*** response");
-
-      console.log("*** runtime response");
-      console.log(response);
 
       this.supabase
         .from("logs")
@@ -354,8 +343,7 @@ export class BgentRuntime {
     const evaluatorPromises = this.evaluators.map(
       async (evaluator: Evaluator) => {
         if (!evaluator.handler) {
-          console.log("no handler");
-          return;
+          return null;
         }
 
         const result = await evaluator.validate(this, message, state);
@@ -393,6 +381,8 @@ export class BgentRuntime {
 
         evaluator.handler(this, message);
       });
+
+    return parsedResult;
   }
 
   async composeState(message: Message) {
@@ -492,10 +482,8 @@ export class BgentRuntime {
     const actionPromises = this.actions.map(async (action: Action) => {
       const result = await action.validate(this, message);
       if (result) {
-        console.log("action", action.name, "validated");
         return action;
       }
-      console.log("action", action.name, "not validated");
       return null;
     });
 

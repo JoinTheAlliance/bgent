@@ -33,17 +33,6 @@ describe("Evaluation Process", () => {
     room_id = relationship?.room_id;
   });
 
-  test("Custom evaluator is loaded into state", async () => {
-    // const state = await runtime.composeState({
-    //   agentId: zeroUuid,
-    //   senderId: user.id as UUID,
-    //   userIds: [user?.id as UUID, zeroUuid],
-    //   content: "Test message",
-    //   room_id,
-    // });
-    // expect(state.evaluators).toContain(testEvaluator.name);
-  });
-
   test("Validate the format of the examples from the evaluator", () => {
     expect(TEST_EVALUATOR.examples).toBeInstanceOf(Array);
     TEST_EVALUATOR.examples.forEach((example) => {
@@ -79,7 +68,6 @@ describe("Evaluation Process", () => {
     expect(state.evaluatorNames).toContain(TEST_EVALUATOR.name);
   });
 
-
   test("Run the TEST_EVALUATOR handler and validate output", async () => {
     const message: Message = {
       senderId: user.id as UUID,
@@ -91,5 +79,31 @@ describe("Evaluation Process", () => {
 
     const result = await TEST_EVALUATOR.handler(runtime, message);
     expect(result).toBeTruthy();
+  });
+
+  // load up a conversation
+  // call the prompt
+  // get back the array of evaluators
+  // run the evaluators
+  // check the results
+  test("Run the evaluation process", async () => {
+    const { runtime } = await createRuntime({
+      env: process.env as Record<string, string>,
+      evaluators: [TEST_EVALUATOR, TEST_EVALUATOR_FAIL],
+    });
+
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user.id as UUID, zeroUuid],
+      content: "Please run the test evaluator",
+      room_id,
+    };
+
+    const state = await runtime.composeState(message);
+
+    const result = await runtime.evaluate(message, state);
+
+    expect(result?.includes("TEST_EVALUATOR")).toBe(true);
   });
 });
