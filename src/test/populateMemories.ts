@@ -3,7 +3,7 @@ import { type UUID } from "crypto";
 import { zeroUuid } from "../lib/actions/__tests__/ignore.test";
 import { type BgentRuntime } from "../lib/runtime";
 import { getCachedEmbedding, writeCachedEmbedding } from "./cache";
-import { ContentExample } from "lib/types";
+import { ContentExample } from "../lib/types";
 
 export async function populateMemories(
   runtime: BgentRuntime,

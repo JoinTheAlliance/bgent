@@ -26,13 +26,13 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "src"
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "./dist",
+    "rootDir": "./src",
   },
   "include": [
     "src",
-    "__tests__",
-    "jest.config.js",
-    "rollup.config.js",
   ],
   "exclude": [
     "node_modules",
