@@ -357,6 +357,11 @@ export class BgentRuntime {
     const resolvedEvaluators = await Promise.all(evaluatorPromises);
     const evaluatorsData = resolvedEvaluators.filter(Boolean);
 
+    // if there are no evaluators this frame, return
+    if (evaluatorsData.length === 0) {
+      return [];
+    }
+
     const evaluators = formatEvaluators(evaluatorsData as Evaluator[]);
     const evaluatorNames = formatEvaluatorNames(evaluatorsData as Evaluator[]);
     const evaluatorConditions = formatEvaluatorConditions(
@@ -389,8 +394,12 @@ export class BgentRuntime {
     const { senderId, agentId, userIds, room_id } = message;
 
     const recentMessageCount = this.getRecentMessageCount();
-    const recentSummarizationsCount = this.getRecentMessageCount() / 2;
-    const relevantSummarizationsCount = this.getRecentMessageCount() / 2;
+    const recentSummarizationsCount = Math.ceil(
+      this.getRecentMessageCount() / 2,
+    );
+    const relevantSummarizationsCount = Math.ceil(
+      this.getRecentMessageCount() / 2,
+    );
 
     const [
       actorsData,

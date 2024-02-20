@@ -1,10 +1,11 @@
 import { User } from "@supabase/supabase-js";
 import { UUID } from "crypto";
 import dotenv from "dotenv";
-import { composeContext } from "../context";
-import { evaluationTemplate } from "../evaluation";
 import { createRuntime } from "../../test/createRuntime";
 import { TEST_EVALUATOR, TEST_EVALUATOR_FAIL } from "../../test/testEvaluator";
+import { composeContext } from "../context";
+import { evaluationTemplate } from "../evaluation";
+import summarization from "../evaluators/summarization";
 import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
@@ -105,5 +106,51 @@ describe("Evaluation Process", () => {
     const result = await runtime.evaluate(message, state);
 
     expect(result?.includes("TEST_EVALUATOR")).toBe(true);
+  });
+
+  test("Run the evaluation process", async () => {
+    const { runtime } = await createRuntime({
+      env: process.env as Record<string, string>,
+      evaluators: [TEST_EVALUATOR, TEST_EVALUATOR_FAIL],
+    });
+
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user.id as UUID, zeroUuid],
+      content: "Please run the test evaluator",
+      room_id,
+    };
+
+    const state = await runtime.composeState(message);
+
+    const result = await runtime.evaluate(message, state);
+
+    expect(result?.includes("TEST_EVALUATOR")).toBe(true);
+  });
+
+  test("Test that summarization appears in evaluation handler", async () => {
+    const { runtime } = await createRuntime({
+      env: process.env as Record<string, string>,
+      recentMessageCount: 1,
+    });
+
+    const message: Message = {
+      senderId: user.id as UUID,
+      agentId: zeroUuid,
+      userIds: [user.id as UUID, zeroUuid],
+      content: "Test message for evaluation",
+      room_id,
+    };
+
+    const state = await runtime.composeState(message);
+    const prompt = composeContext({ state, template: evaluationTemplate });
+
+    // expect that the prompt contacts the testEvaluator name
+    expect(prompt).toContain(summarization.name);
+
+    // check if state.EvaluatorNames contains the testEvaluator name
+
+    expect(state.evaluatorNames).toContain(summarization.name);
   });
 });

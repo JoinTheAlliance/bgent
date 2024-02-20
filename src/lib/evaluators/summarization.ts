@@ -88,7 +88,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   const actionNames = runtime.actions.map((a: Action) => a.name).join(", ");
   console.log("actionNames", actionNames);
-  
+
   const actions = runtime.actions
     .map((a: Action) => `${a.name}: ${a.description}`)
     .join("\n");
@@ -175,11 +175,17 @@ export default {
   name: "SUMMARIZE",
   validate: async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _runtime: BgentRuntime,
+    runtime: BgentRuntime,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _message: Message,
+    message: Message,
   ): Promise<boolean> => {
-    return await Promise.resolve(true);
+    const messageCount = (await runtime.messageManager.countMemoriesByUserIds(
+      message.userIds,
+    )) as number;
+
+    const reflectionCount = Math.ceil(runtime.getRecentMessageCount() / 2);
+
+    return messageCount % reflectionCount === 0;
   },
   description:
     "Extract factual information about the people in the conversation, the current events in the world, and anything else that might be important to remember.",
