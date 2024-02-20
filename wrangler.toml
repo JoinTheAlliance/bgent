@@ -1,4 +1,4 @@
-name = "cojourney"
+name = "bgent"
 main = "src/agents/index.ts"
 compatibility_date = "2023-11-21"
 node_compat = true

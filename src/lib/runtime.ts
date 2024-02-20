@@ -5,6 +5,7 @@ import {
   defaultEvaluators,
   evaluationTemplate,
   formatEvaluatorConditions,
+  formatEvaluatorExamples,
   formatEvaluatorNames,
   formatEvaluators,
 } from "./evaluation";
@@ -85,27 +86,17 @@ export class BgentRuntime {
 
     this.token = opts.token;
 
-    defaultActions.forEach((action) => {
-      this.registerAction(action);
-    });
-
-    const actions = opts.actions ?? [];
-    actions.forEach((action: Action) => {
-      if (!this.getActions().includes(action)) {
+    [...defaultActions, ...((opts.actions ?? []) as Action[])].forEach(
+      (action) => {
         this.registerAction(action);
-      }
-    });
+      },
+    );
 
-    defaultEvaluators.forEach((evaluator) => {
-      this.registerEvaluator(evaluator);
-    });
-
-    const evaluators = opts.evaluators ?? [];
-    evaluators.forEach((evaluator: Evaluator) => {
-      if (!this.evaluators.includes(evaluator)) {
-        this.evaluators.push(evaluator);
-      }
-    });
+    [...defaultEvaluators, ...((opts.evaluators ?? []) as Evaluator[])].forEach(
+      (evaluator) => {
+        this.registerEvaluator(evaluator);
+      },
+    );
   }
 
   getRecentMessageCount() {
@@ -116,16 +107,8 @@ export class BgentRuntime {
     this.actions.push(action);
   }
 
-  getActions() {
-    return [...new Set(this.actions)];
-  }
-
   registerEvaluator(evaluator: Evaluator) {
     this.evaluators.push(evaluator);
-  }
-
-  getEvaluationHandlers() {
-    return [...new Set(this.evaluators)];
   }
 
   async completion({
@@ -179,7 +162,7 @@ export class BgentRuntime {
       }
       return content;
     } catch (error) {
-      console.log("e", error);
+      console.error("ERROR:", error);
       throw new Error(error as string);
     }
   }
@@ -217,7 +200,7 @@ export class BgentRuntime {
 
       return data?.data?.[0].embedding;
     } catch (e) {
-      console.log("e", e);
+      console.error(e);
       throw e;
     }
   }
@@ -234,9 +217,6 @@ export class BgentRuntime {
       template: requestHandlerTemplate,
     });
 
-    console.log("*** runtime context");
-    console.log(context);
-
     if (this.debugMode) {
       logger.log(context, {
         title: "Response Context",
@@ -249,15 +229,10 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      console.log("*** context");
       const response = await this.completion({
         context,
         stop: [],
       });
-      console.log("*** response");
-
-      console.log("*** runtime response");
-      console.log(response);
 
       this.supabase
         .from("logs")
@@ -300,7 +275,7 @@ export class BgentRuntime {
       return;
     }
 
-    const action = this.getActions().find(
+    const action = this.actions.find(
       (a: { name: string }) => a.name === data.action,
     )!;
 
@@ -368,8 +343,7 @@ export class BgentRuntime {
     const evaluatorPromises = this.evaluators.map(
       async (evaluator: Evaluator) => {
         if (!evaluator.handler) {
-          console.log("no handler");
-          return;
+          return null;
         }
 
         const result = await evaluator.validate(this, message, state);
@@ -382,6 +356,11 @@ export class BgentRuntime {
 
     const resolvedEvaluators = await Promise.all(evaluatorPromises);
     const evaluatorsData = resolvedEvaluators.filter(Boolean);
+
+    // if there are no evaluators this frame, return
+    if (evaluatorsData.length === 0) {
+      return [];
+    }
 
     const evaluators = formatEvaluators(evaluatorsData as Evaluator[]);
     const evaluatorNames = formatEvaluatorNames(evaluatorsData as Evaluator[]);
@@ -401,23 +380,26 @@ export class BgentRuntime {
     const parsedResult = parseJsonArrayFromText(result);
 
     this.evaluators
-      .filter(
-        (evaluator: Evaluator) =>
-          evaluator.handler && parsedResult?.includes(evaluator.name),
-      )
+      .filter((evaluator: Evaluator) => parsedResult?.includes(evaluator.name))
       .forEach((evaluator: Evaluator) => {
         if (!evaluator?.handler) return;
 
         evaluator.handler(this, message);
       });
+
+    return parsedResult;
   }
 
   async composeState(message: Message) {
     const { senderId, agentId, userIds, room_id } = message;
 
     const recentMessageCount = this.getRecentMessageCount();
-    const recentSummarizationsCount = this.getRecentMessageCount() / 2;
-    const relevantSummarizationsCount = this.getRecentMessageCount() / 2;
+    const recentSummarizationsCount = Math.ceil(
+      this.getRecentMessageCount() / 2,
+    );
+    const relevantSummarizationsCount = Math.ceil(
+      this.getRecentMessageCount() / 2,
+    );
 
     const [
       actorsData,
@@ -506,12 +488,7 @@ export class BgentRuntime {
       relevantSummarizationsData,
     };
 
-    const actionPromises = this.getActions().map(async (action: Action) => {
-      if (!action.handler) {
-        console.log("no handler");
-        return;
-      }
-
+    const actionPromises = this.actions.map(async (action: Action) => {
       const result = await action.validate(this, message);
       if (result) {
         return action;
@@ -519,7 +496,24 @@ export class BgentRuntime {
       return null;
     });
 
+    const evaluatorPromises = this.evaluators.map(async (evaluator) => {
+      const result = await evaluator.validate(this, message, initialState);
+      if (result) {
+        return evaluator;
+      }
+      return null;
+    });
+
+    const resolvedEvaluators = await Promise.all(evaluatorPromises);
+
+    const evaluatorsData = resolvedEvaluators.filter(Boolean) as Evaluator[];
+    const evaluators = formatEvaluators(evaluatorsData);
+    const evaluatorNames = formatEvaluatorNames(evaluatorsData);
+    const evaluatorConditions = formatEvaluatorConditions(evaluatorsData);
+    const evaluatorExamples = formatEvaluatorExamples(evaluatorsData);
+
     const resolvedActions = await Promise.all(actionPromises);
+
     const actionsData = resolvedActions.filter(Boolean) as Action[];
 
     const actionState = {
@@ -527,6 +521,11 @@ export class BgentRuntime {
       actionConditions: formatActionConditions(actionsData),
       actions: formatActions(actionsData),
       actionExamples: composeActionExamples(actionsData, 10),
+      evaluatorsData,
+      evaluators,
+      evaluatorNames,
+      evaluatorConditions,
+      evaluatorExamples,
     };
 
     return { ...initialState, ...actionState };

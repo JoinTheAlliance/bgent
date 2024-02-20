@@ -14,7 +14,9 @@ describe("Messages Library", () => {
   let runtime: BgentRuntime, user: User, actors: Actor[];
 
   beforeAll(async () => {
-    const setup = await createRuntime();
+    const setup = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     runtime = setup.runtime;
     user = setup.session.user;
     actors = await getMessageActors({

@@ -48,7 +48,9 @@ describe("Agent Runtime", () => {
 
   // Set up before each test
   beforeEach(async () => {
-    const result = await createRuntime();
+    const result = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     runtime = result.runtime;
     user = result.session.user;
 

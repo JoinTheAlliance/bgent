@@ -16,7 +16,9 @@ describe("Memory", () => {
   let room_id: UUID | null = null;
 
   beforeAll(async () => {
-    const result = await createRuntime();
+    const result = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     runtime = result.runtime;
     user = result.session.user;
 
@@ -203,7 +205,9 @@ describe("Memory - Basic tests", () => {
 
   // Setup before all tests
   beforeAll(async () => {
-    const result = await createRuntime();
+    const result = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     runtime = result.runtime;
     user = result.session.user;
 
@@ -293,7 +297,9 @@ describe("Memory - Extended Tests", () => {
   let room_id: UUID | null = null;
 
   beforeAll(async () => {
-    const result = await createRuntime();
+    const result = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     runtime = result.runtime;
     user = result.session.user;
 

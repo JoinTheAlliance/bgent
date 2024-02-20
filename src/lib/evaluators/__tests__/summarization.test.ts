@@ -9,11 +9,11 @@ import {
   GetTellMeAboutYourselfConversation3,
   jimFacts,
 } from "../../../test/data";
+import { populateMemories } from "../../../test/populateMemories";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import evaluator from "../summarization";
-import { populateMemories } from "test/populateMemories";
 
 dotenv.config();
 
@@ -29,7 +29,9 @@ describe("Factual Summarization", () => {
   });
 
   beforeAll(async () => {
-    const setup = await createRuntime();
+    const setup = await createRuntime({
+      env: process.env as Record<string, string>,
+    });
     user = setup.session.user;
     runtime = setup.runtime;
 

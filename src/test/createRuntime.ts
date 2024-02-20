@@ -6,11 +6,19 @@ import {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
 } from "./constants";
+import { Action, Evaluator } from "../lib/types";
 
-export async function createRuntime(
-  env: Record<string, string> | NodeJS.ProcessEnv = process.env,
-  recentMessageCount = 32,
-) {
+export async function createRuntime({
+  env,
+  recentMessageCount,
+  evaluators = [],
+  actions = [],
+}: {
+  env?: Record<string, string> | NodeJS.ProcessEnv;
+  recentMessageCount?: number;
+  evaluators?: Evaluator[];
+  actions?: Action[];
+}) {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
 
   const {
@@ -24,12 +32,16 @@ export async function createRuntime(
     throw new Error("Session not found");
   }
 
+  console.log('*** creating runtime with action', actions, 'and evaluators', evaluators)
+
   const runtime = new BgentRuntime({
     debugMode: false,
     serverUrl: "https://api.openai.com/v1",
     supabase,
     recentMessageCount,
-    token: env.OPENAI_API_KEY!,
+    token: env!.OPENAI_API_KEY!,
+    actions: actions ?? [],
+    evaluators: evaluators ?? [],
   });
 
   return { user, session, runtime };

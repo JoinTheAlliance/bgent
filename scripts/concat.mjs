@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 const instructions = 'The above code was taken from my codebase at https://github.com/lalalune/bgent. You are writing tests and documentation for my codebase. Please use the above code as a reference. Tests should be written with Jest and Typescript. Do not use mocks or stubs. Keep it very simple and straightforward.'
 
 // Patterns to ignore
-const ignorePatterns = ['actionExamples.ts', 'agents', 'goal', 'goals', 'utils', 'logger', 'index', 'data', 'constants', 'templates', 'worker']
+const ignorePatterns = ['actionExamples.ts', 'agents', 'goal', 'cache', 'goals', 'supabase',  'utils', 'logger', 'index', 'data', 'constants', 'templates', 'worker']
 
 // __dirname is not defined in ES module scope, so we need to create it
 const __filename = fileURLToPath(import.meta.url)
@@ -24,7 +24,7 @@ const shouldIgnore = (filePath) => {
 
 // Function to recursively read through directories and concatenate .ts files
 const readDirectory = (dirPath) => {
-    let concatenatedContent = '# START MY CODEBASE'
+    let concatenatedContent = ''
 
     fs.readdirSync(dirPath).forEach(file => {
         const filePath = path.join(dirPath, file)
@@ -51,7 +51,7 @@ const readDirectory = (dirPath) => {
 }
 
 // Start reading from the root TypeScript directory
-const concatenatedContent = readDirectory(directoryPath)
+const concatenatedContent = '# START MY CODEBASE' + readDirectory(directoryPath)
 
 // Write the concatenated content to the output file
 fs.writeFileSync(outputFile, concatenatedContent + '# END MY CODEBASE\n\n' + instructions)
