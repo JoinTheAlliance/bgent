@@ -13,13 +13,17 @@ export interface Relationship {
 
 export interface Content {
   content: string;
-  action?: string;
+  action?: string; // known value
+  source?: string; // known value
+  [key: string]: unknown;
 }
 
 export interface ContentExample {
   user: string;
   content: string;
-  action?: string;
+  action?: string; // known value
+  source?: string; // known value
+  [key: string]: unknown;
 }
 
 export interface Actor {

@@ -5,6 +5,7 @@ export * from "./evaluation";
 export * from "./evaluators/index";
 export * from "./goals";
 export * from "./logger";
+export * from "./lore";
 export * from "./memory";
 export * from "./messages";
 export * from "./relationships";

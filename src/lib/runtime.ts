@@ -36,6 +36,7 @@ import {
   getMessageActors,
 } from "./messages";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
+import { getLore } from "./lore";
 export interface AgentRuntimeOpts {
   recentMessageCount?: number; // number of messages to hold in the recent message cache
   token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
@@ -67,6 +68,11 @@ export class BgentRuntime {
   summarizationManager: MemoryManager = new MemoryManager({
     runtime: this,
     tableName: "summarizations",
+  });
+
+  loreManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    tableName: "lore",
   });
 
   actions: Action[] = [];
@@ -201,20 +207,36 @@ export class BgentRuntime {
   }
 
   async handleRequest(message: Message, state?: State) {
-    console.log("handleRequest", message, state);
-    await this.saveRequestMessage(message, state as State);
-    console.log("handleRequest", message, state);
+    const _saveRequestMessage = async (message: Message, state: State) => {
+      const { content: senderContent, senderId, userIds, room_id } = message;
+
+      const _senderContent = (
+        (senderContent as Content).content ?? senderContent
+      )?.trim();
+      if (_senderContent) {
+        await this.messageManager.createMemory({
+          user_ids: userIds!,
+          user_id: senderId!,
+          content: {
+            content: _senderContent,
+            action: (message.content as Content)?.action ?? "null",
+          },
+          room_id,
+          embedding: embeddingZeroVector,
+        });
+        await this.evaluate(message, state);
+      }
+    };
+
+    await _saveRequestMessage(message, state as State);
     if (!state) {
       state = (await this.composeState(message)) as State;
     }
-    console.log("handleRequest", message, state);
 
     const context = composeContext({
       state,
       template: requestHandlerTemplate,
     });
-
-    console.log("context", context);
 
     if (this.debugMode) {
       logger.log(context, {
@@ -266,7 +288,30 @@ export class BgentRuntime {
       };
     }
 
-    await this.saveResponseMessage(message, state, responseContent);
+    const _saveResponseMessage = async (
+      message: Message,
+      state: State,
+      responseContent: Content,
+    ) => {
+      const { agentId, userIds, room_id } = message;
+
+      responseContent.content = responseContent.content?.trim();
+
+      if (responseContent.content) {
+        await this.messageManager.createMemory({
+          user_ids: userIds!,
+          user_id: agentId!,
+          content: responseContent,
+          room_id,
+          embedding: embeddingZeroVector,
+        });
+        await this.evaluate(message, { ...state, responseContent });
+      } else {
+        console.warn("Empty response, skipping");
+      }
+    };
+
+    await _saveResponseMessage(message, state, responseContent);
     await this.processActions(message, responseContent);
 
     return responseContent;
@@ -295,50 +340,6 @@ export class BgentRuntime {
     }
 
     await action.handler(this, message);
-  }
-
-  async saveRequestMessage(message: Message, state: State) {
-    const { content: senderContent, senderId, userIds, room_id } = message;
-
-    const _senderContent = (
-      (senderContent as Content).content ?? senderContent
-    )?.trim();
-    if (_senderContent) {
-      await this.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: senderId!,
-        content: {
-          content: _senderContent,
-          action: (message.content as Content)?.action ?? "null",
-        },
-        room_id,
-        embedding: embeddingZeroVector,
-      });
-      await this.evaluate(message, state);
-    }
-  }
-
-  async saveResponseMessage(
-    message: Message,
-    state: State,
-    responseContent: Content,
-  ) {
-    const { agentId, userIds, room_id } = message;
-
-    responseContent.content = responseContent.content?.trim();
-
-    if (responseContent.content) {
-      await this.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: agentId!,
-        content: responseContent,
-        room_id,
-        embedding: embeddingZeroVector,
-      });
-      await this.evaluate(message, { ...state, responseContent });
-    } else {
-      console.warn("Empty response, skipping");
-    }
   }
 
   async evaluate(message: Message, state: State) {
@@ -408,7 +409,8 @@ export class BgentRuntime {
       recentMessagesData,
       recentSummarizationsData,
       goalsData,
-    ]: [Actor[], Memory[], Memory[], Goal[]] = await Promise.all([
+      loreData,
+    ]: [Actor[], Memory[], Memory[], Goal[], Memory[]] = await Promise.all([
       getMessageActors({ runtime: this, userIds: userIds! }),
       this.messageManager.getMemoriesByIds({
         userIds: userIds!,
@@ -424,6 +426,12 @@ export class BgentRuntime {
         count: 10,
         onlyInProgress: true,
         userIds: userIds!,
+      }),
+      getLore({
+        runtime: this,
+        message: message.content as string,
+        count: 5,
+        match_threshold: 0.5,
       }),
     ]);
 
@@ -463,6 +471,8 @@ export class BgentRuntime {
     const relevantSummarizations = formatSummarizations(
       relevantSummarizationsData,
     );
+
+    const lore = formatLore(loreData);
 
     const senderName = actorsData?.find(
       (actor: Actor) => actor.id === senderId,

@@ -1,6 +1,5 @@
 import { type UUID } from "crypto";
-
-export const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
+import { zeroUuid } from "../lib/constants";
 
 // in GetEyeColorConversationExample1, CJ asks Jim what color his eyes are, and Jim says he thinks they are blue
 export const GetEyeColorConversationExample1 = (user_id: UUID) => [

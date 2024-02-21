@@ -1,5 +1,6 @@
 import { composeContext } from "../context";
 import logger from "../logger";
+import { embeddingZeroVector } from "../memory";
 import { type BgentRuntime } from "../runtime";
 import { requestHandlerTemplate } from "../templates";
 import { Content, State, type Action, type Message } from "../types";
@@ -110,7 +111,30 @@ export default {
       return responseContent;
     }
 
-    await runtime.saveResponseMessage(message, state, responseContent);
+    const _saveResponseMessage = async (
+      message: Message,
+      state: State,
+      responseContent: Content,
+    ) => {
+      const { agentId, userIds, room_id } = message;
+
+      responseContent.content = responseContent.content?.trim();
+
+      if (responseContent.content) {
+        await runtime.messageManager.createMemory({
+          user_ids: userIds!,
+          user_id: agentId!,
+          content: responseContent,
+          room_id,
+          embedding: embeddingZeroVector,
+        });
+        await runtime.evaluate(message, { ...state, responseContent });
+      } else {
+        console.warn("Empty response, skipping");
+      }
+    };
+
+    await _saveResponseMessage(message, state, responseContent);
 
     // if the action is CONTINUE, check if we are over maxContinuesInARow
     // if so, then we should change the action to WAIT
