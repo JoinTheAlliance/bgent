@@ -33,6 +33,9 @@
   },
   "include": [
     "src",
+    "__tests__",
+    "jest.config.js",
+    "rollup.config.js",
   ],
   "exclude": [
     "node_modules",

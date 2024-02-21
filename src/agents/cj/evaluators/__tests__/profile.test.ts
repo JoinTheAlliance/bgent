@@ -166,7 +166,7 @@ describe("User Profile", () => {
 
       expect(
         result.toLowerCase().includes("startup") ||
-        result.toLowerCase().includes("programmer"),
+          result.toLowerCase().includes("programmer"),
       ).toBe(true);
 
       const descriptions = await runtime.descriptionManager.getMemoriesByIds({

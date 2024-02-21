@@ -201,16 +201,20 @@ export class BgentRuntime {
   }
 
   async handleRequest(message: Message, state?: State) {
+    console.log("handleRequest", message, state);
     await this.saveRequestMessage(message, state as State);
-
+    console.log("handleRequest", message, state);
     if (!state) {
       state = (await this.composeState(message)) as State;
     }
+    console.log("handleRequest", message, state);
 
     const context = composeContext({
       state,
       template: requestHandlerTemplate,
     });
+
+    console.log("context", context);
 
     if (this.debugMode) {
       logger.log(context, {
@@ -224,10 +228,13 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+      console.log("triesLeft", triesLeft);
       const response = await this.completion({
         context,
         stop: [],
       });
+
+      console.log("response", response);
 
       this.supabase
         .from("logs")
