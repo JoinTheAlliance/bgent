@@ -1,5 +1,4 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
-import { defaultActions } from "./actions";
 import { composeContext } from "./context";
 import {
   defaultEvaluators,
@@ -86,17 +85,13 @@ export class BgentRuntime {
 
     this.token = opts.token;
 
-    [...defaultActions, ...((opts.actions ?? []) as Action[])].forEach(
-      (action) => {
-        this.registerAction(action);
-      },
-    );
+    (opts.actions ?? []).forEach((action) => {
+      this.registerAction(action);
+    });
 
-    [...defaultEvaluators, ...((opts.evaluators ?? []) as Evaluator[])].forEach(
-      (evaluator) => {
-        this.registerEvaluator(evaluator);
-      },
-    );
+    (opts.evaluators ?? defaultEvaluators).forEach((evaluator) => {
+      this.registerEvaluator(evaluator);
+    });
   }
 
   getRecentMessageCount() {
