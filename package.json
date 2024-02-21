@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
@@ -9,8 +9,7 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c && npm run build:types",
-    "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
+    "build": "rm -r ./dist && rollup -c && tsc",
     "lint": "eslint --ext .ts --ext .js . --fix",
     "dev": "wrangler dev -- --dev",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",

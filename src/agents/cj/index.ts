@@ -12,6 +12,7 @@ import {
 import actions from "./actions";
 import evaluators from "./evaluators";
 import flavor from "./flavor";
+import { defaultActions, defaultEvaluators } from "../../lib";
 
 export function shouldSkipMessage(state: State, agentId: string): boolean {
   if (state.recentMessagesData && state.recentMessagesData.length > 2) {
@@ -102,8 +103,8 @@ const routes: Route[] = [
         serverUrl: "https://api.openai.com/v1",
         supabase,
         token: env.OPENAI_API_KEY,
-        actions,
-        evaluators,
+        actions: [...actions, ...defaultActions],
+        evaluators: [...evaluators, ...defaultEvaluators],
         flavor,
       });
 

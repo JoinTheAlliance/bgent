@@ -23,8 +23,6 @@ export function parseJsonArrayFromText(text: string) {
     }
   }
 
-  console.log("jsonData", jsonData);
-
   if (Array.isArray(jsonData)) {
     return jsonData;
   } else {
