@@ -52,10 +52,16 @@ export const formatMessages = ({
     .reverse()
     .filter((message: Memory) => message.user_id)
     .map((message: Memory) => {
+      let messageContent =
+        (message.content as Content).content || (message.content as string);
+      const messageAction = (message.content as Content).action;
       const sender = actors.find(
         (actor: Actor) => actor.id === message.user_id,
       )!;
-      return `${sender.name}: ${(message.content as Content).content || (message.content as string)} ${(message.content as Content).action && (message.content as Content).action !== "null" ? `(${(message.content as Content).action})` : ""}`;
+      if (messageAction === "IGNORE") {
+        messageContent = "*Ignored*";
+      }
+      return `${sender.name}: ${messageContent} ${messageAction && messageAction !== "null" ? `(${messageAction})` : ""}`;
     })
     .join("\n");
   return messageStrings;
