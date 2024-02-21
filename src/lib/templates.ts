@@ -22,6 +22,9 @@ json\`\`\`
 
 ## NOTES:
 
+# Relevant Information
+{{lore}}
+
 # Scene Facts
 {{recentSummarizations}}
 {{relevantSummarizations}}

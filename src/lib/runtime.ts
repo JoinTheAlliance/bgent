@@ -490,6 +490,8 @@ export class BgentRuntime {
       actorsData,
       room_id,
       goals,
+      lore,
+      loreData,
       goalsData,
       flavor: this.flavor,
       recentMessages,
