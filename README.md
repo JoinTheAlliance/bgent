@@ -49,7 +49,15 @@ This library uses Supabase as a database. You can set up a free account at [supa
 
 ### TODO: Add script and instructions for deploying fresh copy of database
 
-### TODO: Local supabase deployment instructions
+## Local supabase deployment instructions
+Step 1: On the Subase All Projects Dashboard, select “New Project”.  
+Step 2: Select the organization to store the new project in, assign a database name, password and region.  
+Step 3: Select “Create New Project”.  
+Step 4: Wait for the database to setup. This will take a few minutes as supabase setups various directories.  
+Step 5: Select the “SQL Editor” tab from the left navigation menu.  
+Step 6: Copy in your own SQL dump file or optionally use the provided file in the bgent directory at: "src/supabase/db.sql". Note: You can use the command "supabase db dump" if you have a pre-exisiting supabase database to generate the SQL dump file.  
+Step 7: Paste the SQL code into the SQL Editor and hit run in the bottom right.  
+Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.  
 
 ## Usage
 
