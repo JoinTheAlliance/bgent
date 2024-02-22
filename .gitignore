@@ -5,3 +5,5 @@ node_modules
 concatenated-output.ts
 embedding-cache.json
 dist
+scripts/docs
+output.log

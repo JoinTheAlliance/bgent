@@ -2,14 +2,12 @@ import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
-import { MemoryManager } from "../memory";
-import { getRelationship } from "../relationships";
-import { type Content, type Memory } from "../types";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
-import { BgentRuntime } from "../runtime";
-import { addLore, getLore } from "../lore";
 import { composeContext } from "../context";
+import { addLore, getLore } from "../lore";
+import { getRelationship } from "../relationships";
+import { BgentRuntime } from "../runtime";
 import { requestHandlerTemplate } from "../templates";
+import { type Content } from "../types";
 
 dotenv.config();
 describe("Lore", () => {

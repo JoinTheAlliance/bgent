@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
@@ -12,12 +12,14 @@
     "build": "rm -r ./dist && rollup -c && tsc",
     "lint": "eslint --ext .ts --ext .js . --fix",
     "dev": "wrangler dev -- --dev",
+    "docs": "cd docs && npm run start",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
     "concat": "node ./scripts/concat.mjs",
     "shell:cloud": "node --no-warnings scripts/shell.mjs",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "reset-profile": "rm ~/.cjrc",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "postinstall": "cd docs && npm install"
   },
   "bin": {
     "bgent": "./scripts/shell.mjs"

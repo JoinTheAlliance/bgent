@@ -8,8 +8,8 @@ export default defineConfig([
   {
     input: "src/index.ts",
     external: [
-      ...Object.keys(pkg.dependencies || {}),
-      ...Object.keys(pkg.peerDependencies || {}),
+      // ...Object.keys(pkg.dependencies || {}),
+      // ...Object.keys(pkg.peerDependencies || {}),
     ],
     output: [
       {

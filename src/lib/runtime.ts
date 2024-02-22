@@ -36,7 +36,7 @@ import {
   getMessageActors,
 } from "./messages";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
-import { getLore } from "./lore";
+import { getLore, formatLore } from "./lore";
 export interface AgentRuntimeOpts {
   recentMessageCount?: number; // number of messages to hold in the recent message cache
   token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
