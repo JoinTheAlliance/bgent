@@ -8,9 +8,9 @@ import { themes as prismThemes } from 'prism-react-renderer'
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'We can build it together.',
-  tagline: 'Developer documentation for the Cojourney project',
-  favicon: 'img/favicon.svg',
+  title: 'bgent',
+  tagline: 'The flexible, scalable AI agent for everyone',
+  favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
   url: 'https://docs.cojourney.app',
