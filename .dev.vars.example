@@ -1,0 +1,4 @@
+SUPABASE_URL=https://<your id>.supabase.co
+SUPABASE_SERVICE_API_KEY=
+OPENAI_API_KEY=sk-<your api key>
+NODE_ENV=development
