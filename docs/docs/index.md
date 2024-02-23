@@ -17,13 +17,9 @@ A flexible, scalable and customizable agent to do your bidding.
 [![stars - bgent](https://img.shields.io/github/stars/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
 [![forks - bgent](https://img.shields.io/github/forks/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
 
-## Developing Live on Discord
+## Join Us On Discord
 
 [![Join the Discord server](https://dcbadge.vercel.app/api/server/qetWd7J9De)](https://discord.gg/qetWd7J9De)
-
-## PRE-ALPHA RELEASE
-- This code is NOT production ready. This package has been released as-is to enable collaboration and development.
-- 0.1.0 will be the first official alpha release!
 
 ## Features
 
@@ -35,30 +31,35 @@ A flexible, scalable and customizable agent to do your bidding.
 - Summarization and summarization
 - Goal-directed behavior
 
-## Installation
-
-```bash
-npm install bgent
-```
-
 ## Try the agent
 
 ```
-# evaluation mode
-npm run shell
-
-# for development
-npm run dev # start the server
-npm run shell:dev # start the shell in another terminal
+npx bgent
 ```
 
-## Database setup
+## Installation
+
+Currently bgent is dependent on Supabase. You can install it with the following command:
+
+```bash
+npm install bgent @supabase/supabase-js
+```
+
+### Set up environment variables
+
+You will need a Supbase account, as well as an OpenAI developer account.
+
+Copy and paste the `.dev.vars.example` to `.dev.vars` and fill in the environment variables:
+
+```bash
+SUPABASE_URL="https://your-supabase-url.supabase.co"
+SUPABASE_SERVICE_API_KEY="your-supabase-service-api-key"
+OPENAI_API_KEY="your-openai-api-key"
+```
+
+### Supabase Cloud Setup
 
 This library uses Supabase as a database. You can set up a free account at [supabase.io](https://supabase.io) and create a new project.
-
-### TODO: Add script and instructions for deploying fresh copy of database
-
-## Local supabase deployment instructions
 Step 1: On the Subase All Projects Dashboard, select “New Project”.  
 Step 2: Select the organization to store the new project in, assign a database name, password and region.  
 Step 3: Select “Create New Project”.  
@@ -66,37 +67,90 @@ Step 4: Wait for the database to setup. This will take a few minutes as supabase
 Step 5: Select the “SQL Editor” tab from the left navigation menu.  
 Step 6: Copy in your own SQL dump file or optionally use the provided file in the bgent directory at: "src/supabase/db.sql". Note: You can use the command "supabase db dump" if you have a pre-exisiting supabase database to generate the SQL dump file.  
 Step 7: Paste the SQL code into the SQL Editor and hit run in the bottom right.  
-Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.  
+Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.
+
+## Development
+
+```
+npm run dev # start the server
+npm run shell:dev # start the shell in another terminal
+```
 
 ## Usage
 
-```javascript
+```typescript
+import { BgentRuntime } from "bgent";
+import { createClient } from "@supabase/supabase-js";
+const supabase = new createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_API_KEY,
+);
+
 const runtime = new BgentRuntime({
   serverUrl: "https://api.openai.com/v1",
-  token: process.env.OPENAI_API_KEY,
-  supabase: createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY,
-  ),
+  token: process.env.OPENAI_API_KEY, // Can be an API key or JWT token for your AI services
+  supabase,
+  actions: [
+    /* your custom actions */
+  ],
+  evaluators: [
+    /* your custom evaluators */
+  ],
 });
 ```
 
-## Examples
+## Custom Actions
+
+Bgent is customized through actions and evaluators. Actions are functions that are called when a user input is received, and evaluators are functions that are called when a condition is met at the end of a conversation turn.
+
+An example of an action is `wait` (the agent should stop and wait for the user to respond) or `continue` (the agent should continue with the next step in the conversation).
+
+An example of a evaluator is `summarization` (the agent should summarize the conversation so far).
+
+```typescript
+import { wait, summarization } from "bgent";
+
+const runtime = new BgentRuntime({
+  // ... other options
+  actions: [wait],
+  evaluators: [summarization],
+});
+
+// You can also register actions and evaluators after the runtime has been created
+bgentRuntime.registerAction(wait);
+bgentRuntime.registerEvaluator(summarization);
+```
+
+## Handling User Input
+
+The BgentRuntime instance has a `handleMessage` method that can be used to handle user input. The method returns a promise that resolves to the agent's response.
+
+You will need to make sure that the userIds and room_id already exist in the database. You can use the Supabase client to create new users and rooms if necessary.
+
+```typescript
+const message = {
+  agentId: "agent-uuid", // Replace with your agent's UUID
+  senderId: "user-uuid", // Replace with the sender's UUID
+  userIds: ["user-uuid"], // List of user UUIDs involved in the conversation
+  content: { content: content }, // The message content
+  room_id: "room-uuid", // Replace with the room's UUID
+};
+const response = await bgentRuntime.handleMessage(message);
+console.log("Agent response:", response);
+```
+
+## Example Agents
 
 There are two examples which are set up for cloudflare in `src/agents`
 
 - The `simple` example is a simple agent that can be deployed to cloudflare workers
-- The `cj` example is a more complex agent that has the ability to introduce users to each other
+- The `cj` example is a more complex agent that has the ability to introduce users to each other. This agent is also deployable to cloudflare workers, and is the default agent in [Cojourney](https://cojourney.app).
 
-### Custom actions
+An external example of an agent is the `afbot` Aframe Discord Bot, which is a discord bot that uses bgent as a backend. You can find it [here](https://github.com/JoinTheAlliance/afbot).
 
-Actions come in two flavors -- generic `actions` which run at any time they are considered valid, and `evaluators` which run when a condition is met at the end of a conversation turn.
+### Deploy to Cloudflare
 
-You can pass your own custom actions and evaluators into the BgentRuntime instance. Check out the `src/agents/cj` example for a simple example of how to do this.
-
-### Deployment
-
-Deploying to cloudflare is easy. `npm run deploy` will walk you through a deployment with wrangler, Cloudflare's deployment tool.
+To deploy an agent to Cloudflare, you can run `npm run deploy` -- this will by default deploy the `cj` agent. To deploy your own agent, see the [afbot](https://github.com/JoinTheAlliance/afbot) example.
 
 # Contributions Welcome
 
