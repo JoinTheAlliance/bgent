@@ -9,7 +9,6 @@ export default defineConfig([
   {
     input: "src/index.ts",
     external: [
-      'chalk',
       '@supabase/supabase-js',
       // ...Object.keys(pkg.dependencies || {}),
       // ...Object.keys(pkg.peerDependencies || {}),

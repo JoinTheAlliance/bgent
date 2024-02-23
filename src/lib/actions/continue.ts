@@ -47,7 +47,7 @@ export default {
     });
 
     if (runtime.debugMode) {
-      logger.log("*** Continued Response Context:\n" + context);
+      logger.log(context, "Continued Response Context", "cyan");
     }
 
     let responseContent;
@@ -75,8 +75,12 @@ export default {
           }
         });
 
-      const parsedResponse = parseJSONObjectFromText(response);
-      if (parsedResponse?.user?.includes(state.agentName)) {
+      const parsedResponse = parseJSONObjectFromText(
+        response,
+      ) as unknown as Content;
+      if (
+        (parsedResponse?.user as string).includes(state.agentName as string)
+      ) {
         responseContent = parsedResponse;
         break;
       }
@@ -97,7 +101,11 @@ export default {
 
     if (messageExists) {
       if (runtime.debugMode) {
-        logger.log("Message already exists in recentMessagesData");
+        logger.log(
+          "Message already exists in recentMessagesData",
+          "",
+          "yellow",
+        );
       }
 
       return responseContent;

@@ -105,11 +105,11 @@ async function handler(runtime: BgentRuntime, message: Message) {
     template,
   });
 
-  // if (runtime.debugMode) {
-  logger.log("*** Summarization context:\n" + context);
-  // }
+  if (runtime.debugMode) {
+    logger.log(context, "Summarization context", "cyan");
+  }
 
-  let summarizations = null;
+  let summarizations;
 
   for (let i = 0; i < 3; i++) {
     const summarizationText: string = await runtime.completion({
@@ -132,7 +132,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
   }
 
   if (runtime.debugMode) {
-    logger.log("*** Summarization Output:\n" + JSON.stringify(summarizations));
+    logger.log(JSON.stringify(summarizations), "Summarization Output", "cyan");
   }
 
   const filteredSummarizations = summarizations

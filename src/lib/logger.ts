@@ -1,17 +1,11 @@
+import * as c from "ansi-colors";
 class Logger {
   frameChar = "*";
 
-  log(
-    message: string,
-    // {
-    //   title = "",
-    //   // color = "white",
-    // }: {
-    //   title?: string;
-    //   // color?;
-    // },
-  ): void {
-    console.log("*** LOG: " + "\n" + message);
+  log(message: string, title: string = "", color: string = "white"): void {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    console.log(c[color]("*** LOG: " + title + "\n" + message));
   }
 
   warn(message: string, options = {}) {
@@ -42,4 +36,6 @@ class Logger {
   }
 }
 
-export default new Logger();
+const logger = new Logger();
+
+export default logger;

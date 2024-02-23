@@ -124,7 +124,10 @@ describe("Evaluation Process", () => {
 
     const state = await runtime.composeState(message);
 
-    const result = await runtime.evaluate(message, state);
+    const result = (await runtime.evaluate(
+      message,
+      state,
+    )) as unknown as string[];
 
     expect(result?.includes("TEST_EVALUATOR")).toBe(true);
   });

@@ -313,10 +313,10 @@ export class BgentRuntime {
     });
 
     if (this.debugMode) {
-      logger.log("*** Response Context:\n" + context);
+      logger.log(context, "Response Context", "cyan");
     }
 
-    let responseContent;
+    let responseContent: Content | null = null;
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
@@ -344,9 +344,19 @@ export class BgentRuntime {
           }
         });
 
-      const parsedResponse = parseJSONObjectFromText(response);
-      if (parsedResponse?.user?.includes(state.agentName)) {
-        responseContent = parsedResponse;
+      const parsedResponse = parseJSONObjectFromText(
+        response,
+      ) as unknown as Content;
+
+      if (
+        (parsedResponse.user as string)?.includes(
+          (state as State).agentName as string,
+        )
+      ) {
+        responseContent = {
+          content: parsedResponse.content,
+          action: parsedResponse.action,
+        };
         break;
       }
     }
@@ -407,7 +417,11 @@ export class BgentRuntime {
 
     if (!action.handler) {
       if (this.debugMode) {
-        logger.log(`No handler found for action ${action.name}, skipping`);
+        logger.log(
+          `No handler found for action ${action.name}, skipping`,
+          "",
+          "yellow",
+        );
       }
       return;
     }
@@ -459,7 +473,7 @@ export class BgentRuntime {
       context,
     });
 
-    const parsedResult = parseJsonArrayFromText(result);
+    const parsedResult = parseJsonArrayFromText(result) as unknown as string[];
 
     this.evaluators
       .filter((evaluator: Evaluator) => parsedResult?.includes(evaluator.name))

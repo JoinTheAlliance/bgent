@@ -190,7 +190,7 @@ ___
 
 ### evaluate
 
-▸ **evaluate**(`message`, `state`): `Promise`\<``null`` \| `any`[]\>
+▸ **evaluate**(`message`, `state`): `Promise`\<`string`[]\>
 
 Evaluate the message and state using the registered evaluators.
 
@@ -203,7 +203,7 @@ Evaluate the message and state using the registered evaluators.
 
 #### Returns
 
-`Promise`\<``null`` \| `any`[]\>
+`Promise`\<`string`[]\>
 
 The results of the evaluation.
 
@@ -225,7 +225,7 @@ ___
 
 ### handleMessage
 
-▸ **handleMessage**(`message`, `state?`): `Promise`\<`any`\>
+▸ **handleMessage**(`message`, `state?`): `Promise`\<[`Content`](../interfaces/Content.md)\>
 
 Handle an incoming message, processing it and returning a response.
 
@@ -238,7 +238,7 @@ Handle an incoming message, processing it and returning a response.
 
 #### Returns
 
-`Promise`\<`any`\>
+`Promise`\<[`Content`](../interfaces/Content.md)\>
 
 The response to the message.
 
