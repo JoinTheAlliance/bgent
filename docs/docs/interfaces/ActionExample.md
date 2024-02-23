@@ -1,7 +1,7 @@
 ---
-id: "ContentExample"
-title: "Interface: ContentExample"
-sidebar_label: "ContentExample"
+id: "ActionExample"
+title: "Interface: ActionExample"
+sidebar_label: "ActionExample"
 sidebar_position: 0
 custom_edit_url: null
 ---

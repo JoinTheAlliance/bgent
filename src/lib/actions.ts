@@ -1,5 +1,5 @@
 import { names, uniqueNamesGenerator } from "unique-names-generator";
-import { Action, ContentExample } from "./types";
+import { Action, ActionExample } from "./types";
 
 import cont from "./actions/continue";
 import ignore from "./actions/ignore";
@@ -15,11 +15,11 @@ export const defaultActions: Action[] = [cont, wait, ignore];
  * @returns A string containing formatted examples of conversations.
  */
 export const composeActionExamples = (actionsData: Action[], count: number) => {
-  const actionExamples: ContentExample[][] = actionsData
+  const actionExamples: ActionExample[][] = actionsData
     .map((action: Action) => action.examples)
     .flat();
 
-  const randomMessageExamples: ContentExample[][] = [];
+  const randomMessageExamples: ActionExample[][] = [];
 
   // make sure count is not more than actionExamples
   const maxCount = actionExamples.length;

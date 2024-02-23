@@ -24,7 +24,7 @@ ___
 
 ### examples
 
-• **examples**: [`ContentExample`](ContentExample.md)[][]
+• **examples**: [`ActionExample`](ActionExample.md)[][]
 
 ___
 

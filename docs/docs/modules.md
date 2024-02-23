@@ -14,9 +14,9 @@ custom_edit_url: null
 ## Interfaces
 
 - [Action](interfaces/Action.md)
+- [ActionExample](interfaces/ActionExample.md)
 - [Actor](interfaces/Actor.md)
 - [Content](interfaces/Content.md)
-- [ContentExample](interfaces/ContentExample.md)
 - [EvaluationExample](interfaces/EvaluationExample.md)
 - [Evaluator](interfaces/Evaluator.md)
 - [Goal](interfaces/Goal.md)

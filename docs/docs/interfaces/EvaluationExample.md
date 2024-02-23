@@ -18,7 +18,7 @@ ___
 
 ### messages
 
-• **messages**: [`ContentExample`](ContentExample.md)[]
+• **messages**: [`ActionExample`](ActionExample.md)[]
 
 ___
 

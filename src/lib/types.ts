@@ -14,7 +14,7 @@ export interface Content {
 /**
  * Represents an example of content, typically used for demonstrating or testing purposes. Includes user, content, optional action, and optional source.
  */
-export interface ContentExample {
+export interface ActionExample {
   user: string; // The user associated with the message.
   content: string; // The content of the message.
   action?: string; // An optional action associated with the message.
@@ -137,7 +137,7 @@ export type Validator = (
 export interface Action {
   condition: string; // A description of the conditions under which the action is appropriate.
   description: string; // A detailed description of what the action entails.
-  examples: ContentExample[][]; // An array of arrays of content examples demonstrating the action.
+  examples: ActionExample[][]; // An array of arrays of content examples demonstrating the action.
   handler: Handler; // The function that handles the action.
   name: string; // The name of the action.
   validate: Validator; // The function that validates whether the action is appropriate in the current context.
@@ -148,7 +148,7 @@ export interface Action {
  */
 export interface EvaluationExample {
   context: string; // The context in which the evaluation example is set.
-  messages: Array<ContentExample>; // An array of message examples relevant to the evaluation.
+  messages: Array<ActionExample>; // An array of message examples relevant to the evaluation.
   outcome: string; // The expected outcome of the evaluation, typically in a structured format such as JSON.
 }
 
