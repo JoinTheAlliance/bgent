@@ -19,9 +19,12 @@ export async function createRuntime({
   evaluators?: Evaluator[];
   actions?: Action[];
 }) {
-  const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
+  const supabase = createClient(
+    env?.SUPABASE_URL ?? SUPABASE_URL,
+    env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
+  );
 
-  const {
+  let {
     data: { user, session },
   } = await supabase.auth.signInWithPassword({
     email: TEST_EMAIL!,
@@ -29,7 +32,12 @@ export async function createRuntime({
   });
 
   if (!session) {
-    throw new Error("Session not found");
+    const response = await supabase.auth.signUp({
+      email: TEST_EMAIL!,
+      password: TEST_PASSWORD!,
+    });
+    user = response.data.user;
+    session = response.data.session;
   }
 
   const runtime = new BgentRuntime({
