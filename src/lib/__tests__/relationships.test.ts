@@ -1,13 +1,13 @@
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { createRuntime } from "../../../test/createRuntime"; // Adjust the import path as needed
+import { createRuntime } from "../../test/createRuntime"; // Adjust the import path as needed
 import {
   createRelationship,
   getRelationship,
   getRelationships,
 } from "../relationships"; // Adjust the import path as needed
-import { BgentRuntime } from "../../../lib/runtime";
+import { BgentRuntime } from "../runtime";
 
 dotenv.config();
 

@@ -7,5 +7,6 @@ export * from "./goals";
 export * from "./lore";
 export * from "./memory";
 export * from "./messages";
+export * from "./relationships";
 export * from "./runtime";
 export * from "./types";

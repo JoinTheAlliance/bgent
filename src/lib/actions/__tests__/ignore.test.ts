@@ -7,7 +7,7 @@ import {
   GetTellMeAboutYourselfConversationTroll2,
   Goodbye1,
 } from "../../../test/data";
-import { getRelationship } from "../../../agents/cj/relationships";
+import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 // import action from "../ignore";

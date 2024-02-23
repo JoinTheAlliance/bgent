@@ -3,7 +3,7 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { MemoryManager } from "../memory";
-import { getRelationship } from "../../agents/cj/relationships";
+import { getRelationship } from "../relationships";
 import { type Content, type Memory } from "../types";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 

@@ -6,7 +6,7 @@ import { TEST_EVALUATOR, TEST_EVALUATOR_FAIL } from "../../test/testEvaluator";
 import { composeContext } from "../context";
 import { evaluationTemplate } from "../evaluation";
 import summarization from "../evaluators/summarization";
-import { getRelationship } from "../../agents/cj/relationships";
+import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
 

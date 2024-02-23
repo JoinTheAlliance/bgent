@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
-import { type BgentRuntime } from "../../lib/runtime";
-import { type Relationship } from "./types";
+import { type BgentRuntime } from "./runtime";
+import { type Relationship } from "../agents/cj/types";
 
 export async function createRelationship({
   runtime,

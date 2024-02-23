@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { Session, User, createClient } from "@supabase/supabase-js";
 import { BgentRuntime } from "../lib/runtime";
 import {
   TEST_EMAIL,
@@ -36,8 +36,8 @@ export async function createRuntime({
       email: TEST_EMAIL!,
       password: TEST_PASSWORD!,
     });
-    user = response.data.user;
-    session = response.data.session;
+    user = response.data.user as User;
+    session = response.data.session as Session;
   }
 
   const runtime = new BgentRuntime({

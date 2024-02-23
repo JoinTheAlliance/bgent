@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { type UUID } from "crypto";
-import { getRelationship } from "../../agents/cj/relationships";
+import { getRelationship } from "../relationships";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { BgentRuntime } from "../runtime";
 import { type User } from "@supabase/supabase-js";

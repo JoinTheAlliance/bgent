@@ -73,7 +73,7 @@ Step 8: Select the “Databases” tab from the left navigation menu to verify a
 
 ```
 npm run dev # start the server
-npm run shell:dev # start the shell in another terminal
+npm run shell # start the shell in another terminal
 ```
 
 ## Usage

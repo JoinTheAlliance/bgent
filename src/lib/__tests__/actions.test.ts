@@ -3,7 +3,7 @@ import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { TEST_ACTION, TEST_ACTION_FAIL } from "../../test/testAction";
-import { getRelationship } from "../../agents/cj/relationships";
+import { getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
 import { type Message } from "../types";
 

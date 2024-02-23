@@ -10,7 +10,7 @@ import {
   jimFacts,
 } from "../../../test/data";
 import { populateMemories } from "../../../test/populateMemories";
-import { getRelationship } from "../../../agents/cj/relationships";
+import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import evaluator from "../summarization";

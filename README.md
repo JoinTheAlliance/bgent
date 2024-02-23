@@ -49,24 +49,38 @@ SUPABASE_SERVICE_API_KEY="your-supabase-service-api-key"
 OPENAI_API_KEY="your-openai-api-key"
 ```
 
+### Supabase Local Setup
+
+First, you will need to install the Supabase CLI. You can install it using the instructions [here](https://supabase.com/docs/guides/cli/getting-started).
+
+Once you have the CLI installed, you can run the following commands to set up a local Supabase instance:
+
+```bash
+supabase start
+```
+
+You can now start the bgent project with `npm run dev` and it will connect to the local Supabase instance by default.
 
 ### Supabase Cloud Setup
 
 This library uses Supabase as a database. You can set up a free account at [supabase.io](https://supabase.io) and create a new project.
-Step 1: On the Subase All Projects Dashboard, select “New Project”.  
-Step 2: Select the organization to store the new project in, assign a database name, password and region.  
-Step 3: Select “Create New Project”.  
-Step 4: Wait for the database to setup. This will take a few minutes as supabase setups various directories.  
-Step 5: Select the “SQL Editor” tab from the left navigation menu.  
-Step 6: Copy in your own SQL dump file or optionally use the provided file in the bgent directory at: "src/supabase/db.sql". Note: You can use the command "supabase db dump" if you have a pre-exisiting supabase database to generate the SQL dump file.  
-Step 7: Paste the SQL code into the SQL Editor and hit run in the bottom right.  
-Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.
+
+- Step 1: On the Subase All Projects Dashboard, select “New Project”.  
+- Step 2: Select the organization to store the new project in, assign a database name, password and region.  
+- Step 3: Select “Create New Project”.  
+- Step 4: Wait for the database to setup. This will take a few minutes as supabase setups various directories.  
+- Step 5: Select the “SQL Editor” tab from the left navigation menu.  
+- Step 6: Copy in your own SQL dump file or optionally use the provided file in the bgent directory at: "src/supabase/db.sql". Note: You can use the command "supabase db dump" if you have a pre-exisiting supabase database to generate the SQL dump file.  
+- Step 7: Paste the SQL code into the SQL Editor and hit run in the bottom right.  
+- Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.
+
+Once you've set up your Supabase project, you can find your API key by going to the "Settings" tab and then "API". You will need to set the `SUPABASE_URL` and `SUPABASE_SERVICE_API_KEY` environment variables in your `.dev.vars` file.
 
 ## Development
 
 ```
 npm run dev # start the server
-npm run shell:dev # start the shell in another terminal
+npm run shell # start the shell in another terminal to talk to the default agent
 ```
 
 ## Usage
