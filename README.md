@@ -182,10 +182,6 @@ An external example of an agent is the `afbot` Aframe Discord Bot, which is a di
 
 To deploy an agent to Cloudflare, you can run `npm run deploy` -- this will by default deploy the `cj` agent. To deploy your own agent, see the [afbot](https://github.com/JoinTheAlliance/afbot) example.
 
-# Contributions Welcome
-
-If you like this library and want to contribute in any way, please feel free to submit a PR and I will review it. Please note that the goal here is simplicity and accesibility, using common language and few dependencies.
-
 ## API Documentation
 
 Complete API documentation is available at https://bgent.org/docs
