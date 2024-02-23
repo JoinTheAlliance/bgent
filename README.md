@@ -1,6 +1,6 @@
 # bgent
 
-A flexible, scalable and customizable agent to do your bidding.
+A flexible, scalable and customizable agent to do your bidding. Full documentation at https://bgent.org
 
 ![cj](https://github.com/lalalune/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
@@ -12,7 +12,7 @@ A flexible, scalable and customizable agent to do your bidding.
 
 ## Connect With Us
 
-[![Join the Discord server](https://dcbadge.vercel.app/api/server/qetWd7J9De)](https://discord.gg/qetWd7J9De)
+[![Join the Discord server](https://dcbadge.vercel.app/api/server/qetWd7J9De)](https://discord.gg/jointhealliance)
 
 ## Features
 
@@ -185,3 +185,11 @@ To deploy an agent to Cloudflare, you can run `npm run deploy` -- this will by d
 # Contributions Welcome
 
 If you like this library and want to contribute in any way, please feel free to submit a PR and I will review it. Please note that the goal here is simplicity and accesibility, using common language and few dependencies.
+
+## API Documentation
+
+Complete API documentation is available at https://bgent.org/docs
+
+## Contributions Welcome
+
+This project is made by people like you. No contribution is too small. We welcome your input and support. Please file an issue if you notice something that needs to be resolved, or [join us on Discord](https://discord.gg/jointhealliance) to discuss working with us on fixes and new features.
