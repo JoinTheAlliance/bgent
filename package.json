@@ -9,10 +9,11 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rimraf ./dist && rollup -c && tsc",
+    "build": "rimraf ./dist && rollup -c && tsc && npm run build:docs",
+    "build:docs": "cd docs && npm run build",
     "lint": "eslint --ext .ts --ext .js . --fix",
     "dev": "wrangler dev -- --dev",
-    "docs": "cd docs && npm run start",
+    "start:docs": "cd docs && npm run start",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
     "concat": "node ./scripts/concat.mjs",
     "shell:cloud": "node --no-warnings scripts/shell.mjs",

@@ -1,11 +1,7 @@
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import { createRuntime } from "../../test/createRuntime";
-import {
-  formatMessageActors,
-  formatMessages,
-  getMessageActors,
-} from "../messages";
+import { formatActors, formatMessages, getActorDetails } from "../messages";
 import { type BgentRuntime } from "../runtime";
 import { type Actor, type Content, type Memory } from "../types";
 import { formatSummarizations } from "../evaluators/summarization";
@@ -19,27 +15,27 @@ describe("Messages Library", () => {
     });
     runtime = setup.runtime;
     user = setup.session.user;
-    actors = await getMessageActors({
+    actors = await getActorDetails({
       runtime,
       userIds: [user.id as UUID, "00000000-0000-0000-0000-000000000000"],
     });
   });
 
-  test("getMessageActors should return actors based on given userIds", async () => {
-    const result = await getMessageActors({
+  test("getActorDetails should return actors based on given userIds", async () => {
+    const result = await getActorDetails({
       runtime,
       userIds: [user.id as UUID, "00000000-0000-0000-0000-000000000000"],
     });
     expect(result.length).toBeGreaterThan(0);
-    result.forEach((actor) => {
+    result.forEach((actor: Actor) => {
       expect(actor).toHaveProperty("name");
       expect(actor).toHaveProperty("details");
       expect(actor).toHaveProperty("id");
     });
   });
 
-  test("formatMessageActors should format actors into a readable string", () => {
-    const formattedActors = formatMessageActors({ actors });
+  test("formatActors should format actors into a readable string", () => {
+    const formattedActors = formatActors({ actors });
     actors.forEach((actor) => {
       expect(formattedActors).toContain(actor.name);
     });

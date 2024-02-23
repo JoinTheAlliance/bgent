@@ -24,7 +24,6 @@ custom_edit_url: null
 - [Message](interfaces/Message.md)
 - [MessageExample](interfaces/MessageExample.md)
 - [Objective](interfaces/Objective.md)
-- [Relationship](interfaces/Relationship.md)
 - [State](interfaces/State.md)
 
 ## Type Aliases
