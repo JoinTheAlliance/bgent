@@ -30,55 +30,97 @@ import {
 // import { formatGoalsAsString, getGoals } from "./goals";
 import { formatSummarizations } from "./evaluators/summarization";
 import { formatGoalsAsString, getGoals } from "./goals";
-import {
-  formatMessageActors,
-  formatMessages,
-  getMessageActors,
-} from "./messages";
+import { formatActors, formatMessages, getActorDetails } from "./messages";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
 import { getLore, formatLore } from "./lore";
-export interface AgentRuntimeOpts {
-  recentMessageCount?: number; // number of messages to hold in the recent message cache
-  token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
-  supabase: SupabaseClient; // Supabase client
-  debugMode?: boolean; // If true, will log debug messages
-  serverUrl?: string; // The URL of the worker
-  flavor?: string; // Optional lore to inject into the default prompt
-  actions?: Action[]; // Optional custom actions
-  evaluators?: Evaluator[]; // Optional custom evaluators
-}
 
+/**
+ * Represents the runtime environment for an agent, handling message processing,
+ * action registration, and interaction with external services like OpenAI and Supabase.
+ */
 export class BgentRuntime {
+  /**
+   * Default count for recent messages to be kept in memory.
+   * @private
+   */
   readonly #recentMessageCount = 32 as number;
+  /**
+   * The base URL of the server where the agent's requests are processed.
+   */
   serverUrl = "http://localhost:7998";
+
+  /**
+   * Authentication token used for securing requests.
+   */
   token: string | null;
+
+  /**
+   * Indicates if debug messages should be logged.
+   */
   debugMode: boolean;
+
+  /**
+   * The Supabase client used for database interactions.
+   */
   supabase: SupabaseClient;
+
+  /**
+   * A string to customize the agent's behavior or responses.
+   */
   flavor: string = "";
+
+  /**
+   * Custom actions that the agent can perform.
+   */
+  actions: Action[] = [];
+
+  /**
+   * Evaluators used to assess and guide the agent's responses.
+   */
+  evaluators: Evaluator[] = [];
+
+  /**
+   * Store messages that are sent and received by the agent.
+   */
   messageManager: MemoryManager = new MemoryManager({
     runtime: this,
     tableName: "messages",
   });
 
+  /**
+   * Store and recall descriptions of users based on conversations.
+   */
   descriptionManager: MemoryManager = new MemoryManager({
     runtime: this,
     tableName: "descriptions",
   });
 
+  /**
+   * Manage the summarization and recall of facts.
+   */
   summarizationManager: MemoryManager = new MemoryManager({
     runtime: this,
     tableName: "summarizations",
   });
 
+  /**
+   * Manage the creation and recall of static information (documents, historical game lore, etc)
+   */
   loreManager: MemoryManager = new MemoryManager({
     runtime: this,
     tableName: "lore",
   });
 
-  actions: Action[] = [];
-  evaluators: Evaluator[] = [];
-
-  constructor(opts: AgentRuntimeOpts) {
+  constructor(opts: {
+    recentMessageCount?: number; // number of messages to hold in the recent message cache
+    token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
+    supabase: SupabaseClient; // Supabase client
+    debugMode?: boolean; // If true, will log debug messages
+    serverUrl?: string; // The URL of the worker
+    flavor?: string; // Optional lore to inject into the default prompt
+    actions?: Action[]; // Optional custom actions
+    evaluators?: Evaluator[]; // Optional custom evaluators
+  }) {
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
@@ -100,18 +142,39 @@ export class BgentRuntime {
     });
   }
 
+  /**
+   * Get the number of messages that are kept in the conversation buffer.
+   * @returns The number of recent messages to be kept in memory.
+   */
   getRecentMessageCount() {
     return this.#recentMessageCount;
   }
 
+  /**
+   * Register an action for the agent to perform.
+   * @param action The action to register.
+   */
   registerAction(action: Action) {
     this.actions.push(action);
   }
 
+  /**
+   * Register an evaluator to assess and guide the agent's responses.
+   * @param evaluator The evaluator to register.
+   */
   registerEvaluator(evaluator: Evaluator) {
     this.evaluators.push(evaluator);
   }
 
+  /**
+   * Send a message to the OpenAI API for completion.
+   * @param context The context of the message to be completed.
+   * @param stop A list of strings to stop the completion at.
+   * @param model The model to use for completion.
+   * @param frequency_penalty The frequency penalty to apply to the completion.
+   * @param presence_penalty The presence penalty to apply to the completion.
+   * @returns The completed message.
+   */
   async completion({
     context = "",
     stop = [],
@@ -168,6 +231,11 @@ export class BgentRuntime {
     }
   }
 
+  /**
+   * Send a message to the OpenAI API for embedding.
+   * @param input The input to be embedded.
+   * @returns The embedding of the input.
+   */
   async embed(input: string) {
     const embeddingModel = "text-embedding-3-large";
     const requestOptions = {
@@ -206,7 +274,13 @@ export class BgentRuntime {
     }
   }
 
-  async handleRequest(message: Message, state?: State) {
+  /**
+   * Handle an incoming message, processing it and returning a response.
+   * @param message The message to handle.
+   * @param state The state of the agent.
+   * @returns The response to the message.
+   */
+  async handleMessage(message: Message, state?: State) {
     const _saveRequestMessage = async (message: Message, state: State) => {
       const { content: senderContent, senderId, userIds, room_id } = message;
 
@@ -239,11 +313,7 @@ export class BgentRuntime {
     });
 
     if (this.debugMode) {
-      logger.log(context, {
-        title: "Response Context",
-        frame: true,
-        color: "blue",
-      });
+      logger.log("*** Response Context:\n" + context);
     }
 
     let responseContent;
@@ -317,24 +387,27 @@ export class BgentRuntime {
     return responseContent;
   }
 
-  async processActions(message: Message, data: Content) {
-    if (!data.action) {
+  /**
+   * Process the actions of a message.
+   * @param message The message to process.
+   * @param content The content of the message to process actions from.
+   */
+  async processActions(message: Message, content: Content) {
+    if (!content.action) {
       return;
     }
 
     const action = this.actions.find(
-      (a: { name: string }) => a.name === data.action,
+      (a: { name: string }) => a.name === content.action,
     )!;
 
     if (!action) {
-      return console.warn("No action found for", data.action);
+      return console.warn("No action found for", content.action);
     }
 
     if (!action.handler) {
       if (this.debugMode) {
-        logger.log(`No handler found for action ${action.name}, skipping`, {
-          color: "yellow",
-        });
+        logger.log(`No handler found for action ${action.name}, skipping`);
       }
       return;
     }
@@ -342,6 +415,12 @@ export class BgentRuntime {
     await action.handler(this, message);
   }
 
+  /**
+   * Evaluate the message and state using the registered evaluators.
+   * @param message The message to evaluate.
+   * @param state The state of the agent.
+   * @returns The results of the evaluation.
+   */
   async evaluate(message: Message, state: State) {
     const evaluatorPromises = this.evaluators.map(
       async (evaluator: Evaluator) => {
@@ -393,6 +472,11 @@ export class BgentRuntime {
     return parsedResult;
   }
 
+  /**
+   * Compose the state of the agent into an object that can be passed or used for response generation.
+   * @param message The message to compose the state from.
+   * @returns The state of the agent.
+   */
   async composeState(message: Message) {
     const { senderId, agentId, userIds, room_id } = message;
 
@@ -411,7 +495,7 @@ export class BgentRuntime {
       goalsData,
       loreData,
     ]: [Actor[], Memory[], Memory[], Goal[], Memory[]] = await Promise.all([
-      getMessageActors({ runtime: this, userIds: userIds! }),
+      getActorDetails({ runtime: this, userIds: userIds! }),
       this.messageManager.getMemoriesByIds({
         userIds: userIds!,
         count: recentMessageCount,
@@ -456,7 +540,7 @@ export class BgentRuntime {
       });
     }
 
-    const actors = formatMessageActors({ actors: actorsData ?? [] });
+    const actors = formatActors({ actors: actorsData ?? [] });
 
     const recentMessages = formatMessages({
       actors: actorsData ?? [],

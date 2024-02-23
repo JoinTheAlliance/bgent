@@ -1,6 +1,6 @@
 import { type BgentRuntime } from "../../../lib";
 import { composeContext } from "../../../lib/context";
-import { createRelationship } from "../../../lib/relationships";
+import { createRelationship } from "../relationships";
 import { Action, type Message, type State } from "../../../lib/types";
 import { parseJSONObjectFromText } from "../../../lib/utils";
 

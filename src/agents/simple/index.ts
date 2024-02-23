@@ -21,7 +21,7 @@ const onMessage = async (
     return;
   }
 
-  const data = (await runtime.handleRequest(message, state)) as Content;
+  const data = (await runtime.handleMessage(message, state)) as Content;
   return data;
 };
 

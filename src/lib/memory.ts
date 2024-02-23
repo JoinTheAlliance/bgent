@@ -8,13 +8,9 @@ export const embeddingZeroVector = Array(embeddingDimension).fill(0);
 const defaultMatchThreshold = 0.1;
 const defaultMatchCount = 10;
 
-interface SearchOptions {
-  match_threshold?: number;
-  count?: number;
-  userIds: UUID[];
-  unique?: boolean;
-}
-
+/**
+ * Manage memories in the database.
+ */
 export class MemoryManager {
   runtime: BgentRuntime;
   tableName: string;
@@ -80,7 +76,12 @@ export class MemoryManager {
 
   async searchMemoriesByEmbedding(
     embedding: number[],
-    opts: SearchOptions,
+    opts: {
+      match_threshold?: number;
+      count?: number;
+      userIds: UUID[];
+      unique?: boolean;
+    },
   ): Promise<Memory[]> {
     const {
       match_threshold = defaultMatchThreshold,

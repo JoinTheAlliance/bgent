@@ -1,6 +1,6 @@
 import { composeContext } from "../context";
 import logger from "../logger";
-import { formatMessageActors, getMessageActors } from "../messages";
+import { formatActors, getActorDetails } from "../messages";
 import { type BgentRuntime } from "../runtime";
 import {
   Content,
@@ -78,7 +78,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   const { userIds, senderId, agentId, room_id } = state;
 
-  const actors = (await getMessageActors({ runtime, userIds })) ?? [];
+  const actors = (await getActorDetails({ runtime, userIds })) ?? [];
 
   const senderName = actors?.find(
     (actor: Actor) => actor.id === senderId,
@@ -98,7 +98,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
       ...state,
       senderName,
       agentName,
-      actors: formatMessageActors({ actors }),
+      actors: formatActors({ actors }),
       actionNames,
       actions,
     },
@@ -106,11 +106,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
   });
 
   // if (runtime.debugMode) {
-  logger.log(context, {
-    title: "Summarization context",
-    frame: true,
-    color: "cyan",
-  });
+  logger.log("*** Summarization context:\n" + context);
   // }
 
   let summarizations = null;
@@ -130,17 +126,13 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   if (!summarizations) {
     if (runtime.debugMode) {
-      logger.warn("No summarization generated", { color: "yellow" });
+      logger.warn("No summarization generated");
     }
     return [];
   }
 
   if (runtime.debugMode) {
-    logger.log(JSON.stringify(summarizations), {
-      title: "Summarization Output",
-      frame: true,
-      color: "cyan",
-    });
+    logger.log("*** Summarization Output:\n" + JSON.stringify(summarizations));
   }
 
   const filteredSummarizations = summarizations

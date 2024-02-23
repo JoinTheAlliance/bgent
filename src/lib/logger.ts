@@ -1,35 +1,25 @@
-import chalk, { ForegroundColor } from "chalk";
-
 class Logger {
   frameChar = "*";
 
   log(
     message: string,
-    {
-      title = "",
-      frame = false,
-      color = "white",
-    }: {
-      title?: string;
-      frame?: boolean;
-      color?: typeof ForegroundColor;
-    },
+    // {
+    //   title = "",
+    //   // color = "white",
+    // }: {
+    //   title?: string;
+    //   // color?;
+    // },
   ): void {
-    const coloredMessage = chalk[color](message);
-    if (frame) {
-      const framedMessage = this.frameMessage(coloredMessage, title);
-      console.log(framedMessage);
-    } else {
-      console.log(coloredMessage);
-    }
+    console.log("*** LOG: " + "\n" + message);
   }
 
   warn(message: string, options = {}) {
-    this.log(message, { ...options, color: "yellow" });
+    console.warn(message, { ...options });
   }
 
   error(message: string, options = {}) {
-    this.log(message, { ...options, color: "red" });
+    console.error(message, { ...options });
   }
 
   frameMessage(message: string, title: string) {

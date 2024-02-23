@@ -31,6 +31,16 @@
     "declarationDir": "./dist",
     "rootDir": "./src",
   },
+  "typedocOptions": {
+    "excludePrivate": true,
+    "disableSources": true,
+    "hideBreadcrumbs": true,
+    "name": "API Doc",
+    "theme": "default",
+    "categorizeByGroup": true,
+    "allReflectionsHaveOwnDocument": true,
+    "excludeExternals": true
+    },
   "include": [
     "src",
     "__tests__",
@@ -40,5 +50,6 @@
     "dist",
     "jest.config.js",
     "rollup.config.js",
+    "docs",
   ]
 }

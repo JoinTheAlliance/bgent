@@ -47,11 +47,7 @@ export default {
     });
 
     if (runtime.debugMode) {
-      logger.log(context, {
-        title: "Continued Response Context",
-        frame: true,
-        color: "blue",
-      });
+      logger.log("*** Continued Response Context:\n" + context);
     }
 
     let responseContent;
@@ -88,9 +84,7 @@ export default {
 
     if (!responseContent) {
       if (runtime.debugMode) {
-        logger.log("No response content", {
-          color: "red",
-        });
+        logger.error("No response content");
       }
       return;
     }
@@ -103,9 +97,7 @@ export default {
 
     if (messageExists) {
       if (runtime.debugMode) {
-        logger.log("Message already exists in recentMessagesData", {
-          color: "red",
-        });
+        logger.log("Message already exists in recentMessagesData");
       }
 
       return responseContent;

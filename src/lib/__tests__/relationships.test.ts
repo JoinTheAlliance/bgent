@@ -6,7 +6,7 @@ import {
   createRelationship,
   getRelationship,
   getRelationships,
-} from "../relationships"; // Adjust the import path as needed
+} from "../../agents/cj/relationships"; // Adjust the import path as needed
 import { BgentRuntime } from "../runtime";
 
 dotenv.config();

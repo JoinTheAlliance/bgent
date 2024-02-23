@@ -7,7 +7,7 @@ import {
   GetTellMeAboutYourselfConversationTroll2,
   Goodbye1,
 } from "../../../test/data";
-import { getRelationship } from "../../relationships";
+import { getRelationship } from "../../../agents/cj/relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 // import action from "../ignore";
@@ -72,7 +72,7 @@ describe("Ignore action tests", () => {
       GetTellMeAboutYourselfConversationTroll1,
     ]);
 
-    const result = await runtime.handleRequest(message);
+    const result = await runtime.handleMessage(message);
     console.log("*** result", result);
 
     expect(result.action).toBe("IGNORE");
@@ -91,7 +91,7 @@ describe("Ignore action tests", () => {
       GetTellMeAboutYourselfConversationTroll1,
     ]);
 
-    await runtime.handleRequest(message);
+    await runtime.handleMessage(message);
 
     const state = await runtime.composeState(message);
 
@@ -113,7 +113,7 @@ describe("Ignore action tests", () => {
       GetTellMeAboutYourselfConversationTroll2,
     ]);
 
-    await runtime.handleRequest(message);
+    await runtime.handleMessage(message);
 
     const state = await runtime.composeState(message);
 
@@ -133,7 +133,7 @@ describe("Ignore action tests", () => {
 
     await populateMemories(runtime, user, room_id, [Goodbye1]);
 
-    const response = await runtime.handleRequest(message);
+    const response = await runtime.handleMessage(message);
 
     const state = await runtime.composeState(message);
 

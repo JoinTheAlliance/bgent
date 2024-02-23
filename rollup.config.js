@@ -1,6 +1,7 @@
 import json from "@rollup/plugin-json";
 import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { defineConfig } from "rollup";
 import pkg from "./package.json";
 
@@ -8,6 +9,8 @@ export default defineConfig([
   {
     input: "src/index.ts",
     external: [
+      'chalk',
+      '@supabase/supabase-js',
       // ...Object.keys(pkg.dependencies || {}),
       // ...Object.keys(pkg.peerDependencies || {}),
     ],
@@ -27,6 +30,7 @@ export default defineConfig([
     plugins: [
       json(),
       typescript(),
+      nodeResolve(),
       replace({
         __DEV__: `(process.env.NODE_ENV !== 'production')`,
         preventAssignment: true,

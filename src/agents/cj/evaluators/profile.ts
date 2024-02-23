@@ -1,5 +1,6 @@
 import { type UUID } from "crypto";
-import { getRelationship, type BgentRuntime } from "../../../lib";
+import { type BgentRuntime } from "../../../lib";
+import { getRelationship } from "../relationships";
 import { composeContext } from "../../../lib/context";
 import {
   type Evaluator,

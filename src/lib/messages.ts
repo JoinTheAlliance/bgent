@@ -2,7 +2,10 @@ import { type UUID } from "crypto";
 import { BgentRuntime } from "./runtime";
 import { type Actor, type Content, type Memory } from "./types";
 
-export async function getMessageActors({
+/**
+ * Get details for a list of actors.
+ */
+export async function getActorDetails({
   runtime,
   userIds,
 }: {
@@ -32,7 +35,12 @@ export async function getMessageActors({
   return actors as Actor[];
 }
 
-export function formatMessageActors({ actors }: { actors: Actor[] }) {
+/**
+ * Format actors into a string
+ * @param actors - list of actors
+ * @returns string
+ */
+export function formatActors({ actors }: { actors: Actor[] }) {
   const actorStrings = actors.map((actor: Actor) => {
     const header = `${actor.name}${actor.details.tagline ? ": " + actor.details.tagline : ""}\n${actor.details.summary || "No information available"}`;
     return header;
@@ -41,6 +49,12 @@ export function formatMessageActors({ actors }: { actors: Actor[] }) {
   return finalActorStrings;
 }
 
+/**
+ * Format messages into a string
+ * @param messages - list of messages
+ * @param actors - list of actors
+ * @returns string
+ */
 export const formatMessages = ({
   messages,
   actors,

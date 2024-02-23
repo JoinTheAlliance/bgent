@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
 import { type UUID } from "crypto";
-import { getRelationship } from "../../../../lib/relationships";
+import { getRelationship } from "../../relationships";
 import { type Message } from "../../../../lib/types";
 import { createRuntime } from "../../../../test/createRuntime";
 import {

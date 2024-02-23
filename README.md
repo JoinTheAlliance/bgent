@@ -10,7 +10,9 @@ A flexible, scalable and customizable agent to do your bidding.
 [![forks - bgent](https://img.shields.io/github/forks/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
 
 ## Developing Live on Discord
-<a href="https://discord.gg/qetWd7J9De"><img src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
+
+[![Join the Discord server](https://dcbadge.vercel.app/api/server/qetWd7J9De)](https://discord.gg/qetWd7J9De)
+
 
 ## PRE-ALPHA RELEASE
 - This code is NOT production ready. This package has been released as-is to enable collaboration and development.

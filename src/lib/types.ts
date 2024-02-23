@@ -1,16 +1,6 @@
 import { type UUID } from "crypto";
 import { type BgentRuntime } from "./runtime";
 
-export interface Relationship {
-  id: UUID;
-  user_a: UUID;
-  user_b: UUID;
-  user_id: UUID;
-  room_id: UUID;
-  status: string;
-  created_at?: string;
-}
-
 export interface Content {
   content: string;
   action?: string; // known value
@@ -117,11 +107,11 @@ export interface Action {
   validate: Validator;
 }
 
-export type EvaluationExample = {
+export interface EvaluationExample {
   context: string;
   messages: Array<ContentExample>;
   outcome: string;
-};
+}
 
 export interface Evaluator {
   condition: string;
