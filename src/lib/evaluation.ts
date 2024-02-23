@@ -1,3 +1,4 @@
+import { names, uniqueNamesGenerator } from "unique-names-generator";
 import summarization from "./evaluators/summarization";
 import { type Evaluator } from "./types";
 
@@ -6,6 +7,9 @@ export const defaultEvaluators: Evaluator[] = [
   // goal,
 ];
 
+/**
+ * Template used for the evaluation completion.
+ */
 export const evaluationTemplate = `TASK: Based on the conversation and conditions, determine which evaluation functions are appropriate to call.
 Examples:
 {{evaluatorExamples}}
@@ -34,14 +38,22 @@ Respond with a JSON array containing a field for description in a JSON block for
 
 Your response must include the JSON block.`;
 
-// evaluation
-
+/**
+ * Formats the names of evaluators into a comma-separated list, each enclosed in single quotes.
+ * @param evaluators - An array of evaluator objects.
+ * @returns A string that concatenates the names of all evaluators, each enclosed in single quotes and separated by commas.
+ */
 export function formatEvaluatorNames(evaluators: Evaluator[]) {
   return evaluators
     .map((evaluator: Evaluator) => `'${evaluator.name}'`)
     .join(",\n");
 }
 
+/**
+ * Formats evaluator details into a string, including both the name and description of each evaluator.
+ * @param evaluators - An array of evaluator objects.
+ * @returns A string that concatenates the name and description of each evaluator, separated by a colon and a newline character.
+ */
 export function formatEvaluators(evaluators: Evaluator[]) {
   return evaluators
     .map(
@@ -50,6 +62,11 @@ export function formatEvaluators(evaluators: Evaluator[]) {
     .join(",\n");
 }
 
+/**
+ * Formats the conditions under which each evaluator is relevant into a readable string.
+ * @param evaluators - An array of evaluator objects.
+ * @returns A string that concatenates the name and condition of each evaluator, separated by a colon and a newline character.
+ */
 export function formatEvaluatorConditions(evaluators: Evaluator[]) {
   return evaluators
     .map(
@@ -58,9 +75,11 @@ export function formatEvaluatorConditions(evaluators: Evaluator[]) {
     .join(",\n");
 }
 
-import { uniqueNamesGenerator, names } from "unique-names-generator";
-
-// Formats evaluator examples into a readable string
+/**
+ * Formats evaluator examples into a readable string, replacing placeholders with generated names.
+ * @param evaluators - An array of evaluator objects, each containing examples to format.
+ * @returns A string that presents each evaluator example in a structured format, including context, messages, and outcomes, with placeholders replaced by generated names.
+ */
 export function formatEvaluatorExamples(evaluators: Evaluator[]) {
   return evaluators
     .map((evaluator) => {
@@ -99,7 +118,11 @@ export function formatEvaluatorExamples(evaluators: Evaluator[]) {
     .join("\n\n");
 }
 
-// Generates a string describing the conditions under which each evaluator example is relevant
+/**
+ * Generates a string describing the conditions under which each evaluator example is relevant.
+ * @param evaluators - An array of evaluator objects, each containing examples.
+ * @returns A string that describes the conditions for each evaluator example, formatted with the evaluator name, example number, and condition.
+ */
 export function formatEvaluatorExampleConditions(evaluators: Evaluator[]) {
   return evaluators
     .map((evaluator) =>
@@ -113,7 +136,11 @@ export function formatEvaluatorExampleConditions(evaluators: Evaluator[]) {
     .join("\n\n");
 }
 
-// Generates a string summarizing the descriptions of each evaluator example
+/**
+ * Generates a string summarizing the descriptions of each evaluator example.
+ * @param evaluators - An array of evaluator objects, each containing examples.
+ * @returns A string that summarizes the descriptions for each evaluator example, formatted with the evaluator name, example number, and description.
+ */
 export function formatEvaluatorExampleDescriptions(evaluators: Evaluator[]) {
   return evaluators
     .map((evaluator) =>

@@ -6,6 +6,8 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
+Represents a message within the conversation, including its content and associated metadata such as the sender, agent, and room IDs.
+
 ## Properties
 
 ### agentId

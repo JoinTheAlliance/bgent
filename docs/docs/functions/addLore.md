@@ -6,20 +6,24 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **addLore**(`«destructured»`): `Promise`\<`void`\>
+▸ **addLore**(`params`): `Promise`\<`void`\>
+
+Adds a piece of lore to the lore database. Lore can include static information like documents, historical facts, game lore, etc.
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `«destructured»` | `Object` | `undefined` |
-| › `content` | `string` | `undefined` |
-| › `embedContent?` | `string` | `undefined` |
-| › `room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `zeroUuid` |
-| › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | `undefined` |
-| › `source` | `string` | `undefined` |
-| › `user_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `zeroUuid` |
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `params` | `Object` | `undefined` | The parameters for adding lore. |
+| `params.content` | `string` | `undefined` | The actual content of the lore. |
+| `params.embedContent?` | `string` | `undefined` | Optional content used to generate an embedding if different from `content`. |
+| `params.room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `zeroUuid` | The room ID associated with the lore, defaults to a zero UUID. |
+| `params.runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | `undefined` | The runtime environment of the agent. |
+| `params.source` | `string` | `undefined` | The source of the lore content. |
+| `params.user_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `zeroUuid` | The user ID associated with the lore, defaults to a zero UUID. |
 
 #### Returns
 
 `Promise`\<`void`\>
+
+A promise that resolves when the lore has been added successfully.

@@ -6,6 +6,8 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
+Represents an example for evaluation, including the context, an array of message examples, and the expected outcome.
+
 ## Properties
 
 ### context

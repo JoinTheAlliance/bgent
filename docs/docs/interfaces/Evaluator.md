@@ -6,6 +6,8 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
+Represents an evaluator, which is used to assess and guide the agent's responses based on the current context and state.
+
 ## Properties
 
 ### condition

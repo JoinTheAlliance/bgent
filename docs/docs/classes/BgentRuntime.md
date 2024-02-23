@@ -15,19 +15,21 @@ action registration, and interaction with external services like OpenAI and Supa
 
 • **new BgentRuntime**(`opts`): [`BgentRuntime`](BgentRuntime.md)
 
+Creates an instance of BgentRuntime.
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `opts` | `Object` |
-| `opts.actions?` | [`Action`](../interfaces/Action.md)[] |
-| `opts.debugMode?` | `boolean` |
-| `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] |
-| `opts.flavor?` | `string` |
-| `opts.recentMessageCount?` | `number` |
-| `opts.serverUrl?` | `string` |
-| `opts.supabase` | `default`\<`any`, ``"public"``, `any`\> |
-| `opts.token` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `opts` | `Object` | The options for configuring the BgentRuntime. |
+| `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
+| `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
+| `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
+| `opts.flavor?` | `string` | Optional lore to inject into the default prompt. |
+| `opts.recentMessageCount?` | `number` | The number of messages to hold in the recent message cache. |
+| `opts.serverUrl?` | `string` | The URL of the worker. |
+| `opts.supabase` | `default`\<`any`, ``"public"``, `any`\> | The Supabase client. |
+| `opts.token` | `string` | The JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker. |
 
 #### Returns
 
@@ -125,20 +127,20 @@ Authentication token used for securing requests.
 
 ### completion
 
-▸ **completion**(`«destructured»`): `Promise`\<`string`\>
+▸ **completion**(`opts`): `Promise`\<`string`\>
 
 Send a message to the OpenAI API for completion.
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `«destructured»` | `Object` | `undefined` |
-| › `context` | `undefined` \| `string` | `""` |
-| › `frequency_penalty` | `undefined` \| `number` | `0.0` |
-| › `model` | `undefined` \| `string` | `"gpt-3.5-turbo-0125"` |
-| › `presence_penalty` | `undefined` \| `number` | `0.0` |
-| › `stop` | `undefined` \| `never`[] | `[]` |
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `opts` | `Object` | `undefined` | The options for the completion request. |
+| `opts.context` | `undefined` \| `string` | `""` | The context of the message to be completed. |
+| `opts.frequency_penalty` | `undefined` \| `number` | `0.0` | The frequency penalty to apply to the completion. |
+| `opts.model` | `undefined` \| `string` | `"gpt-3.5-turbo-0125"` | The model to use for completion. |
+| `opts.presence_penalty` | `undefined` \| `number` | `0.0` | The presence penalty to apply to the completion. |
+| `opts.stop` | `undefined` \| `never`[] | `[]` | A list of strings to stop the completion at. |
 
 #### Returns
 

@@ -51,8 +51,8 @@ const readDirectory = (dirPath) => {
 }
 
 // Start reading from the root TypeScript directory
-const concatenatedContent = '# START MY CODEBASE' + readDirectory(directoryPath)
+const concatenatedContent = '# START OF BGENT CODEBASE' + readDirectory(directoryPath)
 
 // Write the concatenated content to the output file
-fs.writeFileSync(outputFile, concatenatedContent + '# END MY CODEBASE\n\n' + instructions)
+fs.writeFileSync(outputFile, concatenatedContent + '# END OF BGENT CODEBASE\n\n' + instructions)
 console.log('TypeScript files have been concatenated into:', outputFile)

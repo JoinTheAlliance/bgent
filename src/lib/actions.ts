@@ -7,6 +7,13 @@ import wait from "./actions/wait";
 
 export const defaultActions: Action[] = [cont, wait, ignore];
 
+/**
+ * Composes a set of example conversations based on provided actions and a specified count.
+ * It randomly selects examples from the provided actions and formats them with generated names.
+ * @param actionsData - An array of `Action` objects from which to draw examples.
+ * @param count - The number of examples to generate.
+ * @returns A string containing formatted examples of conversations.
+ */
 export const composeActionExamples = (actionsData: Action[], count: number) => {
   const actionExamples: ContentExample[][] = actionsData
     .map((action: Action) => action.examples)
@@ -54,6 +61,11 @@ export const composeActionExamples = (actionsData: Action[], count: number) => {
   return formattedExamples.join("\n");
 };
 
+/**
+ * Formats the provided actions into a string listing each action's name and description.
+ * @param actions - An array of `Action` objects to format.
+ * @returns A formatted string listing each action's name and description.
+ */
 export function getFormattedActions(actions: Action[]) {
   return actions
     .map((action) => {
@@ -62,16 +74,31 @@ export function getFormattedActions(actions: Action[]) {
     .join("\n");
 }
 
+/**
+ * Formats the names of the provided actions into a comma-separated string.
+ * @param actions - An array of `Action` objects from which to extract names.
+ * @returns A comma-separated string of action names.
+ */
 export function formatActionNames(actions: Action[]) {
   return actions.map((action: Action) => `${action.name}`).join(", ");
 }
 
+/**
+ * Formats the provided actions into a detailed string listing each action's name and description, separated by commas and newlines.
+ * @param actions - An array of `Action` objects to format.
+ * @returns A detailed string of actions, including names and descriptions.
+ */
 export function formatActions(actions: Action[]) {
   return actions
     .map((action: Action) => `${action.name}: ${action.description}`)
     .join(",\n");
 }
 
+/**
+ * Formats the conditions for each provided action into a string, listing each action's name and its associated condition, separated by commas and newlines.
+ * @param actions - An array of `Action` objects from which to extract conditions.
+ * @returns A string listing each action's name and its condition.
+ */
 export function formatActionConditions(actions: Action[]) {
   return actions
     .map((action: Action) => `'${action.name}: ${action.condition}'`)

@@ -111,6 +111,18 @@ export class BgentRuntime {
     tableName: "lore",
   });
 
+  /**
+   * Creates an instance of BgentRuntime.
+   * @param opts - The options for configuring the BgentRuntime.
+   * @param opts.recentMessageCount - The number of messages to hold in the recent message cache.
+   * @param opts.token - The JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker.
+   * @param opts.supabase - The Supabase client.
+   * @param opts.debugMode - If true, debug messages will be logged.
+   * @param opts.serverUrl - The URL of the worker.
+   * @param opts.flavor - Optional lore to inject into the default prompt.
+   * @param opts.actions - Optional custom actions.
+   * @param opts.evaluators - Optional custom evaluators.
+   */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
     token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
@@ -168,11 +180,12 @@ export class BgentRuntime {
 
   /**
    * Send a message to the OpenAI API for completion.
-   * @param context The context of the message to be completed.
-   * @param stop A list of strings to stop the completion at.
-   * @param model The model to use for completion.
-   * @param frequency_penalty The frequency penalty to apply to the completion.
-   * @param presence_penalty The presence penalty to apply to the completion.
+   * @param opts - The options for the completion request.
+   * @param opts.context The context of the message to be completed.
+   * @param opts.stop A list of strings to stop the completion at.
+   * @param opts.model The model to use for completion.
+   * @param opts.frequency_penalty The frequency penalty to apply to the completion.
+   * @param opts.presence_penalty The presence penalty to apply to the completion.
    * @returns The completed message.
    */
   async completion({

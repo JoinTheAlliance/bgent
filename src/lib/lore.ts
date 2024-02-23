@@ -3,6 +3,18 @@ import { zeroUuid } from "./constants";
 import { type BgentRuntime } from "./runtime";
 import { Content, Memory } from "./types";
 
+/**
+ * Adds a piece of lore to the lore database. Lore can include static information like documents, historical facts, game lore, etc.
+ *
+ * @param {Object} params - The parameters for adding lore.
+ * @param {BgentRuntime} params.runtime - The runtime environment of the agent.
+ * @param {string} params.source - The source of the lore content.
+ * @param {string} params.content - The actual content of the lore.
+ * @param {string} [params.embedContent] - Optional content used to generate an embedding if different from `content`.
+ * @param {UUID} [params.user_id=zeroUuid] - The user ID associated with the lore, defaults to a zero UUID.
+ * @param {UUID} [params.room_id=zeroUuid] - The room ID associated with the lore, defaults to a zero UUID.
+ * @returns {Promise<void>} A promise that resolves when the lore has been added successfully.
+ */
 export async function addLore({
   runtime,
   source,
@@ -33,6 +45,16 @@ export async function addLore({
   });
 }
 
+/**
+ * Retrieves lore from the lore database based on a search query. This function uses embedding to find similar lore entries.
+ *
+ * @param {Object} params - The parameters for retrieving lore.
+ * @param {BgentRuntime} params.runtime - The runtime environment of the agent.
+ * @param {string} params.message - The search query message to find relevant lore.
+ * @param {number} [params.match_threshold] - The similarity threshold for matching lore entries, lower values mean more strict matching.
+ * @param {number} [params.count] - The maximum number of lore entries to retrieve.
+ * @returns {Promise<Memory[]>} A promise that resolves to an array of lore entries that match the search query.
+ */
 export async function getLore({
   runtime,
   message,
@@ -54,6 +76,12 @@ export async function getLore({
   return lore;
 }
 
+/**
+ * Formats an array of lore entries into a single string. Each entry is separated by a newline, and sources are annotated.
+ *
+ * @param {Memory[]} lore - An array of lore entries to format.
+ * @returns {string} A formatted string containing all the lore entries, each separated by a newline, with sources annotated.
+ */
 export const formatLore = (lore: Memory[]) => {
   const messageStrings = lore.reverse().map((fragment: Memory) => {
     const content = fragment.content as Content;

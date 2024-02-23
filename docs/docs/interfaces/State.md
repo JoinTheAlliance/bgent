@@ -6,6 +6,8 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
+Represents the state of the conversation or context in which the agent is operating, including information about users, messages, goals, and other relevant data.
+
 ## Indexable
 
 ▪ [key: `string`]: `unknown`
