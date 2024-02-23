@@ -69,6 +69,4 @@ custom_edit_url: null
 - [getFormattedActions](functions/getFormattedActions.md)
 - [getGoals](functions/getGoals.md)
 - [getLore](functions/getLore.md)
-- [parseJSONObjectFromText](functions/parseJSONObjectFromText.md)
-- [parseJsonArrayFromText](functions/parseJsonArrayFromText.md)
 - [updateGoals](functions/updateGoals.md)
