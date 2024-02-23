@@ -24,8 +24,8 @@ export default function Home() {
   return (
 
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title}`}
+      description={siteConfig.tagline}>
       <div style={{
         position: 'fixed',
         width: '100%',
