@@ -455,7 +455,7 @@ $$;
 ALTER FUNCTION "public"."search_messages"("query_embedding" "extensions"."vector", "similarity_threshold" double precision, "match_count" integer, "owner_id" "uuid", "chat_id" "uuid") OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."accounts" (
-    "id" "uuid" NOT NULL,
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT ("now"() AT TIME ZONE 'utc'::"text") NOT NULL,
     "name" "text",
     "email" "text" NOT NULL,
