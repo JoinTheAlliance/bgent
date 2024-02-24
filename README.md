@@ -1,6 +1,6 @@
 # bgent
 
-A flexible, scalable and customizable agent to do your bidding. Full documentation at https://bgent.org
+A flexible, scalable and customizable agent for production apps. Comes with batteries-including database, deployment and examples using Supabase and Cloudflare.
 
 ![cj](https://github.com/jointhealliance/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
