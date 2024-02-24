@@ -101,11 +101,11 @@ const config = {
             items: [
               {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/thealliance'
+                href: 'https://discordapp.com/invite/jointhealliance'
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/join_the_alliance'
+                href: 'https://twitter.com/WeWillBuildIt'
               }
             ]
           },
