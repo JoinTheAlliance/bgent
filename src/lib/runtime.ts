@@ -540,7 +540,7 @@ export class BgentRuntime {
       }),
       getLore({
         runtime: this,
-        message: message.content as string,
+        message: (message.content as Content).content,
         count: 5,
         match_threshold: 0.5,
       }),
