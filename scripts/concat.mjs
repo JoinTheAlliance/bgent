@@ -2,7 +2,7 @@ import fs from 'fs'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
-const instructions = 'The above code was taken from my codebase at https://github.com/lalalune/bgent. You are writing tests and documentation for my codebase. Please use the above code as a reference. Tests should be written with Jest and Typescript. Do not use mocks or stubs. Keep it very simple and straightforward.'
+const instructions = 'The above code was taken from my codebase at https://github.com/jointhealliance/bgent. You are writing tests and documentation for my codebase. Please use the above code as a reference. Tests should be written with Jest and Typescript. Do not use mocks or stubs. Keep it very simple and straightforward.'
 
 // Patterns to ignore
 const ignorePatterns = ['actionExamples.ts', 'tests', 'test', 'agents', 'goal', 'cache', 'goals', 'supabase',  'utils', 'logger', 'index', 'data', 'constants', 'templates', 'worker']

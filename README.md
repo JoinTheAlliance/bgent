@@ -2,13 +2,13 @@
 
 A flexible, scalable and customizable agent to do your bidding. Full documentation at https://bgent.org
 
-![cj](https://github.com/lalalune/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
+![cj](https://github.com/jointhealliance/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
 [![npm version](https://badge.fury.io/js/bgent.svg)](https://badge.fury.io/js/bgent)
 ![build passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/deploy_worker.yaml/badge.svg)
-[![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/lalalune/bgent/blob/main/LICENSE)
-[![stars - bgent](https://img.shields.io/github/stars/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
-[![forks - bgent](https://img.shields.io/github/forks/lalalune/bgent?style=social)](https://github.com/lalalune/bgent)
+[![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/jointhealliance/bgent/blob/main/LICENSE)
+[![stars - bgent](https://img.shields.io/github/stars/jointhealliance/bgent?style=social)](https://github.com/jointhealliance/bgent)
+[![forks - bgent](https://img.shields.io/github/forks/jointhealliance/bgent?style=social)](https://github.com/jointhealliance/bgent)
 
 ## Connect With Us
 
