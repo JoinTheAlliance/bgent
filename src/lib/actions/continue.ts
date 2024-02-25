@@ -30,7 +30,6 @@ export default {
           (m) => (m.content as Content).action === "CONTINUE",
         );
         if (allContinues) {
-          console.log("returning all continues");
           return false;
         }
       }
@@ -166,12 +165,12 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: "Adventurous",
+        content: { content: "Adventurous" },
         action: "CONTINUE",
       },
       {
         user: "{{user2}}",
-        content: "Any particular destination?",
+        content: { content: "Any particular destination?" },
         action: "WAIT",
       },
     ],
@@ -179,22 +178,22 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: "I started learning the guitar this month!",
+        content: { content: "I started learning the guitar this month!" },
         action: "WAIT",
       },
       {
         user: "{{user2}}",
-        content: "How’s that going?",
+        content: { content: "How’s that going?" },
         action: "WAIT",
       },
       {
         user: "{{user1}}",
-        content: "Challenging, but rewarding.",
+        content: { content: "Challenging, but rewarding." },
         action: "CONTINUE",
       },
       {
         user: "{{user1}}",
-        content: "Seriously lol it hurts to type",
+        content: { content: "Seriously lol it hurts to type" },
         action: "WAIT",
       },
     ],
@@ -208,8 +207,10 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: "That it’s more about moments than things.",
-        action: "CONTINUE",
+        content: {
+          content: "That it’s more about moments than things.",
+          action: "CONTINUE",
+        },
       },
       {
         user: "{{user2}}",
@@ -222,17 +223,17 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: "I found some incredible art today.",
+        content: { content: "I found some incredible art today." },
         action: "WAIT",
       },
       {
         user: "{{user2}}",
-        content: "Who's the artist?",
+        content: { content: "Who's the artist?" },
         action: "WAIT",
       },
       {
         user: "{{user1}}",
-        content: "Not sure lol, they are anon",
+        content: { content: "Not sure lol, they are anon" },
         action: "CONTINUE",
       },
       {
@@ -243,7 +244,7 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: "DMed it to you",
+        content: { content: "DMed it to you" },
         action: "WAIT",
       },
     ],
@@ -257,22 +258,24 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: "Really challenges your perceptions. Highly recommend it!",
-        action: "CONTINUE",
+        content: {
+          content: "Really challenges your perceptions. Highly recommend it!",
+          action: "CONTINUE",
+        },
       },
       {
         user: "{{user2}}",
-        content: "I’m in. When are you free to go?",
+        content: { content: "I’m in. When are you free to go?" },
         action: "WAIT",
       },
       {
         user: "{{user1}}",
-        content: "Hmm, let me check.",
+        content: { content: "Hmm, let me check." },
         action: "CONTINUE",
       },
       {
         user: "{{user1}}",
-        content: "How about this weekend?",
+        content: { content: "How about this weekend?" },
         action: "WAIT",
       },
     ],

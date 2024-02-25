@@ -1,7 +1,7 @@
 ---
-id: "ActionExample"
-title: "Interface: ActionExample"
-sidebar_label: "ActionExample"
+id: "ConversationExample"
+title: "Interface: ConversationExample"
+sidebar_label: "ConversationExample"
 sidebar_position: 0
 custom_edit_url: null
 ---
@@ -16,6 +16,6 @@ Represents an example of content, typically used for demonstrating or testing pu
 
 ___
 
-### user
+### user\_id
 
-• **user**: `string`
+• **user\_id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`

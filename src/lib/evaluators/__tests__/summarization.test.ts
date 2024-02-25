@@ -15,7 +15,7 @@ import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import evaluator from "../summarization";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
@@ -64,7 +64,7 @@ describe("Factual Summarization", () => {
         await runtime.summarizationManager.addEmbeddingToMemory({
           user_id: user?.id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
-          content: fact,
+          content: { content: fact },
           room_id: room_id as UUID,
           embedding: existingEmbedding,
         });
@@ -81,7 +81,7 @@ describe("Factual Summarization", () => {
       senderId: user?.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "",
+      content: { content: "" },
       room_id: room_id as UUID,
     };
 
@@ -95,11 +95,6 @@ describe("Factual Summarization", () => {
     const result = (await handler(runtime, message)) as string[];
     const resultConcatenated = result.join("\n");
 
-    // const state = await runtime.composeState(message);
-    // console.log("************ state.recentMessages\n", state.recentMessages);
-    // console.log("************ resultConcatenated\n", resultConcatenated);
-
-    // console.log("Expecting the facts to contain programmer and Jim");
     expect(resultConcatenated.toLowerCase()).toMatch(/programmer|startup/);
     expect(resultConcatenated.toLowerCase()).toMatch(/jim/);
 
@@ -115,11 +110,6 @@ describe("Factual Summarization", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const result2 = (await handler(runtime, message)) as string[];
     const resultConcatenated2 = result2.join("\n");
-
-    // const state2 = await runtime.composeState(message);
-    // console.log("************ state.recentMessages\n", state2.recentMessages);
-    // console.log("************ resultConcatenated2\n", resultConcatenated2);
-    // console.log("Expecting the facts to contain francisco");
 
     // expect result to ignore 'francisco' and '38' since they are already known
     expect(resultConcatenated2.toLowerCase()).not.toMatch(/francisco/);

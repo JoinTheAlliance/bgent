@@ -27,14 +27,15 @@ export const TEST_ACTION = {
     [
       {
         user: "{{user1}}",
-        content:
-          "Please respond with the message 'testing 123' and the action TEST_ACTION",
-        action: "TEST_ACTION",
+        content: {
+          content:
+            "Please respond with the message 'testing 123' and the action TEST_ACTION",
+          action: "TEST_ACTION",
+        },
       },
       {
         user: "{{user2}}",
-        content: "testing 123",
-        action: "TEST_ACTION",
+        content: { content: "testing 123", action: "TEST_ACTION" },
       },
     ],
   ],
@@ -66,8 +67,7 @@ export const TEST_ACTION_FAIL = {
     [
       {
         user: "{{user1}}",
-        content: "Testing failure",
-        action: "TEST_ACTIONFALSE",
+        content: { content: "Testing failure", action: "TEST_ACTIONFALSE" },
       },
     ],
   ],

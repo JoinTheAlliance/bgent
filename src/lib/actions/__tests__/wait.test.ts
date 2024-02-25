@@ -9,7 +9,7 @@ import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../wait"; // Import the wait action
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 

@@ -9,7 +9,7 @@ import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../continue";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
@@ -17,20 +17,26 @@ const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 const GetContinueExample1 = (_user_id: UUID) => [
   {
     user_id: zeroUuid,
-    content:
-      "Hmm, let think for a second, I was going to tell you about something...",
-    action: "CONTINUE",
+    content: {
+      content:
+        "Hmm, let think for a second, I was going to tell you about something...",
+      action: "CONTINUE",
+    },
   },
   {
     user_id: zeroUuid,
-    content:
-      "I remember now, I was going to tell you about my favorite food, which is pizza.",
-    action: "CONTINUE",
+    content: {
+      content:
+        "I remember now, I was going to tell you about my favorite food, which is pizza.",
+      action: "CONTINUE",
+    },
   },
   {
     user_id: zeroUuid,
-    content: "I love pizza, it's so delicious.",
-    action: "CONTINUE",
+    content: {
+      content: "I love pizza, it's so delicious.",
+      action: "CONTINUE",
+    },
   },
 ];
 
@@ -82,9 +88,7 @@ describe("User Profile", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user.id as UUID, zeroUuid],
-      content: {
-        content: "Hello",
-      },
+      content: { content: "Hello" },
       room_id: room_id as UUID,
     };
 
@@ -109,8 +113,6 @@ describe("User Profile", () => {
     };
 
     const result2 = await validate(runtime, message2);
-
-    console.log("result2", result2);
 
     expect(result2).toBe(false);
   }, 20000);
@@ -143,7 +145,7 @@ describe("User Profile", () => {
       senderId: user?.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "Bye",
+      content: { content: "Bye" },
       room_id: room_id as UUID,
     };
 
@@ -152,8 +154,6 @@ describe("User Profile", () => {
     await populateMemories(runtime, user, room_id, [Goodbye1]);
 
     const result = (await handler(runtime, message)) as Content;
-
-    console.log("IGNORE result", result);
 
     expect(result.action).toBe("IGNORE");
   }, 20000);

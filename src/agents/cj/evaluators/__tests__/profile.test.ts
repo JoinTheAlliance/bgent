@@ -20,7 +20,7 @@ import {
 } from "../../../../test/cache";
 import evaluator from "../profile";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
 let runtime: BgentRuntime;
@@ -74,7 +74,7 @@ describe("User Profile", () => {
       senderId: user?.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "",
+      content: { content: "" },
       room_id,
     };
 
@@ -83,20 +83,21 @@ describe("User Profile", () => {
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID);
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i];
-        const existingEmbedding = getCachedEmbedding(c.content);
+        const existingEmbedding = getCachedEmbedding(c.content.content);
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content,
-          },
+          content: c.content,
           room_id,
           embedding: existingEmbedding,
         });
         await runtime.messageManager.createMemory(bakedMemory);
         // wait for .2 seconds
         if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
+          writeCachedEmbedding(
+            c.content.content,
+            bakedMemory.embedding as number[],
+          );
           await new Promise((resolve) => setTimeout(resolve, 200));
         }
       }
@@ -117,19 +118,20 @@ describe("User Profile", () => {
       ];
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i];
-        const existingEmbedding = getCachedEmbedding(c.content);
+        const existingEmbedding = getCachedEmbedding(c.content.content);
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content,
-          },
+          content: c.content,
           room_id,
           embedding: existingEmbedding,
         });
         await runtime.messageManager.createMemory(bakedMemory);
         if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[]);
+          writeCachedEmbedding(
+            c.content.content,
+            bakedMemory.embedding as number[],
+          );
           await new Promise((resolve) => setTimeout(resolve, 200));
         }
       }
@@ -144,7 +146,7 @@ describe("User Profile", () => {
           await runtime.descriptionManager.addEmbeddingToMemory({
             user_id: user?.id as UUID,
             user_ids: [user?.id as UUID, zeroUuid],
-            content: c,
+            content: { content: c },
             room_id,
             embedding: existingEmbedding,
           });

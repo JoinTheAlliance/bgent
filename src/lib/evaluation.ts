@@ -1,6 +1,6 @@
 import { names, uniqueNamesGenerator } from "unique-names-generator";
 import summarization from "./evaluators/summarization";
-import { type Evaluator } from "./types";
+import { ActionExample, type Evaluator } from "./types";
 
 export const defaultEvaluators: Evaluator[] = [
   summarization,
@@ -99,14 +99,15 @@ export function formatEvaluatorExamples(evaluators: Evaluator[]) {
           });
 
           const formattedMessages = example.messages
-            .map((message) => {
-              let messageString = `${message.user}: ${message.content}`;
+            .map((message: ActionExample) => {
+              let messageString = `${message.user}: ${message.content.content}`;
               exampleNames.forEach((name, index) => {
                 const placeholder = `{{user${index + 1}}}`;
                 messageString = messageString.replaceAll(placeholder, name);
               });
               return (
-                messageString + (message.action ? ` (${message.action})` : "")
+                messageString +
+                (message.content.action ? ` (${message.content.action})` : "")
               );
             })
             .join("\n");

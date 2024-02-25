@@ -25,8 +25,6 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
     template,
   });
 
-  console.log("*** context\n", context);
-
   let responseData = null;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
@@ -58,8 +56,6 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
   }
 
   const { name, age, location, gender } = responseData;
-
-  console.log("responseData", responseData);
 
   const response = await runtime.supabase
     .from("accounts")

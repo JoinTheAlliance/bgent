@@ -25,21 +25,21 @@ export async function addLore({
 }: {
   runtime: BgentRuntime;
   source: string;
-  content: string;
-  embedContent?: string;
+  content: Content;
+  embedContent?: Content;
   user_id?: UUID;
   room_id?: UUID;
 }) {
   const loreManager = runtime.loreManager;
 
   const embedding = embedContent
-    ? await runtime.embed(embedContent)
-    : await runtime.embed(content);
+    ? await runtime.embed(embedContent.content)
+    : await runtime.embed(content.content);
 
   await loreManager.createMemory({
     user_id,
     user_ids: [user_id],
-    content: { content, source },
+    content: { content: content.content, source },
     room_id,
     embedding: embedding,
   });

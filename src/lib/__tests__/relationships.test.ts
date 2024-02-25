@@ -9,7 +9,7 @@ import {
 } from "../relationships"; // Adjust the import path as needed
 import { BgentRuntime } from "../runtime";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 

@@ -16,10 +16,15 @@ export interface Content {
  */
 export interface ActionExample {
   user: string; // The user associated with the message.
-  content: string; // The content of the message.
-  action?: string; // An optional action associated with the message.
-  source?: string; // An optional source of the content.
-  [key: string]: unknown; // Allows for additional properties to be included dynamically.
+  content: Content; // The content of the message.
+}
+
+/**
+ * Represents an example of content, typically used for demonstrating or testing purposes. Includes user, content, optional action, and optional source.
+ */
+export interface ConversationExample {
+  user_id: UUID; // The user associated with the message.
+  content: Content; // The content of the message.
 }
 
 /**
@@ -38,7 +43,7 @@ export interface Memory {
   id?: UUID; // An optional unique identifier for the memory.
   user_id: UUID; // The user ID associated with the memory.
   created_at?: string; // An optional timestamp indicating when the memory was created.
-  content: Content | string; // The content of the memory, which can be a structured object or a plain string.
+  content: Content; // The content of the memory, which can be a structured object or a plain string.
   embedding?: number[]; // An optional embedding vector representing the semantic content of the memory.
   user_ids: UUID[]; // A list of user IDs associated with the memory, for group contexts.
   room_id: UUID; // The room or conversation ID associated with the memory.
@@ -100,7 +105,7 @@ export interface Message {
   agentId: UUID; // The ID of the agent associated with the message.
   senderId: UUID; // The ID of the user who sent the message.
   userIds: UUID[]; // A list of user IDs involved in the message, for group contexts.
-  content: Content | string; // The content of the message, which can be a structured object or a plain string.
+  content: Content; // The content of the message, which can be a structured object or a plain string.
   room_id: UUID; // The ID of the room or conversation context in which the message was sent.
 }
 
@@ -109,8 +114,7 @@ export interface Message {
  */
 export interface MessageExample {
   user: string; // The user associated with the message example.
-  content: string | null; // The content of the message example, which may be null for actions that don't produce visible content.
-  action: string | null; // An optional action associated with the message example.
+  content: Content; // The content of the message example, which may be null for actions that don't produce visible content.
 }
 
 /**

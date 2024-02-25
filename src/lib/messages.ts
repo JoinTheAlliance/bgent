@@ -66,8 +66,7 @@ export const formatMessages = ({
     .reverse()
     .filter((message: Memory) => message.user_id)
     .map((message: Memory) => {
-      let messageContent =
-        (message.content as Content).content || (message.content as string);
+      let messageContent = (message.content as Content).content;
       const messageAction = (message.content as Content).action;
       const sender = actors.find(
         (actor: Actor) => actor.id === message.user_id,

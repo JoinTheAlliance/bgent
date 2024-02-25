@@ -333,13 +333,10 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      console.log("triesLeft", triesLeft);
       const response = await this.completion({
         context,
         stop: [],
       });
-
-      console.log("response", response);
 
       this.supabase
         .from("logs")
@@ -482,9 +479,13 @@ export class BgentRuntime {
       template: evaluationTemplate,
     });
 
+    console.log("*** completion context", context);
+
     const result = await this.completion({
       context,
     });
+
+    console.log("result", result);
 
     const parsedResult = parseJsonArrayFromText(result) as unknown as string[];
 

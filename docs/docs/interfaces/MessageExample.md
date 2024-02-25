@@ -10,15 +10,9 @@ Represents an example of a message, typically used for demonstrating or testing 
 
 ## Properties
 
-### action
-
-• **action**: ``null`` \| `string`
-
-___
-
 ### content
 
-• **content**: ``null`` \| `string`
+• **content**: [`Content`](Content.md)
 
 ___
 

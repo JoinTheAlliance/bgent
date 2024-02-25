@@ -15,8 +15,8 @@ Adds a piece of lore to the lore database. Lore can include static information l
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `params` | `Object` | `undefined` | The parameters for adding lore. |
-| `params.content` | `string` | `undefined` | The actual content of the lore. |
-| `params.embedContent?` | `string` | `undefined` | Optional content used to generate an embedding if different from `content`. |
+| `params.content` | [`Content`](../interfaces/Content.md) | `undefined` | The actual content of the lore. |
+| `params.embedContent?` | [`Content`](../interfaces/Content.md) | `undefined` | Optional content used to generate an embedding if different from `content`. |
 | `params.room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `zeroUuid` | The room ID associated with the lore, defaults to a zero UUID. |
 | `params.runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | `undefined` | The runtime environment of the agent. |
 | `params.source` | `string` | `undefined` | The source of the lore content. |

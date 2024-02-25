@@ -18,7 +18,7 @@ ___
 
 ### content
 
-• **content**: `string` \| [`Content`](Content.md)
+• **content**: [`Content`](Content.md)
 
 ___
 

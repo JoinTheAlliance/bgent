@@ -12,7 +12,7 @@ Represents a memory record, which could be a message or any other piece of infor
 
 ### content
 
-• **content**: `string` \| [`Content`](Content.md)
+• **content**: [`Content`](Content.md)
 
 ___
 

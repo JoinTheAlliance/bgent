@@ -7,7 +7,7 @@ import { BgentRuntime } from "../runtime";
 import { type User } from "@supabase/supabase-js";
 import { type Message } from "../types";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 describe("Agent Runtime", () => {
   const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
@@ -26,21 +26,24 @@ describe("Agent Runtime", () => {
   // Helper function to create memories
   async function createMemories() {
     const memories = [
-      { userId: user?.id as UUID, content: "test memory from user" },
-      { userId: zeroUuid, content: "test memory from agent" },
+      {
+        userId: user?.id as UUID,
+        content: { content: "test memory from user" },
+      },
+      { userId: zeroUuid, content: { content: "test memory from agent" } },
     ];
 
     for (const { userId, content } of memories) {
-      const embedding = getCachedEmbedding(content);
+      const embedding = getCachedEmbedding(content.content);
       const memory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: userId,
         user_ids: [user?.id as UUID, zeroUuid],
-        content: { content },
+        content,
         room_id,
         embedding,
       });
       if (!embedding) {
-        writeCachedEmbedding(content, memory.embedding as number[]);
+        writeCachedEmbedding(content.content, memory.embedding as number[]);
       }
       await runtime.messageManager.createMemory(memory);
     }
@@ -86,7 +89,7 @@ describe("Agent Runtime", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user.id as UUID, zeroUuid],
-      content: "test message",
+      content: { content: "test message" },
       room_id: room_id as UUID,
     };
 

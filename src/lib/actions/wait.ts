@@ -25,7 +25,9 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: "I finally finished that book I've been reading for weeks!",
+        content: {
+          content: "I finally finished that book I've been reading for weeks!",
+        },
         action: "WAIT",
       },
     ],
@@ -39,7 +41,7 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: "Worth watching?",
+        content: { content: "Worth watching?" },
         action: "WAIT",
       },
       {
@@ -53,12 +55,14 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: "I've been trying out pottery recently.",
+        content: { content: "I've been trying out pottery recently." },
         action: "WAIT",
       },
       {
         user: "{{user2}}",
-        content: "That sounds therapeutic. Made anything interesting?",
+        content: {
+          content: "That sounds therapeutic. Made anything interesting?",
+        },
         action: "WAIT",
       },
     ],
@@ -66,7 +70,7 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: "Frustrated.",
+        content: { content: "Frustrated." },
         action: "CONTINUE",
       },
       {
@@ -77,7 +81,9 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: "I can relate. Developed any helpful coping mechanisms?",
+        content: {
+          content: "I can relate. Developed any helpful coping mechanisms?",
+        },
       },
       {
         user: "{{user1}}",
@@ -95,21 +101,21 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: "Oh sick",
+        content: { content: "Oh sick" },
         action: "CONTINUE",
       },
       {
         user: "{{user2}}",
-        content: "Oh? What makes it special?",
+        content: { content: "Oh? What makes it special?" },
         action: "WAIT",
       },
       {
         user: "{{user1}}",
-        content: "They sell espresso for a dollar.",
+        content: { content: "They sell espresso for a dollar." },
       },
       {
         user: "{{user2}}",
-        content: "Dang, I must check it out.",
+        content: { content: "Dang, I must check it out." },
         action: "WAIT",
       },
     ],
@@ -117,27 +123,29 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: "I stumbled upon an old bookstore in the downtown area.",
+        content: {
+          content: "I stumbled upon an old bookstore in the downtown area.",
+        },
         action: "WAIT",
       },
       {
         user: "{{user2}}",
-        content: "Old bookstore? Find anything good?",
+        content: { content: "Old bookstore? Find anything good?" },
         action: "WAIT",
       },
       {
         user: "{{user1}}",
-        content: "Yeah but I forgot my wallet.",
+        content: { content: "Yeah but I forgot my wallet." },
         action: "WAIT",
       },
       {
         user: "{{user3}}",
-        content: "Couldn't just pay with your phone?",
+        content: { content: "Couldn't just pay with your phone?" },
         action: "WAIT",
       },
       {
         user: "{{user1}}",
-        content: "Nope, cash only",
+        content: { content: "Nope, cash only" },
         action: "WAIT",
       },
     ],

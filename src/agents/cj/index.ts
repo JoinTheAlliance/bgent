@@ -96,8 +96,6 @@ const routes: Route[] = [
 
       const message = await req.json();
 
-      console.log("NODE_ENV", env.NODE_ENV);
-
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === "development",
         serverUrl: "https://api.openai.com/v1",

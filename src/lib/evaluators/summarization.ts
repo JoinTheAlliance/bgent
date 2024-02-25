@@ -9,6 +9,7 @@ import {
   type Actor,
   type Message,
   type State,
+  ActionExample,
 } from "../types";
 import { parseJsonArrayFromText } from "../utils";
 
@@ -17,7 +18,7 @@ export const formatSummarizations = (summarizations: Memory[]) => {
     .reverse()
     .map(
       (summarization: Memory) =>
-        `${(summarization.content as Content)?.content ?? (summarization.content as string)}`,
+        `${(summarization.content as Content)?.content}`,
     );
   const finalMessageStrings = messageStrings.join("\n");
   return finalMessageStrings;
@@ -87,8 +88,6 @@ async function handler(runtime: BgentRuntime, message: Message) {
   const agentName = actors?.find((actor: Actor) => actor.id === agentId)?.name;
 
   const actionNames = runtime.actions.map((a: Action) => a.name).join(", ");
-  console.log("actionNames", actionNames);
-
   const actions = runtime.actions
     .map((a: Action) => `${a.name}: ${a.description}`)
     .join("\n");
@@ -116,7 +115,6 @@ async function handler(runtime: BgentRuntime, message: Message) {
       context,
       stop: [],
     });
-    console.log("summarizationText", summarizationText);
     const parsedSummarizations = parseJsonArrayFromText(summarizationText);
     if (parsedSummarizations) {
       summarizations = parsedSummarizations;
@@ -195,26 +193,28 @@ None`,
       messages: [
         {
           user: "{{user1}}",
-          content: "So where are you from?",
-          action: "WAIT",
+          content: { content: "So where are you from?", action: "WAIT" },
         },
         {
           user: "{{user2}}",
-          content: "I'm from the city.",
+          content: { content: "I'm from the city." },
         },
         {
           user: "{{user1}}",
-          content: "Which city?",
+          content: { content: "Which city?" },
         },
         {
           user: "{{user2}}",
-          content: "Oakland",
+          content: { content: "Oakland" },
         },
         {
           user: "{{user1}}",
-          content: "Oh, I've never been there, but I know it's in California!",
+          content: {
+            content:
+              "Oh, I've never been there, but I know it's in California!",
+          },
         },
-      ],
+      ] as ActionExample[],
       outcome: `{ "claim": "{{user1}} is from Oakland", "type": "fact", "in_bio": false, "already_known": false },`,
     },
     {
@@ -228,21 +228,21 @@ Facts about the actors:
       messages: [
         {
           user: "{{user1}}",
-          content: "I finally completed the marathon this year!",
+          content: { content: "I finally completed the marathon this year!" },
         },
         {
           user: "{{user2}}",
-          content: "Wow! How long did it take?",
+          content: { content: "Wow! How long did it take?" },
         },
         {
           user: "{{user1}}",
-          content: "A little over three hours.",
+          content: { content: "A little over three hours." },
         },
         {
           user: "{{user1}}",
-          content: "I'm so proud of myself.",
+          content: { content: "I'm so proud of myself." },
         },
-      ],
+      ] as ActionExample[],
       outcome: `Claims:
 json\`\`\`
 [
@@ -265,16 +265,18 @@ Eva studied Philosophy before switching to Computer Science`,
       messages: [
         {
           user: "{{user1}}",
-          content:
-            "Remember when we won the regional poker tournament last spring?",
+          content: {
+            content:
+              "Remember when we won the regional poker tournament last spring?",
+          },
         },
         {
           user: "{{user2}}",
-          content: "Of course! That was an incredible day.",
+          content: { content: "Of course! That was an incredible day." },
         },
         {
           user: "{{user1}}",
-          content: "It really put our poker club on the map.",
+          content: { content: "It really put our poker club on the map." },
         },
       ],
       outcome: `Claims:

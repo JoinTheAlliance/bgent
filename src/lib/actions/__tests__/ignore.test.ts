@@ -13,7 +13,7 @@ import { Content, type Message } from "../../types";
 // import action from "../ignore";
 import { populateMemories } from "../../../test/populateMemories";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 
 export const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
@@ -73,7 +73,6 @@ describe("Ignore action tests", () => {
     ]);
 
     const result = await runtime.handleMessage(message);
-    console.log("*** result", result);
 
     expect(result.action).toBe("IGNORE");
   }, 60000);
@@ -83,7 +82,7 @@ describe("Ignore action tests", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "",
+      content: { content: "" },
       room_id: room_id as UUID,
     };
 
@@ -105,7 +104,7 @@ describe("Ignore action tests", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "",
+      content: { content: "" },
       room_id: room_id as UUID,
     };
 
@@ -127,26 +126,17 @@ describe("Ignore action tests", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
-      content: "Bye",
+      content: { content: "Bye" },
       room_id: room_id as UUID,
     };
 
     await populateMemories(runtime, user, room_id, [Goodbye1]);
 
-    const response = await runtime.handleMessage(message);
+    await runtime.handleMessage(message);
 
     const state = await runtime.composeState(message);
 
-    console.log(
-      "*** recentMessagesData",
-      state.recentMessagesData.map((m) => m.content),
-    );
-
-    console.log("*** response", response);
-
     const lastMessage = state.recentMessagesData[0];
-
-    console.log("*** lastMessage", lastMessage.content);
 
     expect((lastMessage.content as Content).action).toBe("IGNORE");
   }, 60000);

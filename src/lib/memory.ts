@@ -150,17 +150,20 @@ export class MemoryManager {
    */
   async createMemory(memory: Memory, unique = false): Promise<void> {
     if (unique) {
+      console.log("*** memory", memory);
+      const opts = {
+        query_table_name: this.tableName,
+        query_user_id: memory.user_id,
+        query_user_ids: memory.user_ids,
+        query_content: memory.content.content,
+        query_room_id: memory.room_id,
+        query_embedding: memory.embedding,
+        similarity_threshold: 0.95,
+      };
+
       const result = await this.runtime.supabase.rpc(
         "check_similarity_and_insert",
-        {
-          query_table_name: this.tableName,
-          query_user_id: memory.user_id,
-          query_user_ids: memory.user_ids,
-          query_content: memory.content,
-          query_room_id: memory.room_id,
-          query_embedding: memory.embedding,
-          similarity_threshold: 0.95,
-        },
+        opts,
       );
 
       if (result.error) {

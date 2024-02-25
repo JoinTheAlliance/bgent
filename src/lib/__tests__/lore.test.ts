@@ -8,7 +8,7 @@ import { BgentRuntime } from "../runtime";
 import { requestHandlerTemplate } from "../templates";
 import { type Content } from "../types";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 describe("Lore", () => {
   const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
   let runtime: BgentRuntime;
@@ -41,7 +41,7 @@ describe("Lore", () => {
     await addLore({
       runtime,
       source: "/Test.md",
-      content: "Test",
+      content: { content: "Test" },
       user_id: zeroUuid,
       room_id: zeroUuid,
     });
@@ -60,7 +60,7 @@ describe("Lore", () => {
     await addLore({
       runtime,
       source: "Test Lore Source",
-      content: "Test Lore Content",
+      content: { content: "Test Lore Content" },
       user_id: zeroUuid as UUID,
       room_id: zeroUuid,
     });
@@ -69,7 +69,7 @@ describe("Lore", () => {
       senderId: zeroUuid as UUID,
       agentId: zeroUuid,
       userIds: [zeroUuid],
-      content: "Test Lore Content",
+      content: { content: "Test Lore Content" },
       room_id: zeroUuid,
     };
 

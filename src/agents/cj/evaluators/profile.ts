@@ -3,6 +3,7 @@ import { type BgentRuntime } from "../../../lib";
 import { getRelationship } from "../../../lib/relationships";
 import { composeContext } from "../../../lib/context";
 import {
+  Content,
   type Evaluator,
   type Memory,
   type Message,
@@ -81,10 +82,8 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
     count: 5,
   });
   const profiles = descriptions
-    .map((d: Memory) => '"""\n' + (d.content as string) + '\n"""')
+    .map((d: Memory) => '"""\n' + (d.content as Content).content + '\n"""')
     .join("\n");
-
-  console.log("**** profiles", profiles);
 
   state.profiles = profiles;
 
@@ -98,7 +97,6 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
   let responseData: Record<string, unknown> = {};
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-    console.log("*** context\n", context);
     // generate the response
     const response = await runtime.completion({
       context,
@@ -147,7 +145,7 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
       await runtime.descriptionManager.addEmbeddingToMemory({
         user_ids: [state.agentId, userRecord.id],
         user_id: state.agentId!,
-        content,
+        content: { content },
         room_id: relationshipRecord.room_id,
       });
 
@@ -162,7 +160,6 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
     let responseData2: Record<string, unknown> = {};
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      console.log("*** context\n", context);
       // generate the response
       const response = await runtime.completion({
         context,
@@ -189,8 +186,6 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
         delete responseData2[key];
       }
     }
-
-    console.log("***responseData2\n", responseData2);
 
     // save the new description to the user's account
     const response2 = await runtime.supabase

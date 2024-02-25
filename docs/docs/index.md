@@ -8,28 +8,37 @@ custom_edit_url: null
 
 # bgent
 
-A flexible, scalable and customizable agent to do your bidding.
+A flexible, scalable and customizable agent for production apps. Comes with batteries-including database, deployment and examples using Supabase and Cloudflare.
 
 ![cj](https://github.com/jointhealliance/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
 [![npm version](https://badge.fury.io/js/bgent.svg)](https://badge.fury.io/js/bgent)
+![build passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/deploy_worker.yaml/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/jointhealliance/bgent/blob/main/LICENSE)
 [![stars - bgent](https://img.shields.io/github/stars/jointhealliance/bgent?style=social)](https://github.com/jointhealliance/bgent)
 [![forks - bgent](https://img.shields.io/github/forks/jointhealliance/bgent?style=social)](https://github.com/jointhealliance/bgent)
 
-## Join Us On Discord
+## Connect With Us
 
-[![Join the Discord server](https://dcbadge.vercel.app/api/server/qetWd7J9De)](https://discord.gg/qetWd7J9De)
+[![Join the Discord server](https://dcbadge.vercel.app/api/server/qetWd7J9De)](https://discord.gg/jointhealliance)
 
 ## Features
 
-- Simple and extensible
-- Customizable to your use case
-- Retrievable memory and document store
-- Serverless artchitecture, deployable in minutes at scale with Cloudflare and Supabase
-- Multi-agent and room support
-- Summarization and summarization
-- Goal-directed behavior
+- 🛠 Simple and extensible
+- 🎨 Customizable to your use case
+- 📚 Easily ingest and interact with your documents
+- 💾 Retrievable memory and document store
+- ☁️ Serverless architecture
+- 🚀 Deployable in minutes at scale with Cloudflare
+- 👥 Multi-agent and room support
+- 🎯 Goal-directed behavior
+- 📦 Comes with ready-to-deploy examples
+
+## What can I use it for?
+- 🤖 Chatbots
+- 🕵️ Autonomous Agents
+- 📈 Business process handling
+- 🎮 Video game NPCs
 
 ## Try the agent
 
@@ -57,23 +66,52 @@ SUPABASE_SERVICE_API_KEY="your-supabase-service-api-key"
 OPENAI_API_KEY="your-openai-api-key"
 ```
 
+### Supabase Local Setup
+
+First, you will need to install the Supabase CLI. You can install it using the instructions [here](https://supabase.com/docs/guides/cli/getting-started).
+
+Once you have the CLI installed, you can run the following commands to set up a local Supabase instance:
+
+```bash
+supabase start
+```
+
+You can now start the bgent project with `npm run dev` and it will connect to the local Supabase instance by default.
+
+**NOTE**: You will need Docker installed for this to work. If that is an issue for you, use the _Supabase Cloud Setup_ instructions instead below).
+
 ### Supabase Cloud Setup
 
 This library uses Supabase as a database. You can set up a free account at [supabase.io](https://supabase.io) and create a new project.
-Step 1: On the Subase All Projects Dashboard, select “New Project”.  
-Step 2: Select the organization to store the new project in, assign a database name, password and region.  
-Step 3: Select “Create New Project”.  
-Step 4: Wait for the database to setup. This will take a few minutes as supabase setups various directories.  
-Step 5: Select the “SQL Editor” tab from the left navigation menu.  
-Step 6: Copy in your own SQL dump file or optionally use the provided file in the bgent directory at: "src/supabase/db.sql". Note: You can use the command "supabase db dump" if you have a pre-exisiting supabase database to generate the SQL dump file.  
-Step 7: Paste the SQL code into the SQL Editor and hit run in the bottom right.  
-Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.
+
+- Step 1: On the Subase All Projects Dashboard, select “New Project”.
+- Step 2: Select the organization to store the new project in, assign a database name, password and region.
+- Step 3: Select “Create New Project”.
+- Step 4: Wait for the database to setup. This will take a few minutes as supabase setups various directories.
+- Step 5: Select the “SQL Editor” tab from the left navigation menu.
+- Step 6: Copy in your own SQL dump file or optionally use the provided file in the bgent directory at: "src/supabase/db.sql". Note: You can use the command "supabase db dump" if you have a pre-exisiting supabase database to generate the SQL dump file.
+- Step 7: Paste the SQL code into the SQL Editor and hit run in the bottom right.
+- Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.
+
+Once you've set up your Supabase project, you can find your API key by going to the "Settings" tab and then "API". You will need to set the `SUPABASE_URL` and `SUPABASE_SERVICE_API_KEY` environment variables in your `.dev.vars` file.
+
+## Local Model Setup
+
+While bgent uses ChatGPT 3.5 by default, you can use a local model by setting the `serverUrl` to a local endpoint. The [LocalAI](https://localai.io/) project is a great way to run a local model with a compatible API endpoint.
+
+```typescript
+const runtime = new BgentRuntime({
+  serverUrl: process.env.LOCALAI_URL,
+  token: process.env.LOCALAI_TOKEN, // Can be an API key or JWT token for your AI service
+  // ... other options
+});
+```
 
 ## Development
 
 ```
 npm run dev # start the server
-npm run shell # start the shell in another terminal
+npm run shell # start the shell in another terminal to talk to the default agent
 ```
 
 ## Usage
@@ -152,6 +190,10 @@ An external example of an agent is the `afbot` Aframe Discord Bot, which is a di
 
 To deploy an agent to Cloudflare, you can run `npm run deploy` -- this will by default deploy the `cj` agent. To deploy your own agent, see the [afbot](https://github.com/JoinTheAlliance/afbot) example.
 
-# Contributions Welcome
+## API Documentation
 
-If you like this library and want to contribute in any way, please feel free to submit a PR and I will review it. Please note that the goal here is simplicity and accesibility, using common language and few dependencies.
+Complete API documentation is available at https://bgent.org/docs
+
+## Contributions Welcome
+
+This project is made by people like you. No contribution is too small. We welcome your input and support. Please file an issue if you notice something that needs to be resolved, or [join us on Discord](https://discord.gg/jointhealliance) to discuss working with us on fixes and new features.

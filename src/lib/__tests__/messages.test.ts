@@ -44,13 +44,13 @@ describe("Messages Library", () => {
   test("formatMessages should format messages into a readable string", async () => {
     const messages: Memory[] = [
       {
-        content: "Hello",
+        content: { content: "Hello" },
         user_id: user.id as UUID,
         user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000",
       },
       {
-        content: "How are you?",
+        content: { content: "How are you?" },
         user_id: "00000000-0000-0000-0000-000000000000",
         user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000",
@@ -58,23 +58,20 @@ describe("Messages Library", () => {
     ];
     const formattedMessages = formatMessages({ messages, actors });
     messages.forEach((message: Memory) => {
-      console.log("message", message);
-      expect(formattedMessages).toContain(
-        (message.content as Content).content || (message.content as string),
-      );
+      expect(formattedMessages).toContain((message.content as Content).content);
     });
   });
 
   test("formatSummarizations should format summarizations into a readable string", async () => {
     const summarizations: Memory[] = [
       {
-        content: "Reflecting on the day",
+        content: { content: "Reflecting on the day" },
         user_id: user.id as UUID,
         user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000",
       },
       {
-        content: "Thoughts and musings",
+        content: { content: "Thoughts and musings" },
         user_id: "00000000-0000-0000-0000-000000000000",
         user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000room",
@@ -82,7 +79,7 @@ describe("Messages Library", () => {
     ];
     const formattedSummarizations = formatSummarizations(summarizations);
     summarizations.forEach((summarization) => {
-      expect(formattedSummarizations).toContain(summarization.content);
+      expect(formattedSummarizations).toContain(summarization.content.content);
     });
   });
 });

@@ -17,7 +17,7 @@
     "shell": "node --no-warnings scripts/shell.mjs --dev",
     "concat": "node ./scripts/concat.mjs",
     "shell:cloud": "node --no-warnings scripts/shell.mjs",
-    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --runInBand",
     "reset-profile": "rimraf ~/.cjrc",
     "deploy": "wrangler deploy",
     "postinstall": "cd docs && npm install"

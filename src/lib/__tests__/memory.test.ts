@@ -7,7 +7,7 @@ import { getRelationship } from "../relationships";
 import { type Content, type Memory } from "../types";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 
-dotenv.config();
+dotenv.config({ path: ".dev.vars" });
 describe("Memory", () => {
   let memoryManager: MemoryManager;
   const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
@@ -344,7 +344,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
-      content: similarMemoryContent,
+      content: { content: similarMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
       room_id: room_id as UUID,
       embedding,
@@ -386,7 +386,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
-      content: similarMemoryContent,
+      content: { content: similarMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
       room_id: room_id as UUID,
       embedding,
@@ -426,7 +426,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the similar and dissimilar memories
     const newMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
-      content: memoryContent,
+      content: { content: memoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
       room_id: room_id as UUID,
       embedding,
@@ -441,7 +441,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
-      content: similarMemoryContent,
+      content: { content: similarMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
       room_id: room_id as UUID,
       embedding,

@@ -25,8 +25,10 @@ export const TEST_EVALUATOR = {
       messages: [
         {
           user: "{{user1}}",
-          content: "Testing, testing, 123 123",
-          action: "TEST_EVALUATOR",
+          content: {
+            content: "Testing, testing, 123 123",
+            action: "TEST_EVALUATOR",
+          },
         },
       ],
       outcome: "There is an outcome.",
@@ -53,8 +55,10 @@ export const TEST_EVALUATOR_FAIL = {
       messages: [
         {
           user: "{{user1}}",
-          content: "Testing, testing, 123 123",
-          action: "TEST_EVALUATOR_FAIL",
+          content: {
+            content: "Testing, testing, 123 123",
+            action: "TEST_EVALUATOR_FAIL",
+          },
         },
       ],
       outcome: "Things have been tested to have maybe gone wrong.",
