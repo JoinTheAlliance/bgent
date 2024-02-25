@@ -48,17 +48,9 @@ export class MemoryManager {
     if (memory.embedding) {
       return memory;
     }
-    const getMemoryEmbeddingString = (memory: Memory) => {
-      if (typeof memory.content === "string") {
-        return memory.content;
-      }
-      if (typeof memory.content === "object" && memory.content !== null) {
-        return JSON.stringify(memory.content.content ?? memory.content);
-      }
-      return "";
-    };
 
-    const memoryText = getMemoryEmbeddingString(memory);
+    const memoryText = memory.content.content;
+    if (!memoryText) throw new Error("Memory content is empty");
     memory.embedding = memoryText
       ? await this.runtime.embed(memoryText)
       : embeddingZeroVector.slice();
