@@ -8,6 +8,7 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../continue";
+import ignore from "../ignore";
 import { zeroUuid } from "../../constants";
 
 dotenv.config({ path: ".dev.vars" });
@@ -51,7 +52,7 @@ describe("User Profile", () => {
   beforeAll(async () => {
     const setup = await createRuntime({
       env: process.env as Record<string, string>,
-      actions: [action],
+      actions: [action, ignore],
     });
     user = setup.session.user;
     runtime = setup.runtime;
