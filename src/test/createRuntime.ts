@@ -24,12 +24,13 @@ export async function createRuntime({
     env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
   );
 
-  let {
-    data: { user, session },
-  } = await supabase.auth.signInWithPassword({
+  const { data } = await supabase.auth.signInWithPassword({
     email: TEST_EMAIL!,
     password: TEST_PASSWORD!,
   });
+
+  let { user, session } = data;
+
 
   if (!session) {
     const response = await supabase.auth.signUp({
