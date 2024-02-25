@@ -6,7 +6,8 @@ export const defaultProviders: Provider[] = [time];
 
 /**
  * Formats provider outputs into a string which can be injected into the context.
- * @param providers - An array of evaluator objects.
+ * @param runtime The Bgent runtime object.
+ * @param message The incoming message object.
  * @returns A string that concatenates the outputs of each provider.
  */
 export async function getProviders(runtime: BgentRuntime, message: Message) {

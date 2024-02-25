@@ -132,6 +132,7 @@ export default {
   
   Goals:
   - Name: Finish reading "War and Peace"
+    id: 12345-67890-12345-67890
     Status: IN_PROGRESS
     Objectives: 
       - Read up to chapter 20 by the end of the month
@@ -161,7 +162,7 @@ export default {
 
       outcome: `[
         {
-          "id": "<goal uuid for 'Finish reading War and Peace'>",
+          "id": "12345-67890-12345-67890",
           "objectives": [
             { "description": "Read up to chapter 20 by the end of the month", "completed": true },
             { "description": "Discuss the first part in the next meeting", "completed": false }
@@ -177,6 +178,7 @@ export default {
   
   Goals:
   - Name: Complete a marathon
+    id: 23456-78901-23456-78901
     Status: IN_PROGRESS
     Objectives: 
       - Increase running distance to 30 miles a week
@@ -202,7 +204,7 @@ export default {
 
       outcome: `[
         {
-          "id": "<goal uuid for 'Complete a marathon'>",
+          "id": "23456-78901-23456-78901",
           "objectives": [
             { "description": "Increase running distance to 30 miles a week", "completed": true },
             { "description": "Complete a half-marathon as practice", "completed": false }
@@ -218,6 +220,7 @@ export default {
   
   Goals:
   - Name: Finish the final year project
+    id: 34567-89012-34567-89012
     Status: IN_PROGRESS
     Objectives: 
       - Submit the first draft of the thesis
@@ -243,7 +246,7 @@ export default {
 
       outcome: `[
         {
-          "id": "<goal uuid for 'Finish the final year project'>",
+          "id": "34567-89012-34567-89012",
           "objectives": [
             { "description": "Submit the first draft of the thesis", "completed": true },
             { "description": "Complete the project prototype", "completed": false }

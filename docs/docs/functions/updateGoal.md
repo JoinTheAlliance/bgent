@@ -15,7 +15,6 @@ custom_edit_url: null
 | `«destructured»` | `Object` |
 | › `goal` | [`Goal`](../interfaces/Goal.md) |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) |
-| › `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 

@@ -12,10 +12,10 @@ Formats provider outputs into a string which can be injected into the context.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) |
-| `message` | [`Message`](../interfaces/Message.md) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | The Bgent runtime object. |
+| `message` | [`Message`](../interfaces/Message.md) | The incoming message object. |
 
 #### Returns
 

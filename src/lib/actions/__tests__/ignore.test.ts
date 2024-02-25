@@ -12,6 +12,7 @@ import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../ignore";
 import { populateMemories } from "../../../test/populateMemories";
+import { zeroUuid } from "../../constants";
 
 dotenv.config({ path: ".dev.vars" });
 

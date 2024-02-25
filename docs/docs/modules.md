@@ -47,6 +47,7 @@ custom_edit_url: null
 - [embeddingZeroVector](variables/embeddingZeroVector.md)
 - [evaluationTemplate](variables/evaluationTemplate.md)
 - [fact](variables/fact.md)
+- [goal](variables/goal-1.md)
 - [ignore](variables/ignore.md)
 - [wait](variables/wait.md)
 
