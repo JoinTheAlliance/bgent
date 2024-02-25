@@ -14,18 +14,6 @@ CREATE SCHEMA IF NOT EXISTS "public";
 
 ALTER SCHEMA "public" OWNER TO "pg_database_owner";
 
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_extension
-        WHERE extname = 'vector'
-    ) THEN
-        CREATE EXTENSION vector
-        SCHEMA extensions;
-    END IF;
-END $$;
-
 CREATE OR REPLACE FUNCTION "public"."check_similarity_and_insert"("query_table_name" "text", "query_user_id" "uuid", "query_user_ids" "uuid"[], "query_content" "jsonb", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "similarity_threshold" double precision) RETURNS "void"
     LANGUAGE "plpgsql"
     AS $$
