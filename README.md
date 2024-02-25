@@ -7,6 +7,7 @@ A flexible, scalable and customizable agent for production apps. Comes with batt
 [![npm version](https://badge.fury.io/js/bgent.svg)](https://badge.fury.io/js/bgent)
 ![build passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/deploy_worker.yaml/badge.svg)
 ![tests passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/test.yaml/badge.svg)
+![lint passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/lint.yaml/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/jointhealliance/bgent/blob/main/LICENSE)
 [![stars - bgent](https://img.shields.io/github/stars/jointhealliance/bgent?style=social)](https://github.com/jointhealliance/bgent)
 [![forks - bgent](https://img.shields.io/github/forks/jointhealliance/bgent?style=social)](https://github.com/jointhealliance/bgent)
