@@ -6,6 +6,10 @@ sidebar_position: 0.5
 custom_edit_url: null
 ---
 
+## Enumerations
+
+- [GoalStatus](enums/GoalStatus.md)
+
 ## Classes
 
 - [BgentRuntime](classes/BgentRuntime.md)
@@ -25,6 +29,7 @@ custom_edit_url: null
 - [Message](interfaces/Message.md)
 - [MessageExample](interfaces/MessageExample.md)
 - [Objective](interfaces/Objective.md)
+- [Provider](interfaces/Provider.md)
 - [State](interfaces/State.md)
 
 ## Type Aliases
@@ -37,15 +42,17 @@ custom_edit_url: null
 - [continue](variables/continue.md)
 - [defaultActions](variables/defaultActions.md)
 - [defaultEvaluators](variables/defaultEvaluators.md)
+- [defaultProviders](variables/defaultProviders.md)
 - [embeddingDimension](variables/embeddingDimension.md)
 - [embeddingZeroVector](variables/embeddingZeroVector.md)
 - [evaluationTemplate](variables/evaluationTemplate.md)
+- [fact](variables/fact.md)
 - [ignore](variables/ignore.md)
-- [summarization](variables/summarization.md)
 - [wait](variables/wait.md)
 
 ## Functions
 
+- [addHeader](functions/addHeader.md)
 - [addLore](functions/addLore.md)
 - [cancelGoal](functions/cancelGoal.md)
 - [composeActionExamples](functions/composeActionExamples.md)
@@ -72,6 +79,7 @@ custom_edit_url: null
 - [getFormattedActions](functions/getFormattedActions.md)
 - [getGoals](functions/getGoals.md)
 - [getLore](functions/getLore.md)
+- [getProviders](functions/getProviders.md)
 - [getRelationship](functions/getRelationship.md)
 - [getRelationships](functions/getRelationships.md)
-- [updateGoals](functions/updateGoals.md)
+- [updateGoal](functions/updateGoal.md)

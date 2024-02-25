@@ -49,7 +49,7 @@ describe("Ignore action tests", () => {
   });
 
   async function cleanup() {
-    await runtime.summarizationManager.removeAllMemoriesByUserIds([
+    await runtime.factManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);

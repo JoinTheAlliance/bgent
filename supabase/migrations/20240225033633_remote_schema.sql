@@ -545,7 +545,7 @@ CREATE TABLE IF NOT EXISTS "public"."rooms" (
 
 ALTER TABLE "public"."rooms" OWNER TO "postgres";
 
-CREATE TABLE IF NOT EXISTS "public"."summarizations" (
+CREATE TABLE IF NOT EXISTS "public"."facts" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "content" "jsonb" NOT NULL,
@@ -555,9 +555,9 @@ CREATE TABLE IF NOT EXISTS "public"."summarizations" (
     "room_id" "uuid",
     "unique" boolean DEFAULT true NOT NULL
 );
-ALTER TABLE ONLY "public"."summarizations" ALTER COLUMN "embedding" SET STORAGE EXTENDED;
+ALTER TABLE ONLY "public"."facts" ALTER COLUMN "embedding" SET STORAGE EXTENDED;
 
-ALTER TABLE "public"."summarizations" OWNER TO "postgres";
+ALTER TABLE "public"."facts" OWNER TO "postgres";
 
 ALTER TABLE ONLY "public"."descriptions"
     ADD CONSTRAINT "descriptions_pkey" PRIMARY KEY ("id");
@@ -589,7 +589,7 @@ ALTER TABLE ONLY "public"."participants"
 ALTER TABLE ONLY "public"."participants"
     ADD CONSTRAINT "participants_pkey" PRIMARY KEY ("id");
 
-ALTER TABLE ONLY "public"."summarizations"
+ALTER TABLE ONLY "public"."facts"
     ADD CONSTRAINT "reflections_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."rooms"
@@ -627,10 +627,10 @@ ALTER TABLE ONLY "public"."lore"
 ALTER TABLE ONLY "public"."lore"
     ADD CONSTRAINT "public_lore_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
 
-ALTER TABLE ONLY "public"."summarizations"
+ALTER TABLE ONLY "public"."facts"
     ADD CONSTRAINT "reflections_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
 
-ALTER TABLE ONLY "public"."summarizations"
+ALTER TABLE ONLY "public"."facts"
     ADD CONSTRAINT "reflections_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
 
 ALTER TABLE ONLY "public"."relationships"
@@ -650,7 +650,7 @@ ALTER TABLE ONLY "public"."rooms"
 
 CREATE POLICY "Can select and update all data" ON "public"."accounts" USING (("auth"."uid"() = "id")) WITH CHECK (("auth"."uid"() = "id"));
 
-CREATE POLICY "Enable for authenticated users only" ON "public"."summarizations" TO "authenticated" USING (("auth"."uid"() = ANY ("user_ids"))) WITH CHECK (("auth"."uid"() = ANY ("user_ids")));
+CREATE POLICY "Enable for authenticated users only" ON "public"."facts" TO "authenticated" USING (("auth"."uid"() = ANY ("user_ids"))) WITH CHECK (("auth"."uid"() = ANY ("user_ids")));
 
 CREATE POLICY "Enable for users based on user_id" ON "public"."descriptions" TO "authenticated" USING (("auth"."uid"() = ANY ("user_ids"))) WITH CHECK (("auth"."uid"() = ANY ("user_ids")));
 
@@ -777,9 +777,9 @@ GRANT ALL ON TABLE "public"."rooms" TO "anon";
 GRANT ALL ON TABLE "public"."rooms" TO "authenticated";
 GRANT ALL ON TABLE "public"."rooms" TO "service_role";
 
-GRANT ALL ON TABLE "public"."summarizations" TO "anon";
-GRANT ALL ON TABLE "public"."summarizations" TO "authenticated";
-GRANT ALL ON TABLE "public"."summarizations" TO "service_role";
+GRANT ALL ON TABLE "public"."facts" TO "anon";
+GRANT ALL ON TABLE "public"."facts" TO "authenticated";
+GRANT ALL ON TABLE "public"."facts" TO "service_role";
 
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "postgres";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "anon";

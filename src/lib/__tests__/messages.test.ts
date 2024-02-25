@@ -4,7 +4,7 @@ import { createRuntime } from "../../test/createRuntime";
 import { formatActors, formatMessages, getActorDetails } from "../messages";
 import { type BgentRuntime } from "../runtime";
 import { type Actor, type Content, type Memory } from "../types";
-import { formatSummarizations } from "../evaluators/summarization";
+import { formatFacts } from "../evaluators/fact";
 
 describe("Messages Library", () => {
   let runtime: BgentRuntime, user: User, actors: Actor[];
@@ -62,8 +62,8 @@ describe("Messages Library", () => {
     });
   });
 
-  test("formatSummarizations should format summarizations into a readable string", async () => {
-    const summarizations: Memory[] = [
+  test("formatFacts should format facts into a readable string", async () => {
+    const facts: Memory[] = [
       {
         content: { content: "Reflecting on the day" },
         user_id: user.id as UUID,
@@ -77,9 +77,9 @@ describe("Messages Library", () => {
         room_id: "00000000-0000-0000-0000-000000000000room",
       },
     ];
-    const formattedSummarizations = formatSummarizations(summarizations);
-    summarizations.forEach((summarization) => {
-      expect(formattedSummarizations).toContain(summarization.content.content);
+    const formattedFacts = formatFacts(facts);
+    facts.forEach((fact) => {
+      expect(formattedFacts).toContain(fact.content.content);
     });
   });
 });

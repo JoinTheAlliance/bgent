@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
 import { BgentRuntime } from "./runtime";
-import { type Goal, type Objective } from "./types";
+import { type Goal, GoalStatus, type Objective } from "./types";
 
 export const getGoals = async ({
   runtime,
@@ -43,42 +43,28 @@ export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
   return goalStrings.join("\n");
 };
 
-export const updateGoals = async ({
+export const updateGoal = async ({
   runtime,
-  userIds,
-  goals,
+  goal,
 }: {
   runtime: BgentRuntime;
   userIds: UUID[];
-  goals: Goal[];
+  goal: Goal;
 }) => {
-  for (const goal of goals) {
-    await runtime.supabase
-      .from("goals")
-      .update(goal)
-      .match({ id: goal.id })
-      .in("user_ids", userIds);
-  }
+  return await runtime.supabase
+    .from("goals")
+    .update(goal)
+    .match({ id: goal.id });
 };
 
 export const createGoal = async ({
   runtime,
   goal,
-  userIds,
-  userId,
 }: {
   runtime: BgentRuntime;
   goal: Goal;
-  userIds: string[];
-  userId: string;
 }) => {
-  const { error } = await runtime.supabase
-    .from("goals")
-    .upsert({ ...goal, user_ids: userIds, user_id: userId });
-
-  if (error) {
-    throw new Error(error.message);
-  }
+  return await runtime.supabase.from("goals").upsert(goal);
 };
 
 export const cancelGoal = async ({
@@ -88,9 +74,9 @@ export const cancelGoal = async ({
   runtime: BgentRuntime;
   goalId: UUID;
 }) => {
-  await runtime.supabase
+  return await runtime.supabase
     .from("goals")
-    .update({ status: "FAILED" })
+    .update({ status: GoalStatus.FAILED })
     .match({ id: goalId });
 };
 
@@ -101,9 +87,9 @@ export const finishGoal = async ({
   runtime: BgentRuntime;
   goalId: UUID;
 }) => {
-  await runtime.supabase
+  return await runtime.supabase
     .from("goals")
-    .update({ status: "DONE" })
+    .update({ status: GoalStatus.DONE })
     .match({ id: goalId });
 };
 
@@ -128,12 +114,12 @@ export const finishGoalObjective = async ({
 
   const updatedObjectives = goal.objectives.map((objective: Objective) => {
     if (objective.id === objectiveId) {
-      return { ...objective, status: "DONE" };
+      return { ...objective, completed: true };
     }
     return objective;
   });
 
-  await runtime.supabase
+  return await runtime.supabase
     .from("goals")
     .update({ objectives: updatedObjectives })
     .match({ id: goalId });

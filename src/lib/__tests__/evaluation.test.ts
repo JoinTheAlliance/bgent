@@ -5,7 +5,7 @@ import { createRuntime } from "../../test/createRuntime";
 import { TEST_EVALUATOR, TEST_EVALUATOR_FAIL } from "../../test/testEvaluator";
 import { composeContext } from "../context";
 import { evaluationTemplate } from "../evaluators";
-import summarization from "../evaluators/summarization";
+import fact from "../evaluators/fact";
 import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
@@ -103,11 +103,11 @@ describe("Evaluation Process", () => {
     }); // Adjust the timeout if needed
   }, 600000);
 
-  test("Test that summarization appears in evaluation handler", async () => {
+  test("Test that fact appears in evaluation handler", async () => {
     const { runtime } = await createRuntime({
       env: process.env as Record<string, string>,
       recentMessageCount: 1,
-      evaluators: [summarization],
+      evaluators: [fact],
     });
 
     const message: Message = {
@@ -122,10 +122,10 @@ describe("Evaluation Process", () => {
     const prompt = composeContext({ state, template: evaluationTemplate });
 
     // expect that the prompt contacts the testEvaluator name
-    expect(prompt.includes(summarization.name)).toBeTruthy();
+    expect(prompt.includes(fact.name)).toBeTruthy();
 
     // check if state.EvaluatorNames contains the testEvaluator name
 
-    expect(state.evaluatorNames).toContain(summarization.name);
+    expect(state.evaluatorNames).toContain(fact.name);
   });
 });

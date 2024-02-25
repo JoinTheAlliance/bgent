@@ -1,1 +1,1 @@
-export { default as summarization } from "./summarization";
+export { default as fact } from "./fact";

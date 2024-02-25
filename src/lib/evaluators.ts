@@ -1,9 +1,9 @@
 import { names, uniqueNamesGenerator } from "unique-names-generator";
-import summarization from "./evaluators/summarization";
+import fact from "./evaluators/fact";
 import { ActionExample, type Evaluator } from "./types";
 
 export const defaultEvaluators: Evaluator[] = [
-  summarization,
+  fact,
   // goal,
 ];
 

@@ -137,20 +137,20 @@ Bgent is customized through actions and evaluators. Actions are functions that a
 
 An example of an action is `wait` (the agent should stop and wait for the user to respond) or `continue` (the agent should continue with the next step in the conversation).
 
-An example of a evaluator is `summarization` (the agent should summarize the conversation so far).
+An example of a evaluator is `fact` (the agent should summarize the conversation so far).
 
 ```typescript
-import { wait, summarization } from "bgent";
+import { wait, fact } from "bgent";
 
 const runtime = new BgentRuntime({
   // ... other options
   actions: [wait],
-  evaluators: [summarization],
+  evaluators: [fact],
 });
 
 // You can also register actions and evaluators after the runtime has been created
 bgentRuntime.registerAction(wait);
-bgentRuntime.registerEvaluator(summarization);
+bgentRuntime.registerEvaluator(fact);
 ```
 
 ## Handling User Input

@@ -13,13 +13,13 @@ import { populateMemories } from "../../../test/populateMemories";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
-import evaluator from "../summarization";
+import evaluator from "../fact";
 
 dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
-describe("Factual Summarization", () => {
+describe("Factual Fact", () => {
   let user: User;
   let runtime: BgentRuntime;
   let room_id: UUID;
@@ -47,7 +47,7 @@ describe("Factual Summarization", () => {
   });
 
   async function cleanup() {
-    await runtime.summarizationManager.removeAllMemoriesByUserIds([
+    await runtime.factManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);
@@ -60,15 +60,14 @@ describe("Factual Summarization", () => {
   async function addFacts(facts: string[]) {
     for (const fact of facts) {
       const existingEmbedding = getCachedEmbedding(fact);
-      const bakedMemory =
-        await runtime.summarizationManager.addEmbeddingToMemory({
-          user_id: user?.id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: { content: fact },
-          room_id: room_id as UUID,
-          embedding: existingEmbedding,
-        });
-      await runtime.summarizationManager.createMemory(bakedMemory);
+      const bakedMemory = await runtime.factManager.addEmbeddingToMemory({
+        user_id: user?.id as UUID,
+        user_ids: [user?.id as UUID, zeroUuid],
+        content: { content: fact },
+        room_id: room_id as UUID,
+        embedding: existingEmbedding,
+      });
+      await runtime.factManager.createMemory(bakedMemory);
       if (!existingEmbedding) {
         writeCachedEmbedding(fact, bakedMemory.embedding as number[]);
         await new Promise((resolve) => setTimeout(resolve, 200));

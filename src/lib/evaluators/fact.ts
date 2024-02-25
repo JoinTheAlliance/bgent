@@ -13,18 +13,15 @@ import {
 } from "../types";
 import { parseJsonArrayFromText } from "../utils";
 
-export const formatSummarizations = (summarizations: Memory[]) => {
-  const messageStrings = summarizations
+export const formatFacts = (facts: Memory[]) => {
+  const messageStrings = facts
     .reverse()
-    .map(
-      (summarization: Memory) =>
-        `${(summarization.content as Content)?.content}`,
-    );
+    .map((fact: Memory) => `${(fact.content as Content)?.content}`);
   const finalMessageStrings = messageStrings.join("\n");
   return finalMessageStrings;
 };
 
-const template = `TASK: Fact Summarization
+const template = `TASK: Fact Fact
 Extract what happened in the scene as an array of claims in JSON format.
 
 # START OF EXAMPLES
@@ -52,8 +49,8 @@ Extract any claims from the conversation in the ACTUAL scene that are not alread
 # START OF ACTUAL TASK INFORMATION
 
 Facts about the actors:
-{{recentSummarizations}}
-{{relevantSummarizations}}
+{{recentFacts}}
+{{relevantFacts}}
 
 Actors in the Scene:
 {{actors}}
@@ -105,64 +102,63 @@ async function handler(runtime: BgentRuntime, message: Message) {
   });
 
   if (runtime.debugMode) {
-    logger.log(context, "Summarization context", "cyan");
+    logger.log(context, "Fact context", "cyan");
   }
 
-  let summarizations;
+  let facts;
 
   for (let i = 0; i < 3; i++) {
-    const summarizationText: string = await runtime.completion({
+    const factText: string = await runtime.completion({
       context,
       stop: [],
     });
-    const parsedSummarizations = parseJsonArrayFromText(summarizationText);
-    if (parsedSummarizations) {
-      summarizations = parsedSummarizations;
+    const parsedFacts = parseJsonArrayFromText(factText);
+    if (parsedFacts) {
+      facts = parsedFacts;
       break;
     }
   }
 
-  if (!summarizations) {
+  if (!facts) {
     if (runtime.debugMode) {
-      logger.warn("No summarization generated");
+      logger.warn("No fact generated");
     }
     return [];
   }
 
   if (runtime.debugMode) {
-    logger.log(JSON.stringify(summarizations), "Summarization Output", "cyan");
+    logger.log(JSON.stringify(facts), "Fact Output", "cyan");
   }
 
-  const filteredSummarizations = summarizations
-    .filter((summarization) => {
+  const filteredFacts = facts
+    .filter((fact) => {
       return (
-        !summarization.already_known &&
-        summarization.type === "fact" &&
-        !summarization.in_bio &&
-        summarization.claim &&
-        summarization.claim.trim() !== ""
+        !fact.already_known &&
+        fact.type === "fact" &&
+        !fact.in_bio &&
+        fact.claim &&
+        fact.claim.trim() !== ""
       );
     })
-    .map((summarization) => summarization.claim);
+    .map((fact) => fact.claim);
 
-  for (const summarization of filteredSummarizations) {
-    const summarizationMemory =
-      await runtime.summarizationManager.addEmbeddingToMemory({
-        user_ids: userIds,
-        user_id: agentId!,
-        content: summarization,
-        room_id,
-      });
+  for (const fact of filteredFacts) {
+    const factMemory = await runtime.factManager.addEmbeddingToMemory({
+      user_ids: userIds,
+      user_id: agentId!,
+      content: fact,
+      room_id,
+    });
 
-    await runtime.summarizationManager.createMemory(summarizationMemory, true);
+    await runtime.factManager.createMemory(factMemory, true);
 
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
-  return filteredSummarizations;
+  return filteredFacts;
 }
 
 export default {
-  name: "SUMMARIZE",
+  name: "GET_FACTS",
   validate: async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     runtime: BgentRuntime,

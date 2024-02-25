@@ -74,6 +74,24 @@ ___
 
 ___
 
+### providers
+
+• `Optional` **providers**: `string`
+
+___
+
+### recentFacts
+
+• `Optional` **recentFacts**: `string`
+
+___
+
+### recentFactsData
+
+• `Optional` **recentFactsData**: [`Memory`](Memory.md)[]
+
+___
+
 ### recentMessages
 
 • **recentMessages**: `string`
@@ -86,27 +104,15 @@ ___
 
 ___
 
-### recentSummarizations
+### relevantFacts
 
-• `Optional` **recentSummarizations**: `string`
-
-___
-
-### recentSummarizationsData
-
-• `Optional` **recentSummarizationsData**: [`Memory`](Memory.md)[]
+• `Optional` **relevantFacts**: `string`
 
 ___
 
-### relevantSummarizations
+### relevantFactsData
 
-• `Optional` **relevantSummarizations**: `string`
-
-___
-
-### relevantSummarizationsData
-
-• `Optional` **relevantSummarizationsData**: [`Memory`](Memory.md)[]
+• `Optional` **relevantFactsData**: [`Memory`](Memory.md)[]
 
 ___
 

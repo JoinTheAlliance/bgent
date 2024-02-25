@@ -53,20 +53,26 @@ export interface Memory {
  * Represents an objective within a goal, detailing what needs to be achieved and whether it has been completed.
  */
 export interface Objective {
-  id: string; // A unique identifier for the objective.
+  id?: string; // A unique identifier for the objective.
   description: string; // A description of what the objective entails.
   completed: boolean; // A boolean indicating whether the objective has been completed.
+}
+
+export enum GoalStatus {
+  DONE = "DONE",
+  FAILED = "FAILED",
+  IN_PROGRESS = "IN_PROGRESS",
 }
 
 /**
  * Represents a goal, which is a higher-level aim composed of one or more objectives. Goals are tracked to measure progress or achievements within the conversation or system.
  */
 export interface Goal {
-  id: UUID; // A unique identifier for the goal.
+  id?: UUID; // A unique identifier for the goal.
   user_ids: UUID[]; // A list of user IDs associated with the goal, for goals relevant to specific users or groups.
   user_id: UUID; // The user ID of the goal's owner or the user who is primarily responsible for the goal.
   name: string; // The name or title of the goal.
-  status: string; // The current status of the goal, such as "in progress" or "completed".
+  status: GoalStatus; // The current status of the goal, such as "in progress" or "completed".
   objectives: Objective[]; // A list of objectives that make up the goal.
 }
 
@@ -86,10 +92,10 @@ export interface State {
   goalsData?: Goal[]; // An optional array of goal objects relevant to the current conversation or context.
   recentMessages: string; // A string representation of recent messages in the conversation, for context.
   recentMessagesData: Memory[]; // An array of memory objects representing recent messages in the conversation.
-  recentSummarizations?: string; // An optional string representation of recent summarizations derived from the conversation.
-  recentSummarizationsData?: Memory[]; // An optional array of memory objects representing recent summarizations.
-  relevantSummarizations?: string; // An optional string representation of summarizations relevant to the current context or topic.
-  relevantSummarizationsData?: Memory[]; // An optional array of memory objects representing relevant summarizations.
+  recentFacts?: string; // An optional string representation of recent facts derived from the conversation.
+  recentFactsData?: Memory[]; // An optional array of memory objects representing recent facts.
+  relevantFacts?: string; // An optional string representation of facts relevant to the current context or topic.
+  relevantFactsData?: Memory[]; // An optional array of memory objects representing relevant facts.
   actionNames?: string; // An optional string listing the names of actions that are valid in the current state.
   actions?: string; // An optional string representation of actions and their descriptions, relevant to the current state.
   actionsData?: Action[]; // An optional array of action objects relevant to the current state.

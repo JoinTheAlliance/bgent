@@ -12,7 +12,7 @@ Represents a goal, which is a higher-level aim composed of one or more objective
 
 ### id
 
-• **id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
+• `Optional` **id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 ### status
 
-• **status**: `string`
+• **status**: [`GoalStatus`](../enums/GoalStatus.md)
 
 ___
 

@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
+import { defaultActions, defaultEvaluators } from "../../lib";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
 import {
@@ -11,8 +12,6 @@ import {
 } from "../../lib/types";
 import actions from "./actions";
 import evaluators from "./evaluators";
-import flavor from "./flavor";
-import { defaultActions, defaultEvaluators } from "../../lib";
 
 export function shouldSkipMessage(state: State, agentId: string): boolean {
   if (state.recentMessagesData && state.recentMessagesData.length > 2) {
@@ -103,7 +102,6 @@ const routes: Route[] = [
         token: env.OPENAI_API_KEY,
         actions: [...actions, ...defaultActions],
         evaluators: [...evaluators, ...defaultEvaluators],
-        flavor,
       });
 
       if (!(message as Message).agentId) {
@@ -147,7 +145,6 @@ const routes: Route[] = [
         token: env.OPENAI_API_KEY,
         actions,
         evaluators,
-        flavor,
       });
 
       if (!message.agentId) {

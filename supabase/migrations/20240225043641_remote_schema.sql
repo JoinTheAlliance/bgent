@@ -28,7 +28,7 @@ alter table "public"."relationships" enable row level security;
 
 alter table "public"."rooms" enable row level security;
 
-alter table "public"."summarizations" enable row level security;
+alter table "public"."facts" enable row level security;
 
 CREATE UNIQUE INDEX credits_pkey ON public.credits USING btree (id);
 

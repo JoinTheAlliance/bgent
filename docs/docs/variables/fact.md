@@ -1,12 +1,12 @@
 ---
-id: "summarization"
-title: "Variable: summarization"
-sidebar_label: "summarization"
+id: "fact"
+title: "Variable: fact"
+sidebar_label: "fact"
 sidebar_position: 0
 custom_edit_url: null
 ---
 
-• **summarization**: `Object`
+• **fact**: `Object`
 
 #### Type declaration
 

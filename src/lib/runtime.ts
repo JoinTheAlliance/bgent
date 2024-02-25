@@ -1,5 +1,5 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
-import { composeContext } from "./context";
+import { addHeader, composeContext } from "./context";
 import {
   defaultEvaluators,
   evaluationTemplate,
@@ -14,11 +14,11 @@ import { messageHandlerTemplate } from "./templates";
 import {
   Content,
   Goal,
+  Provider,
   State,
   type Action,
   type Evaluator,
   type Message,
-  Provider,
 } from "./types";
 import { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";
 
@@ -29,12 +29,12 @@ import {
   formatActions,
 } from "./actions";
 // import { formatGoalsAsString, getGoals } from "./goals";
-import { formatSummarizations } from "./evaluators/summarization";
+import { formatFacts } from "./evaluators/fact";
 import { formatGoalsAsString, getGoals } from "./goals";
+import { formatLore, getLore } from "./lore";
 import { formatActors, formatMessages, getActorDetails } from "./messages";
-import { type Actor, /*type Goal,*/ type Memory } from "./types";
-import { getLore, formatLore } from "./lore";
 import { defaultProviders, getProviders } from "./providers";
+import { type Actor, /*type Goal,*/ type Memory } from "./types";
 
 /**
  * Represents the runtime environment for an agent, handling message processing,
@@ -65,11 +65,6 @@ export class BgentRuntime {
    * The Supabase client used for database interactions.
    */
   supabase: SupabaseClient;
-
-  /**
-   * A string to customize the agent's behavior or responses.
-   */
-  flavor: string = "";
 
   /**
    * Custom actions that the agent can perform.
@@ -103,11 +98,11 @@ export class BgentRuntime {
   });
 
   /**
-   * Manage the summarization and recall of facts.
+   * Manage the fact and recall of facts.
    */
-  summarizationManager: MemoryManager = new MemoryManager({
+  factManager: MemoryManager = new MemoryManager({
     runtime: this,
-    tableName: "summarizations",
+    tableName: "facts",
   });
 
   /**
@@ -126,7 +121,6 @@ export class BgentRuntime {
    * @param opts.supabase - The Supabase client.
    * @param opts.debugMode - If true, debug messages will be logged.
    * @param opts.serverUrl - The URL of the worker.
-   * @param opts.flavor - Optional lore to inject into the default prompt.
    * @param opts.actions - Optional custom actions.
    * @param opts.evaluators - Optional custom evaluators.
    * @param opts.providers - Optional context providers.
@@ -137,7 +131,6 @@ export class BgentRuntime {
     supabase: SupabaseClient; // Supabase client
     debugMode?: boolean; // If true, will log debug messages
     serverUrl?: string; // The URL of the worker
-    flavor?: string; // Optional lore to inject into the default prompt
     actions?: Action[]; // Optional custom actions
     evaluators?: Evaluator[]; // Optional custom evaluators
     providers?: Provider[];
@@ -147,7 +140,6 @@ export class BgentRuntime {
     this.debugMode = opts.debugMode ?? false;
     this.supabase = opts.supabase;
     this.serverUrl = opts.serverUrl ?? this.serverUrl;
-    this.flavor = opts.flavor ?? "";
     if (!this.serverUrl) {
       console.warn("No serverUrl provided, defaulting to localhost");
     }
@@ -525,17 +517,13 @@ export class BgentRuntime {
     const { senderId, agentId, userIds, room_id } = message;
 
     const recentMessageCount = this.getRecentMessageCount();
-    const recentSummarizationsCount = Math.ceil(
-      this.getRecentMessageCount() / 2,
-    );
-    const relevantSummarizationsCount = Math.ceil(
-      this.getRecentMessageCount() / 2,
-    );
+    const recentFactsCount = Math.ceil(this.getRecentMessageCount() / 2);
+    const relevantFactsCount = Math.ceil(this.getRecentMessageCount() / 2);
 
     const [
       actorsData,
       recentMessagesData,
-      recentSummarizationsData,
+      recentFactsData,
       goalsData,
       loreData,
       providers,
@@ -547,9 +535,9 @@ export class BgentRuntime {
           count: recentMessageCount,
           unique: false,
         }),
-        this.summarizationManager.getMemoriesByIds({
+        this.factManager.getMemoriesByIds({
           userIds: userIds!,
-          count: recentSummarizationsCount,
+          count: recentFactsCount,
         }),
         getGoals({
           runtime: this,
@@ -568,21 +556,20 @@ export class BgentRuntime {
 
     const goals = await formatGoalsAsString({ goals: goalsData });
 
-    let relevantSummarizationsData: Memory[] = [];
+    let relevantFactsData: Memory[] = [];
 
-    if (recentSummarizationsData.length > recentSummarizationsCount) {
-      relevantSummarizationsData = (
-        await this.summarizationManager.searchMemoriesByEmbedding(
-          recentSummarizationsData[0].embedding!,
+    if (recentFactsData.length > recentFactsCount) {
+      relevantFactsData = (
+        await this.factManager.searchMemoriesByEmbedding(
+          recentFactsData[0].embedding!,
           {
             userIds: userIds!,
-            count: relevantSummarizationsCount,
+            count: relevantFactsCount,
           },
         )
-      ).filter((summarization: Memory) => {
-        return !recentSummarizationsData.find(
-          (recentSummarization: Memory) =>
-            recentSummarization.id === summarization.id,
+      ).filter((fact: Memory) => {
+        return !recentFactsData.find(
+          (recentFact: Memory) => recentFact.id === fact.id,
         );
       });
     }
@@ -598,10 +585,8 @@ export class BgentRuntime {
       }),
     });
 
-    const recentSummarizations = formatSummarizations(recentSummarizationsData);
-    const relevantSummarizations = formatSummarizations(
-      relevantSummarizationsData,
-    );
+    const recentFacts = formatFacts(recentFactsData);
+    const relevantFacts = formatFacts(relevantFactsData);
 
     const lore = formatLore(loreData);
 
@@ -617,21 +602,20 @@ export class BgentRuntime {
       agentId,
       agentName,
       senderName,
-      actors,
+      actors: addHeader("# Actors", actors),
       actorsData,
       room_id,
-      goals,
-      lore,
+      goals: addHeader("### Goals", goals),
+      lore: addHeader("### Important Information", lore),
       loreData,
       providers,
       goalsData,
-      flavor: this.flavor,
-      recentMessages,
+      recentMessages: addHeader("### Conversation Messages", recentMessages),
       recentMessagesData,
-      recentSummarizations,
-      recentSummarizationsData,
-      relevantSummarizations,
-      relevantSummarizationsData,
+      recentFacts: addHeader("### Recent Facts", recentFacts),
+      recentFactsData,
+      relevantFacts: addHeader("# Relevant Facts", relevantFacts),
+      relevantFactsData,
     };
 
     const actionPromises = this.actions.map(async (action: Action) => {
@@ -662,11 +646,17 @@ export class BgentRuntime {
 
     const actionsData = resolvedActions.filter(Boolean) as Action[];
 
+    const formattedActionExamples =
+      `json\`\`\`\n` + composeActionExamples(actionsData, 10) + `\n\`\`\``;
+
     const actionState = {
-      actionNames: formatActionNames(actionsData),
+      actionNames: addHeader(
+        "### Available actions to respond with:",
+        formatActionNames(actionsData),
+      ),
       actionConditions: formatActionConditions(actionsData),
       actions: formatActions(actionsData),
-      actionExamples: composeActionExamples(actionsData, 10),
+      actionExamples: addHeader("### Action Examples", formattedActionExamples),
       evaluatorsData,
       evaluators,
       evaluatorNames,

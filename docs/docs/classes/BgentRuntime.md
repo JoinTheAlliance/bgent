@@ -25,7 +25,7 @@ Creates an instance of BgentRuntime.
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
-| `opts.flavor?` | `string` | Optional lore to inject into the default prompt. |
+| `opts.providers?` | [`Provider`](../interfaces/Provider.md)[] | Optional context providers. |
 | `opts.recentMessageCount?` | `number` | The number of messages to hold in the recent message cache. |
 | `opts.serverUrl?` | `string` | The URL of the worker. |
 | `opts.supabase` | `default`\<`any`, ``"public"``, `any`\> | The Supabase client. |
@@ -69,11 +69,11 @@ Evaluators used to assess and guide the agent's responses.
 
 ___
 
-### flavor
+### factManager
 
-• **flavor**: `string` = `""`
+• **factManager**: [`MemoryManager`](MemoryManager.md)
 
-A string to customize the agent's behavior or responses.
+Manage the fact and recall of facts.
 
 ___
 
@@ -93,19 +93,19 @@ Store messages that are sent and received by the agent.
 
 ___
 
+### providers
+
+• **providers**: [`Provider`](../interfaces/Provider.md)[] = `[]`
+
+Context providers used to provide context for message generation.
+
+___
+
 ### serverUrl
 
 • **serverUrl**: `string` = `"http://localhost:7998"`
 
 The base URL of the server where the agent's requests are processed.
-
-___
-
-### summarizationManager
-
-• **summarizationManager**: [`MemoryManager`](MemoryManager.md)
-
-Manage the summarization and recall of facts.
 
 ___
 
@@ -152,7 +152,7 @@ ___
 
 ### composeState
 
-▸ **composeState**(`message`): `Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `flavor`: `string` ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `recentSummarizations`: `string` ; `recentSummarizationsData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantSummarizations`: `string` ; `relevantSummarizationsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string` ; `userIds`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]  }\>
+▸ **composeState**(`message`): `Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string` ; `userIds`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]  }\>
 
 Compose the state of the agent into an object that can be passed or used for response generation.
 
@@ -164,7 +164,7 @@ Compose the state of the agent into an object that can be passed or used for res
 
 #### Returns
 
-`Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `flavor`: `string` ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `recentSummarizations`: `string` ; `recentSummarizationsData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantSummarizations`: `string` ; `relevantSummarizationsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string` ; `userIds`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]  }\>
+`Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string` ; `userIds`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]  }\>
 
 The state of the agent.
 
@@ -276,6 +276,24 @@ Register an action for the agent to perform.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `action` | [`Action`](../interfaces/Action.md) | The action to register. |
+
+#### Returns
+
+`void`
+
+___
+
+### registerContextProvider
+
+▸ **registerContextProvider**(`provider`): `void`
+
+Register a context provider to provide context for message generation.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `provider` | [`Provider`](../interfaces/Provider.md) | The context provider to register. |
 
 #### Returns
 

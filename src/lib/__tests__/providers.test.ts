@@ -8,7 +8,6 @@ dotenv.config({ path: ".dev.vars" });
 
 const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
-// Define a generic TestProvider that always provides "Hello Test"
 const TestProvider: Provider = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   get: async (_runtime: BgentRuntime, _message: Message, _state?: State) => {
@@ -23,10 +22,10 @@ describe("TestProvider", () => {
   beforeAll(async () => {
     const setup = await createRuntime({
       env: process.env as Record<string, string>,
-      providers: [TestProvider], // Add TestProvider to the runtime
+      providers: [TestProvider],
     });
     runtime = setup.runtime;
-    room_id = "some-room-id" as UUID; // Assume room_id is fetched or set up in your environment
+    room_id = "some-room-id" as UUID;
   });
 
   test("TestProvider should return 'Hello Test'", async () => {

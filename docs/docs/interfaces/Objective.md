@@ -24,4 +24,4 @@ ___
 
 ### id
 
-• **id**: `string`
+• `Optional` **id**: `string`

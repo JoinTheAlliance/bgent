@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **createGoal**(`«destructured»`): `Promise`\<`void`\>
+▸ **createGoal**(`«destructured»`): `Promise`\<`PostgrestSingleResponse`\<``null``\>\>
 
 #### Parameters
 
@@ -15,9 +15,7 @@ custom_edit_url: null
 | `«destructured»` | `Object` |
 | › `goal` | [`Goal`](../interfaces/Goal.md) |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) |
-| › `userId` | `string` |
-| › `userIds` | `string`[] |
 
 #### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`PostgrestSingleResponse`\<``null``\>\>

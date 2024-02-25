@@ -45,7 +45,7 @@ describe("Wait Action Behavior", () => {
   });
 
   async function cleanup() {
-    await runtime.summarizationManager.removeAllMemoriesByUserIds([
+    await runtime.factManager.removeAllMemoriesByUserIds([
       user?.id as UUID,
       zeroUuid,
     ]);
