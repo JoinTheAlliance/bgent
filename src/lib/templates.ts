@@ -1,4 +1,4 @@
-export const requestHandlerTemplate = `{{flavor}}
+export const messageHandlerTemplate = `{{flavor}}
 
 # START MESSAGE EXAMPLES
 json\`\`\`
@@ -38,6 +38,8 @@ json\`\`\`
 # Available actions for {{agentName}}
 {{actionNames}}
 {{actions}}
+
+{{providers}}
 
 Current Scene Dialog:
 {{recentMessages}}

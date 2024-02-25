@@ -5,7 +5,7 @@ import { createRuntime } from "../../test/createRuntime";
 import { composeContext } from "../context";
 import { addLore, getLore } from "../lore";
 import { BgentRuntime } from "../runtime";
-import { requestHandlerTemplate } from "../templates";
+import { messageHandlerTemplate } from "../templates";
 import { type Content } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
@@ -77,7 +77,7 @@ describe("Lore", () => {
 
     const context = composeContext({
       state,
-      template: requestHandlerTemplate,
+      template: messageHandlerTemplate,
     });
 
     // expect context to contain 'Test Lore Source' and 'Test Lore Content'

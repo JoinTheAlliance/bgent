@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { TEST_EVALUATOR, TEST_EVALUATOR_FAIL } from "../../test/testEvaluator";
 import { composeContext } from "../context";
-import { evaluationTemplate } from "../evaluation";
+import { evaluationTemplate } from "../evaluators";
 import summarization from "../evaluators/summarization";
 import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";

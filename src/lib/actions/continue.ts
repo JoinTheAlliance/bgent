@@ -2,7 +2,7 @@ import { composeContext } from "../context";
 import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
 import { type BgentRuntime } from "../runtime";
-import { requestHandlerTemplate } from "../templates";
+import { messageHandlerTemplate } from "../templates";
 import { Content, State, type Action, type Message } from "../types";
 import { parseJSONObjectFromText } from "../utils";
 
@@ -42,7 +42,7 @@ export default {
 
     const context = composeContext({
       state,
-      template: requestHandlerTemplate,
+      template: messageHandlerTemplate,
     });
 
     if (runtime.debugMode) {

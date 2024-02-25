@@ -1,23 +1,25 @@
 import { Session, User, createClient } from "@supabase/supabase-js";
 import { BgentRuntime } from "../lib/runtime";
+import { Action, Evaluator, Provider } from "../lib/types";
 import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_URL,
   TEST_EMAIL,
   TEST_PASSWORD,
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
 } from "./constants";
-import { Action, Evaluator } from "../lib/types";
 
 export async function createRuntime({
   env,
   recentMessageCount,
   evaluators = [],
   actions = [],
+  providers = [],
 }: {
   env?: Record<string, string> | NodeJS.ProcessEnv;
   recentMessageCount?: number;
   evaluators?: Evaluator[];
   actions?: Action[];
+  providers?: Provider[];
 }) {
   const supabase = createClient(
     env?.SUPABASE_URL ?? SUPABASE_URL,
@@ -30,7 +32,6 @@ export async function createRuntime({
   });
 
   let { user, session } = data;
-
 
   if (!session) {
     const response = await supabase.auth.signUp({
@@ -49,6 +50,7 @@ export async function createRuntime({
     token: env!.OPENAI_API_KEY!,
     actions: actions ?? [],
     evaluators: evaluators ?? [],
+    providers: providers ?? [],
   });
 
   return { user, session, runtime };

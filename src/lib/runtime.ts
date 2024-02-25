@@ -7,10 +7,10 @@ import {
   formatEvaluatorExamples,
   formatEvaluatorNames,
   formatEvaluators,
-} from "./evaluation";
+} from "./evaluators";
 import logger from "./logger";
 import { MemoryManager, embeddingZeroVector } from "./memory";
-import { requestHandlerTemplate } from "./templates";
+import { messageHandlerTemplate } from "./templates";
 import {
   Content,
   Goal,
@@ -18,6 +18,7 @@ import {
   type Action,
   type Evaluator,
   type Message,
+  Provider,
 } from "./types";
 import { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";
 
@@ -33,6 +34,7 @@ import { formatGoalsAsString, getGoals } from "./goals";
 import { formatActors, formatMessages, getActorDetails } from "./messages";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
 import { getLore, formatLore } from "./lore";
+import { defaultProviders, getProviders } from "./providers";
 
 /**
  * Represents the runtime environment for an agent, handling message processing,
@@ -80,6 +82,11 @@ export class BgentRuntime {
   evaluators: Evaluator[] = [];
 
   /**
+   * Context providers used to provide context for message generation.
+   */
+  providers: Provider[] = [];
+
+  /**
    * Store messages that are sent and received by the agent.
    */
   messageManager: MemoryManager = new MemoryManager({
@@ -122,6 +129,7 @@ export class BgentRuntime {
    * @param opts.flavor - Optional lore to inject into the default prompt.
    * @param opts.actions - Optional custom actions.
    * @param opts.evaluators - Optional custom evaluators.
+   * @param opts.providers - Optional context providers.
    */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
@@ -132,6 +140,7 @@ export class BgentRuntime {
     flavor?: string; // Optional lore to inject into the default prompt
     actions?: Action[]; // Optional custom actions
     evaluators?: Evaluator[]; // Optional custom evaluators
+    providers?: Provider[];
   }) {
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
@@ -151,6 +160,9 @@ export class BgentRuntime {
 
     (opts.evaluators ?? defaultEvaluators).forEach((evaluator) => {
       this.registerEvaluator(evaluator);
+    });
+    (opts.providers ?? defaultProviders).forEach((provider) => {
+      this.registerContextProvider(provider);
     });
   }
 
@@ -176,6 +188,14 @@ export class BgentRuntime {
    */
   registerEvaluator(evaluator: Evaluator) {
     this.evaluators.push(evaluator);
+  }
+
+  /**
+   * Register a context provider to provide context for message generation.
+   * @param provider The context provider to register.
+   */
+  registerContextProvider(provider: Provider) {
+    this.providers.push(provider);
   }
 
   /**
@@ -322,7 +342,7 @@ export class BgentRuntime {
 
     const context = composeContext({
       state,
-      template: requestHandlerTemplate,
+      template: messageHandlerTemplate,
     });
 
     if (this.debugMode) {
@@ -518,30 +538,33 @@ export class BgentRuntime {
       recentSummarizationsData,
       goalsData,
       loreData,
-    ]: [Actor[], Memory[], Memory[], Goal[], Memory[]] = await Promise.all([
-      getActorDetails({ runtime: this, userIds: userIds! }),
-      this.messageManager.getMemoriesByIds({
-        userIds: userIds!,
-        count: recentMessageCount,
-        unique: false,
-      }),
-      this.summarizationManager.getMemoriesByIds({
-        userIds: userIds!,
-        count: recentSummarizationsCount,
-      }),
-      getGoals({
-        runtime: this,
-        count: 10,
-        onlyInProgress: true,
-        userIds: userIds!,
-      }),
-      getLore({
-        runtime: this,
-        message: (message.content as Content).content,
-        count: 5,
-        match_threshold: 0.5,
-      }),
-    ]);
+      providers,
+    ]: [Actor[], Memory[], Memory[], Goal[], Memory[], string] =
+      await Promise.all([
+        getActorDetails({ runtime: this, userIds: userIds! }),
+        this.messageManager.getMemoriesByIds({
+          userIds: userIds!,
+          count: recentMessageCount,
+          unique: false,
+        }),
+        this.summarizationManager.getMemoriesByIds({
+          userIds: userIds!,
+          count: recentSummarizationsCount,
+        }),
+        getGoals({
+          runtime: this,
+          count: 10,
+          onlyInProgress: true,
+          userIds: userIds!,
+        }),
+        getLore({
+          runtime: this,
+          message: (message.content as Content).content,
+          count: 5,
+          match_threshold: 0.5,
+        }),
+        getProviders(this, message),
+      ]);
 
     const goals = await formatGoalsAsString({ goals: goalsData });
 
@@ -600,6 +623,7 @@ export class BgentRuntime {
       goals,
       lore,
       loreData,
+      providers,
       goalsData,
       flavor: this.flavor,
       recentMessages,

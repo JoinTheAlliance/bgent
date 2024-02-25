@@ -94,6 +94,7 @@ export interface State {
   actions?: string; // An optional string representation of actions and their descriptions, relevant to the current state.
   actionsData?: Action[]; // An optional array of action objects relevant to the current state.
   actionExamples?: string; // An optional string representation of examples of actions, for demonstration or testing.
+  providers?: string; // An optional string representation of available providers and their descriptions, relevant to the current state.
   responseData?: Content; // An optional content object representing the agent's response in the current state.
   [key: string]: unknown; // Allows for additional properties to be included dynamically.
 }
@@ -166,4 +167,12 @@ export interface Evaluator {
   handler: Handler; // The function that handles the evaluation.
   name: string; // The name of the evaluator.
   validate: Validator; // The function that validates whether the evaluator is applicable in the current context.
+}
+
+export interface Provider {
+  get: (
+    runtime: BgentRuntime,
+    message: Message,
+    state?: State,
+  ) => Promise<unknown>;
 }
