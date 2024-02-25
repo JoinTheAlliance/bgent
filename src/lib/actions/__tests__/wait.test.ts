@@ -8,10 +8,9 @@ import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../wait"; // Import the wait action
+import { zeroUuid } from "../../constants";
 
 dotenv.config({ path: ".dev.vars" });
-
-const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Wait Action Behavior", () => {
   let user: User;
@@ -29,6 +28,7 @@ describe("Wait Action Behavior", () => {
   beforeAll(async () => {
     const setup = await createRuntime({
       env: process.env as Record<string, string>,
+      actions: [action],
     });
     user = setup.session.user;
     runtime = setup.runtime;

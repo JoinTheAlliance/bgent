@@ -10,6 +10,7 @@ import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
 import { runAiTest } from "../../test/runAiTest";
+import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -17,7 +18,6 @@ describe("Evaluation Process", () => {
   let runtime: BgentRuntime;
   let user: User;
   let room_id: UUID;
-  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
 
   beforeAll(async () => {
     const setup = await createRuntime({

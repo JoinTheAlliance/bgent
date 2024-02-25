@@ -3,10 +3,9 @@ import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { BgentRuntime } from "../runtime";
 import { type Message, type Provider, type State } from "../types";
+import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
-
-const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 const TestProvider: Provider = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

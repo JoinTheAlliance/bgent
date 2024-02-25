@@ -345,6 +345,7 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+      console.log("*** context\n", context);
       const response = await this.completion({
         context,
         stop: [],
@@ -389,6 +390,8 @@ export class BgentRuntime {
         action: "IGNORE",
       };
     }
+
+    console.log("*** responseContent\n", responseContent);
 
     const _saveResponseMessage = async (
       message: Message,
@@ -531,19 +534,19 @@ export class BgentRuntime {
       await Promise.all([
         getActorDetails({ runtime: this, userIds: userIds! }),
         this.messageManager.getMemoriesByIds({
-          userIds: userIds!,
+          userIds,
           count: recentMessageCount,
           unique: false,
         }),
         this.factManager.getMemoriesByIds({
-          userIds: userIds!,
+          userIds,
           count: recentFactsCount,
         }),
         getGoals({
           runtime: this,
           count: 10,
-          onlyInProgress: true,
-          userIds: userIds!,
+          onlyInProgress: false,
+          userIds,
         }),
         getLore({
           runtime: this,

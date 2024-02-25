@@ -15,14 +15,15 @@ export const getGoals = async ({
   onlyInProgress?: boolean;
   count?: number;
 }) => {
+  const opts = {
+    query_user_ids: userIds,
+    query_user_id: userId,
+    only_in_progress: onlyInProgress,
+    row_count: count,
+  };
   const { data: goals, error } = await runtime.supabase.rpc(
     "get_goals_by_user_ids",
-    {
-      query_user_ids: userIds,
-      query_user_id: userId,
-      only_in_progress: onlyInProgress,
-      row_count: count,
-    },
+    opts,
   );
 
   if (error) {
@@ -34,11 +35,15 @@ export const getGoals = async ({
 
 export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
   const goalStrings = goals.map((goal: Goal) => {
-    const header = `${goal.name} - ${goal.status}`;
-    const objectives = goal.objectives.map((objective: Objective) => {
-      return `- ${objective.completed ? "[x]" : "[ ]"} ${objective.description}`;
-    });
-    return `${header}\n${objectives.join("\n")}`;
+    const header = `Name: ${goal.name}\nid: ${goal.id}`;
+    const objectives =
+      "Objectives:\n" +
+      goal.objectives
+        .map((objective: Objective) => {
+          return `- ${objective.completed ? "[x]" : "[ ]"} ${objective.description}`;
+        })
+        .join("\n");
+    return `${header}\n${objectives}`;
   });
   return goalStrings.join("\n");
 };

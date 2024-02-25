@@ -16,7 +16,6 @@ Examples:
 
 INSTRUCTIONS: You are helping me to decide which appropriate functions to call based on the conversation between {{senderName}} and {{agentName}}.
 
-Recent conversation:
 {{recentMessages}}
 
 Evaluator Functions:

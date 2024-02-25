@@ -36,7 +36,6 @@ The response format should be this:
 \`\`\`
 """
 
-Recent conversation:
 {{recentMessages}}
 
 Users in the current scene:

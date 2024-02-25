@@ -17,9 +17,8 @@ import {
   getCachedEmbedding,
   writeCachedEmbedding,
 } from "../../../../test/cache";
+import { zeroUuid } from "../../../../lib/constants";
 dotenv.config({ path: ".dev.vars" });
-
-const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Introduce Action", () => {
   test("Introduce the user", async () => {

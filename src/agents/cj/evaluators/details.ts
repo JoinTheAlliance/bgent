@@ -5,7 +5,6 @@ import { parseJSONObjectFromText } from "../../../lib/utils";
 
 const template = `You are collecting details about {{senderName}} based on their ongoing conversation with {{agentName}}.
 
-Recent conversation:
 {{recentMessages}}
 
 Using the most recent conversation, get the details for the user's name, age, location and gender.

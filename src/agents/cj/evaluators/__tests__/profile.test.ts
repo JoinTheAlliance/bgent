@@ -19,10 +19,10 @@ import {
   writeCachedEmbedding,
 } from "../../../../test/cache";
 import evaluator from "../profile";
+import { zeroUuid } from "../../../../lib/constants";
 
 dotenv.config({ path: ".dev.vars" });
 
-const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
 let runtime: BgentRuntime;
 let user: User;
 

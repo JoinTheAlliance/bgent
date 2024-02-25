@@ -6,11 +6,11 @@ import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { BgentRuntime } from "../runtime";
 import { type User } from "@supabase/supabase-js";
 import { type Message } from "../types";
+import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
 
 describe("Agent Runtime", () => {
-  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
   let user: User;
   let runtime: BgentRuntime;
   let room_id: UUID;

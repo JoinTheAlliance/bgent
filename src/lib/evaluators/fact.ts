@@ -1,16 +1,7 @@
 import { composeContext } from "../context";
 import logger from "../logger";
-import { formatActors, getActorDetails } from "../messages";
 import { type BgentRuntime } from "../runtime";
-import {
-  Content,
-  Memory,
-  type Action,
-  type Actor,
-  type Message,
-  type State,
-  ActionExample,
-} from "../types";
+import { ActionExample, Content, Memory, type Message } from "../types";
 import { parseJsonArrayFromText } from "../utils";
 
 export const formatFacts = (facts: Memory[]) => {
@@ -65,32 +56,12 @@ Response should be a JSON object array inside a JSON markdown block. Correct res
 \`\`\``;
 
 async function handler(runtime: BgentRuntime, message: Message) {
-  const state = (await runtime.composeState(message)) as State;
+  const state = await runtime.composeState(message);
 
-  const { userIds, senderId, agentId, room_id } = state;
-
-  const actors = (await getActorDetails({ runtime, userIds })) ?? [];
-
-  const senderName = actors?.find(
-    (actor: Actor) => actor.id === senderId,
-  )?.name;
-
-  const agentName = actors?.find((actor: Actor) => actor.id === agentId)?.name;
-
-  const actionNames = runtime.actions.map((a: Action) => a.name).join(", ");
-  const actions = runtime.actions
-    .map((a: Action) => `${a.name}: ${a.description}`)
-    .join("\n");
+  const { userIds, agentId, room_id } = state;
 
   const context = composeContext({
-    state: {
-      ...state,
-      senderName,
-      agentName,
-      actors: formatActors({ actors }),
-      actionNames,
-      actions,
-    },
+    state,
     template,
   });
 
@@ -110,6 +81,8 @@ async function handler(runtime: BgentRuntime, message: Message) {
       facts = parsedFacts;
       break;
     }
+    // wait 1 second
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   if (!facts) {
@@ -139,7 +112,7 @@ async function handler(runtime: BgentRuntime, message: Message) {
     const factMemory = await runtime.factManager.addEmbeddingToMemory({
       user_ids: userIds,
       user_id: agentId!,
-      content: fact,
+      content: { content: fact },
       room_id,
     });
 

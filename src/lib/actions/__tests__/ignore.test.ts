@@ -10,12 +10,10 @@ import {
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
-// import action from "../ignore";
+import action from "../ignore";
 import { populateMemories } from "../../../test/populateMemories";
 
 dotenv.config({ path: ".dev.vars" });
-
-export const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Ignore action tests", () => {
   let user: User;
@@ -29,6 +27,7 @@ describe("Ignore action tests", () => {
   beforeAll(async () => {
     const setup = await createRuntime({
       env: process.env as Record<string, string>,
+      actions: [action],
     });
     user = setup.session.user;
     runtime = setup.runtime;

@@ -3,7 +3,13 @@ import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
 import { type BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
-import { Content, State, type Action, type Message } from "../types";
+import {
+  Content,
+  State,
+  type Action,
+  type Message,
+  ActionExample,
+} from "../types";
 import { parseJSONObjectFromText } from "../utils";
 
 const maxContinuesInARow = 2;
@@ -160,50 +166,51 @@ export default {
     [
       {
         user: "{{user1}}",
-        content:
-          "Planning a solo trip soon. I've always wanted to try backpacking.",
+        content: {
+          content:
+            "Planning a solo trip soon. I've always wanted to try backpacking.",
+        },
       },
       {
         user: "{{user2}}",
-        content: { content: "Adventurous" },
-        action: "CONTINUE",
+        content: { content: "Adventurous", action: "CONTINUE" },
       },
       {
         user: "{{user2}}",
-        content: { content: "Any particular destination?" },
-        action: "WAIT",
+        content: { content: "Any particular destination?", action: "WAIT" },
       },
     ],
 
     [
       {
         user: "{{user1}}",
-        content: { content: "I started learning the guitar this month!" },
-        action: "WAIT",
+        content: {
+          content: "I started learning the guitar this month!",
+          action: "WAIT",
+        },
       },
       {
         user: "{{user2}}",
-        content: { content: "How’s that going?" },
-        action: "WAIT",
+        content: { content: "How’s that going?", action: "WAIT" },
       },
       {
         user: "{{user1}}",
-        content: { content: "Challenging, but rewarding." },
-        action: "CONTINUE",
+        content: { content: "Challenging, but rewarding.", action: "CONTINUE" },
       },
       {
         user: "{{user1}}",
-        content: { content: "Seriously lol it hurts to type" },
-        action: "WAIT",
+        content: { content: "Seriously lol it hurts to type", action: "WAIT" },
       },
     ],
 
     [
       {
         user: "{{user1}}",
-        content:
-          "I've been summarying a lot on what happiness means to me lately.",
-        action: "CONTINUE",
+        content: {
+          content:
+            "I've been summarying a lot on what happiness means to me lately.",
+          action: "CONTINUE",
+        },
       },
       {
         user: "{{user1}}",
@@ -214,47 +221,52 @@ export default {
       },
       {
         user: "{{user2}}",
-        content:
-          "Like the best things that have ever happened were things that happened, or moments that I had with someone.",
-        action: "CONTINUE",
+        content: {
+          content:
+            "Like the best things that have ever happened were things that happened, or moments that I had with someone.",
+          action: "CONTINUE",
+        },
       },
     ],
 
     [
       {
         user: "{{user1}}",
-        content: { content: "I found some incredible art today." },
-        action: "WAIT",
+        content: {
+          content: "I found some incredible art today.",
+          action: "WAIT",
+        },
       },
       {
         user: "{{user2}}",
-        content: { content: "Who's the artist?" },
-        action: "WAIT",
+        content: { content: "Who's the artist?", action: "WAIT" },
       },
       {
         user: "{{user1}}",
-        content: { content: "Not sure lol, they are anon" },
-        action: "CONTINUE",
+        content: { content: "Not sure lol, they are anon", action: "CONTINUE" },
       },
       {
         user: "{{user1}}",
-        content:
-          "But the pieces are just so insane looking. Once sec, let me grab a link.",
-        action: "CONTINUE",
+        content: {
+          content:
+            "But the pieces are just so insane looking. Once sec, let me grab a link.",
+          action: "CONTINUE",
+        },
       },
       {
         user: "{{user1}}",
-        content: { content: "DMed it to you" },
-        action: "WAIT",
+        content: { content: "DMed it to you", action: "WAIT" },
       },
     ],
 
     [
       {
         user: "{{user1}}",
-        content:
-          "The new exhibit downtown is thought-provoking. It's all about tribalism in online spaces.",
-        action: "CONTINUE",
+        content: {
+          content:
+            "The new exhibit downtown is thought-provoking. It's all about tribalism in online spaces.",
+          action: "CONTINUE",
+        },
       },
       {
         user: "{{user1}}",
@@ -279,5 +291,5 @@ export default {
         action: "WAIT",
       },
     ],
-  ],
+  ] as ActionExample[][],
 } as Action;

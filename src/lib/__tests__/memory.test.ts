@@ -6,11 +6,11 @@ import { MemoryManager } from "../memory";
 import { getRelationship } from "../relationships";
 import { type Content, type Memory } from "../types";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
+import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Memory", () => {
   let memoryManager: MemoryManager;
-  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
   let runtime = null;
   let user: User | null = null;
   let room_id: UUID | null = null;
@@ -198,7 +198,6 @@ describe("Memory", () => {
 });
 describe("Memory - Basic tests", () => {
   let memoryManager: MemoryManager;
-  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
   let runtime = null;
   let user: User | null = null;
   let room_id: UUID | null = null;
@@ -291,7 +290,6 @@ describe("Memory - Basic tests", () => {
 });
 describe("Memory - Extended Tests", () => {
   let memoryManager: MemoryManager;
-  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
   let runtime = null;
   let user: User | null = null;
   let room_id: UUID | null = null;

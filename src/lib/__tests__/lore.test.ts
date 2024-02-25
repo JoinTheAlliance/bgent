@@ -7,10 +7,10 @@ import { addLore, getLore } from "../lore";
 import { BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
 import { type Content } from "../types";
+import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Lore", () => {
-  const zeroUuid: UUID = "00000000-0000-0000-0000-000000000000";
   let runtime: BgentRuntime;
   let user: User;
 

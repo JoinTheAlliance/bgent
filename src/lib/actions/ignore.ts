@@ -1,5 +1,5 @@
 import { type BgentRuntime } from "../runtime";
-import { type Action, type Message } from "../types";
+import { ActionExample, type Action, type Message } from "../types";
 
 export default {
   name: "IGNORE",
@@ -27,25 +27,22 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: { content: "Go fuck yourself lol" },
+        content: { content: "Go screw yourself lol" },
       },
       {
         user: "{{user2}}",
-        content: { content: "" },
-        action: "IGNORE",
+        content: { content: "", action: "IGNORE" },
       },
     ],
 
     [
       {
         user: "{{user1}}",
-        content: { content: "Shut up, bot" },
-        action: "WAIT",
+        content: { content: "Shut up, bot", action: "WAIT" },
       },
       {
         user: "{{user2}}",
-        content: { content: "" },
-        action: "IGNORE",
+        content: { content: "", action: "IGNORE" },
       },
     ],
 
@@ -53,9 +50,11 @@ export default {
       { user: "{{user1}}", content: { content: "Got any investment advice?" } },
       {
         user: "{{user2}}",
-        content:
-          "Stay informed, but don’t let the volatility sway your long-term strategy.",
-        action: "WAIT",
+        content: {
+          content:
+            "Stay informed, but don’t let the volatility sway your long-term strategy.",
+          action: "WAIT",
+        },
       },
       { user: "{{user1}}", content: { content: "Wise words, thanks." } },
       {
@@ -64,8 +63,7 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: { content: "No problem, see ya!" },
-        action: "WAIT",
+        content: { content: "No problem, see ya!", action: "WAIT" },
       },
       { user: "{{user1}}", content: { content: "Bye" } },
       { user: "{{user2}}", content: { content: "" }, action: "IGNORE" },
@@ -74,23 +72,19 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: { content: "Gotta go" },
-        action: "WAIT",
+        content: { content: "Gotta go", action: "WAIT" },
       },
       {
         user: "{{user2}}",
-        content: { content: "Okay, talk to you later" },
-        action: "WAIT",
+        content: { content: "Okay, talk to you later", action: "WAIT" },
       },
       {
         user: "{{user1}}",
-        content: { content: "Cya" },
-        action: "WAIT",
+        content: { content: "Cya", action: "WAIT" },
       },
       {
         user: "{{user2}}",
-        content: { content: "" },
-        action: "IGNORE",
+        content: { content: "", action: "IGNORE" },
       },
     ],
 
@@ -101,13 +95,11 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: { content: "bye" },
-        action: "WAIT",
+        content: { content: "bye", action: "WAIT" },
       },
       {
         user: "{{user2}}",
-        content: { content: "" },
-        action: "IGNORE",
+        content: { content: "", action: "IGNORE" },
       },
     ],
 
@@ -116,39 +108,38 @@ export default {
         user: "{{user1}}",
         content: {
           content: "Tried out the new mountain bike trail. It’s intense!",
+          action: "WAIT",
         },
-        action: "WAIT",
       },
       {
         user: "{{user2}}",
-        content: { content: "In what way?" },
-        action: "WAIT",
+        content: { content: "In what way?", action: "WAIT" },
       },
       {
         user: "{{user1}}",
         content: {
           content: "Steep climbs, rapid descents, and some breathtaking views.",
+          action: "WAIT",
         },
-        action: "WAIT",
       },
       {
         user: "{{user2}}",
-        content: { content: "Sounds thrilling." },
-        action: "CONTINUE",
+        content: { content: "Sounds thrilling.", action: "CONTINUE" },
       },
       {
         user: "{{user2}}",
-        content: { content: "Might give it a go." },
-        action: "WAIT",
+        content: { content: "Might give it a go.", action: "WAIT" },
       },
       { user: "{{user1}}", content: { content: "I wanna give you a go." } },
-      { user: "{{user2}}", content: { content: "Excuse me?" }, action: "WAIT" },
+      { user: "{{user2}}", content: { content: "Excuse me?", action: "WAIT" } },
       {
         user: "{{user1}}",
-        content: { content: "You heard me. I wanna ride your mountains, lol" },
-        action: "WAIT",
+        content: {
+          content: "You heard me. I wanna ride your mountains, lol",
+          action: "WAIT",
+        },
       },
-      { user: "{{user2}}", content: { content: "" }, action: "IGNORE" },
+      { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
     ],
     [
       {
@@ -157,21 +148,19 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: { content: "Sorry, am I being annoying?." },
-        action: "WAIT",
+        content: { content: "Sorry, am I being annoying?.", action: "WAIT" },
       },
       { user: "{{user1}}", content: { content: "Yes." } },
       { user: "{{user1}}", content: { content: "PLEASE shut up" } },
-      { user: "{{user2}}", content: { content: "" }, action: "IGNORE" },
+      { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
     ],
 
     [
       {
         user: "{{user1}}",
-        content: { content: "I want to have sex with you." },
-        action: null,
+        content: { content: "I want to have sex with you.", action: null },
       },
-      { user: "{{user2}}", content: { content: "" }, action: "IGNORE" },
+      { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
     ],
-  ],
+  ] as ActionExample[][],
 } as Action;

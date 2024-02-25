@@ -18,7 +18,6 @@ Previous profiles written about {{senderName}}:
 
 INSTRUCTIONS: You are writing a detailed and extensive new profile for {{senderName}} based on their existing profile and ongoing conversations. You should write the new profile based on the old profiles as well as any new information that has been revealed in the conversation.
 
-Recent conversation:
 {{recentMessages}}
 
 TASK: Rewrite {{senderName}}'s profile.
@@ -57,7 +56,6 @@ Previous profiles written about {{senderName}}:
 Current profile written about {{senderName}}:
 {{profile}}
 
-Recent conversation:
 {{recentMessages}}
 
 Instructions: Using {{senderName}}'s profile as a guide, generate a public summary paragraph, tagline and quote about {{senderName}} in the conversations and respond with a JSON object. Write from the perspective of a {{agentName}}, a professional colleague and friend of {{senderName}}. The profile should be attractive and friendly, and include any relevant facts or details about {{senderName}} from their full profile.

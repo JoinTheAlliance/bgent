@@ -1,6 +1,6 @@
 import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
-import { zeroUuid } from "../lib/actions/__tests__/ignore.test";
+import { zeroUuid } from "../lib/constants";
 import { type BgentRuntime } from "../lib/runtime";
 import { Content } from "../lib/types";
 import { getCachedEmbedding, writeCachedEmbedding } from "./cache";

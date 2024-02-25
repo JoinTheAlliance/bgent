@@ -6,10 +6,9 @@ import { BgentRuntime } from "../../runtime";
 
 import { type Message, type State } from "../../types";
 import timeProvider from "../time";
+import { zeroUuid } from "../../constants";
 
 dotenv.config({ path: ".dev.vars" });
-
-const zeroUuid = "00000000-0000-0000-0000-000000000000" as UUID;
 
 describe("Time Provider", () => {
   let runtime: BgentRuntime;

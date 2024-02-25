@@ -74,7 +74,7 @@ export const formatMessages = ({
       if (messageAction === "IGNORE") {
         messageContent = "*Ignored*";
       }
-      return `${sender.name}: ${messageContent} ${messageAction && messageAction !== "null" ? `(${messageAction})` : ""}`;
+      return `${sender?.name}: ${messageContent} ${messageAction && messageAction !== "null" ? `(${messageAction})` : ""}`;
     })
     .join("\n");
   return messageStrings;
