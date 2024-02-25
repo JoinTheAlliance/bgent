@@ -48,7 +48,6 @@ export const updateGoal = async ({
   goal,
 }: {
   runtime: BgentRuntime;
-  userIds: UUID[];
   goal: Goal;
 }) => {
   return await runtime.supabase

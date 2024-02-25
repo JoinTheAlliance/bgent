@@ -97,17 +97,11 @@ describe("Goals", () => {
       onlyInProgress: false,
     });
     const existingGoal = goals.find((goal: Goal) => goal.name === newGoal.name);
-    console.log("*** existingGoal", existingGoal);
     const updatedGoal = { ...existingGoal, status: "COMPLETED" };
-    const { error } = await updateGoal({
+    await updateGoal({
       runtime,
-      userIds: [user?.id as UUID],
       goal: updatedGoal,
     });
-
-    if (error) {
-      console.log("*** error", error);
-    }
 
     // Verify the goal's status is updated in the database
     goals = await getGoals({
@@ -115,7 +109,7 @@ describe("Goals", () => {
       userIds: [user?.id as UUID],
       onlyInProgress: false,
     });
-    console.log("goals", goals);
+
     const updatedGoalInDb = goals.find(
       (goal: Goal) => goal.id === existingGoal.id,
     );
@@ -138,7 +132,7 @@ describe("Goals", () => {
       ],
     };
 
-    let result = await createGoal({
+    await createGoal({
       runtime,
       goal: newGoal,
     });
@@ -154,12 +148,10 @@ describe("Goals", () => {
 
     // now create the goal
 
-    result = await finishGoal({
+    await finishGoal({
       runtime,
       goalId: goalToFinish.id as UUID,
     });
-
-    console.log("result", result);
 
     // Verify the goal's status is updated to "DONE" in the database
     goals = await getGoals({
@@ -171,7 +163,6 @@ describe("Goals", () => {
     const finishedGoal = goals.find(
       (goal: Goal) => goal.id === goalToFinish.id,
     );
-    console.log("finishedGoal", finishedGoal);
 
     expect(finishedGoal?.status).toEqual(GoalStatus.DONE);
   });
@@ -191,7 +182,7 @@ describe("Goals", () => {
       ],
     };
 
-    let result = await createGoal({
+    await createGoal({
       runtime,
       goal: newGoal,
     });
@@ -205,16 +196,10 @@ describe("Goals", () => {
 
     const goalToFinish = goals.find((goal: Goal) => goal.name === newGoal.name);
 
-    // now create the goal
-
-    console.log("goalToFinish", goalToFinish);
-
-    result = await cancelGoal({
+    await cancelGoal({
       runtime,
       goalId: goalToFinish.id as UUID,
     });
-
-    console.log("result", result);
 
     // Verify the goal's status is updated to "DONE" in the database
     goals = await getGoals({
@@ -223,12 +208,9 @@ describe("Goals", () => {
       onlyInProgress: false,
     });
 
-    console.log("goals", goals);
-
     const finishedGoal = goals.find(
       (goal: Goal) => goal.id === goalToFinish.id,
     );
-    console.log("finishedGoal", finishedGoal);
 
     expect(finishedGoal?.status).toEqual(GoalStatus.FAILED);
   });
@@ -248,12 +230,10 @@ describe("Goals", () => {
       ],
     };
 
-    const result = await createGoal({
+    await createGoal({
       runtime,
       goal: newGoal,
     });
-
-    console.log("result", result);
 
     // Verify the goal is created in the database
     const goals = await getGoals({

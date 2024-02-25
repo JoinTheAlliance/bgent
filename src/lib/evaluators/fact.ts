@@ -48,17 +48,10 @@ Extract any claims from the conversation in the ACTUAL scene that are not alread
 
 # START OF ACTUAL TASK INFORMATION
 
-Facts about the actors:
 {{recentFacts}}
 {{relevantFacts}}
-
-Actors in the Scene:
 {{actors}}
-
-Scene Dialog:
-\`\`\`json
 {{recentMessages}}
-\`\`\`
 
 INSTRUCTIONS: Extract ALL claims from the conversation in the scene that are not already present in the list of facts.
 
