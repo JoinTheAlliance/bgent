@@ -345,7 +345,6 @@ export class BgentRuntime {
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      console.log("*** context\n", context);
       const response = await this.completion({
         context,
         stop: [],
@@ -390,8 +389,6 @@ export class BgentRuntime {
         action: "IGNORE",
       };
     }
-
-    console.log("*** responseContent\n", responseContent);
 
     const _saveResponseMessage = async (
       message: Message,

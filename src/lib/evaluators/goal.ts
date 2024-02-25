@@ -57,22 +57,14 @@ async function handler(
     template,
   });
 
-  console.log("**** context");
-  console.log(context);
-
   // Request completion from OpenAI to analyze conversation and suggest goal updates
   const response = await runtime.completion({
     context,
     stop: [],
   });
 
-  console.log("response");
-  console.log(response);
-
   // Parse the JSON response to extract goal updates
   const updates = parseJsonArrayFromText(response);
-
-  console.log("*** updates", updates);
 
   // get goals
   goalsData = await getGoals({
@@ -94,11 +86,10 @@ async function handler(
 
   // Update goals in the database
   for (const goal of updatedGoals) {
-    const result = await runtime.supabase
+    await runtime.supabase
       .from("goals")
       .update({ ...goal })
       .match({ id: goal.id });
-    console.log("result", result);
   }
 
   return updatedGoals; // Return updated goals for further processing or logging
