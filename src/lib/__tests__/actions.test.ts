@@ -98,8 +98,6 @@ describe("Actions", () => {
     expect(actions.length).toBeGreaterThan(0);
     // Ensure the TEST_ACTION action is part of the loaded actions
     const testAction = actions.find((action) => action.name === "TEST_ACTION");
-    console.log("Actions", actions);
-    console.log(testAction);
     expect(testAction).toBeDefined();
   });
 

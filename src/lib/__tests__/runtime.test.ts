@@ -54,7 +54,7 @@ describe("Agent Runtime", () => {
     const result = await createRuntime({
       env: process.env as Record<string, string>,
     });
-    console.log("result", result);
+
     runtime = result.runtime;
     user = result.session.user;
 

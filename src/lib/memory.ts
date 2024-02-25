@@ -150,7 +150,6 @@ export class MemoryManager {
    */
   async createMemory(memory: Memory, unique = false): Promise<void> {
     if (unique) {
-      console.log("*** memory", memory);
       const opts = {
         query_table_name: this.tableName,
         query_user_id: memory.user_id,

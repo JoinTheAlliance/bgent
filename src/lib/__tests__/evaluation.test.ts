@@ -99,8 +99,6 @@ describe("Evaluation Process", () => {
       const state = await runtime.composeState(message);
       const result = await runtime.evaluate(message, state);
 
-      console.log("*** result", result);
-
       return result?.includes("TEST_EVALUATOR");
     }); // Adjust the timeout if needed
   }, 600000);
