@@ -369,7 +369,6 @@ describe("Memory - Extended Tests", () => {
     const memory = searchedMemories[0];
 
     const similarity = (memory as unknown as { similarity: number }).similarity;
-
     expect(similarity).toBeGreaterThan(0.9);
   });
 
