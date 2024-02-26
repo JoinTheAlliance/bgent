@@ -138,7 +138,7 @@ describe("Goals Evaluator", () => {
       {
         user_id: zeroUuid,
         content: {
-          content: "That's unfortunate. Let's reflect on what went wrong.",
+          content: "That's unfortunate. Let's cancel it..",
         },
       },
     ];
@@ -149,7 +149,7 @@ describe("Goals Evaluator", () => {
       senderId: user.id as UUID,
       agentId: zeroUuid,
       userIds: [user.id as UUID, zeroUuid],
-      content: { content: "I've decided to give up on Goal Y." },
+      content: { content: "I've decided to mark Goal Y as failed." },
       room_id,
     };
 

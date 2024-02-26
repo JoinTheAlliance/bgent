@@ -14,8 +14,6 @@ Analyze the conversation and update the status of the goals based on the new inf
 - Update the status of the goal to 'DONE' if all objectives are completed.
 - If no progress is made, do not change the status of the goal.
 
-- Goal status options are 'IN_PROGRESS', 'DONE' and 'FAILED'. If the goal is active it should always be 'IN_PROGRESS'.
-
 # START OF ACTUAL TASK INFORMATION
 
 {{goals}}
@@ -25,6 +23,9 @@ TASK: Analyze the conversation and update the status of the goals based on the n
 - Each item must include the goal ID, as well as the fields in the goal to update.
 - For updating objectives, include the entire objectives array including unchanged fields.
 - Only include goals which need to be updated.
+- Goal status options are 'IN_PROGRESS', 'DONE' and 'FAILED'. If the goal is active it should always be 'IN_PROGRESS'.
+- If the goal has been successfully completed, set status to DONE. If the goal cannot be completed, set status to FAILED.
+- If those goal is still in progress, do not include the status field.
 
 Response format should be:
 \`\`\`json
