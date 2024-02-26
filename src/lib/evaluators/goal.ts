@@ -154,9 +154,10 @@ export default {
       outcome: `[
         {
           "id": "12345-67890-12345-67890",
+          "status": "DONE",
           "objectives": [
             { "description": "Read up to chapter 20 by the end of the month", "completed": true },
-            { "description": "Discuss the first part in the next meeting", "completed": false }
+            { "description": "Prepare notes for the next discussion", "completed": true }
           ]
         }
       ]`,
@@ -243,6 +244,46 @@ export default {
             { "description": "Complete the project prototype", "completed": false }
           ]
         }
+      ]`,
+    },
+
+    {
+      context: `Actors in the scene:
+        {{user1}}: A project manager working on a software development project.
+        {{user2}}: A software developer in the project team.
+        
+        Goals:
+        - Name: Launch the new software version
+          id: 45678-90123-45678-90123
+          Status: IN_PROGRESS
+          Objectives: 
+            - Complete the coding for the new features
+            - Perform comprehensive testing of the software`,
+
+      messages: [
+        {
+          user: "{{user1}}",
+          content: { content: "How's the progress on the new features?" },
+        },
+        {
+          user: "{{user2}}",
+          content: {
+            content:
+              "We've encountered some unexpected challenges and are currently troubleshooting.",
+          },
+        },
+        {
+          user: "{{user1}}",
+          content: {
+            content: "Let's move on and cancel the task.",
+          },
+        },
+      ],
+
+      outcome: `[
+        {
+          "id": "45678-90123-45678-90123",
+          "status": "FAILED"
       ]`,
     },
   ],
