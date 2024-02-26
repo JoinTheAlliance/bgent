@@ -100,8 +100,8 @@ DECLARE
 BEGIN
   -- Assuming NEW.id is the user ID of the newly inserted/updated row triggering this action
   -- Create a new room for the direct message between the new user and the host agent
-  INSERT INTO rooms (created_by, name, is_dm)
-  VALUES (NEW.id, 'Direct Message with Host Agent', TRUE)
+  INSERT INTO rooms (created_by, name)
+  VALUES (NEW.id, 'Direct Message with Host Agent')
   RETURNING id INTO new_room_id;
 
   -- Create a new friendship between the new user and the host agent

@@ -3,10 +3,16 @@ import { type BgentRuntime } from "../../../lib";
 import { composeContext } from "../../../lib/context";
 import { formatActors, getActorDetails } from "../../../lib/messages";
 import { createRelationship } from "../../../lib/relationships";
-import { Action, Memory, type Message, type State } from "../../../lib/types";
+import {
+  Action,
+  ActionExample,
+  Memory,
+  type Message,
+  type State,
+} from "../../../lib/types";
 import { parseJSONObjectFromText } from "../../../lib/utils";
 
-const template = `TASK: Introduce {{senderName}} to someone from {{agentName}}'s rolodex.
+export const template = `TASK: Introduce {{senderName}} to someone from {{agentName}}'s rolodex.
 The goal of this task is to determine which person from {{agentName}}'s rolodex would be the best match for {{senderName}} to meet.
 
 # BEGAN TASK EXAMPLE DATA
@@ -45,7 +51,7 @@ The response format should include userA, userB and explanation fields, and shou
 { "explanation": Brief explanation of why they should be connected>, "userA": <name>, "userB": <name> }
 \`\`\``;
 
-const getRelevantRelationships = async (
+export const getRelevantRelationships = async (
   runtime: BgentRuntime,
   message: Message,
 ) => {
@@ -130,15 +136,19 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
   }
 };
 
-export default {
+export const action = {
   name: "INTRODUCE",
   validate: async (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _runtime: BgentRuntime,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _message: Message,
+    runtime: BgentRuntime,
+    message: Message,
   ): Promise<boolean> => {
-    return await Promise.resolve(true);
+    // Retrieve descriptions for the message sender
+    const descriptions = await runtime.descriptionManager.getMemoriesByIds({
+      userIds: [message.senderId],
+    });
+
+    // If the sender has at least one description, return true to indicate the action is valid
+    return descriptions.length > 0;
   },
   description:
     "Introduce the user to someone from the rolodex who they might like to chat with. Only use this if the user is expressing interest in meeting someone new. If the user has not expressed interest, DO NOT USE THIS ACTION.",
@@ -147,56 +157,54 @@ export default {
     "The agent wants to introduce the user to someone from the rolodex",
   examples: [
     [
-      [
-        {
-          user: "{{user1}}",
-          content: {
-            content:
-              "I've been wanting to meet someone who's into indie music like I am.",
-          },
+      {
+        user: "{{user1}}",
+        content: {
+          content:
+            "I've been wanting to meet someone who's into indie music like I am.",
         },
-        {
-          user: "{{agent}}",
-          content: {
-            content:
-              "I know just the person! Let me introduce you to Alex, who is a huge indie music fan.",
-            action: "INTRODUCE",
-          },
+      },
+      {
+        user: "{{agent}}",
+        content: {
+          content:
+            "I know just the person! Let me introduce you to Alex, who is a huge indie music fan.",
+          action: "INTRODUCE",
         },
-        {
-          user: "{{agent}}",
-          content: {
-            content:
-              "I've sent Alex a message to see if they're up for a chat. Hang tight!",
-            action: "WAIT",
-          },
+      },
+      {
+        user: "{{agent}}",
+        content: {
+          content:
+            "I've sent Alex a message to see if they're up for a chat. Hang tight!",
+          action: "WAIT",
         },
-      ],
-      [
-        {
-          user: "{{user1}}",
-          content: {
-            content:
-              "I'm trying to expand my professional network in the graphic design field.",
-          },
+      },
+    ],
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content:
+            "I'm trying to expand my professional network in the graphic design field.",
         },
-        {
-          user: "{{agent}}",
-          content: {
-            content:
-              "Great! I'll introduce you to Jordan, who is well-connected in the graphic design community.",
-            action: "INTRODUCE",
-          },
+      },
+      {
+        user: "{{agent}}",
+        content: {
+          content:
+            "Great! I'll introduce you to Jordan, who is well-connected in the graphic design community.",
+          action: "INTRODUCE",
         },
-        {
-          user: "{{agent}}",
-          content: {
-            content:
-              "Jordan is usually quick to respond. Let's give them a moment.",
-            action: "WAIT",
-          },
+      },
+      {
+        user: "{{agent}}",
+        content: {
+          content:
+            "Jordan is usually quick to respond. Let's give them a moment.",
+          action: "WAIT",
         },
-      ],
+      },
     ],
 
     [
@@ -234,39 +242,37 @@ export default {
     ],
 
     [
-      [
-        {
-          user: "{{user1}}",
-          content: {
-            content: "I'm not sure if I'm ready to meet new people yet.",
-          },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "I'm not sure if I'm ready to meet new people yet.",
         },
-        {
-          user: "{{agent}}",
-          content: {
-            content:
-              "No worries at all. Take your time, and I'm here when you're ready.",
-            action: "IGNORE",
-          },
+      },
+      {
+        user: "{{agent}}",
+        content: {
+          content:
+            "No worries at all. Take your time, and I'm here when you're ready.",
+          action: "IGNORE",
         },
-      ],
-      [
-        {
-          user: "{{user1}}",
-          content: {
-            content:
-              "Maybe meeting someone new would be nice. Oh, did you see the latest football match?",
-          },
-        },
-        {
-          user: "{{agent}}",
-          content: {
-            content:
-              "I did catch the highlights! If you decide you'd like to meet someone from the community, just let me know.",
-            action: "IGNORE",
-          },
-        },
-      ],
+      },
     ],
-  ],
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content:
+            "Maybe meeting someone new would be nice. Oh, did you see the latest football match?",
+        },
+      },
+      {
+        user: "{{agent}}",
+        content: {
+          content:
+            "I did catch the highlights! If you decide you'd like to meet someone from the community, just let me know.",
+          action: "IGNORE",
+        },
+      },
+    ],
+  ] as ActionExample[][],
 } as Action;
