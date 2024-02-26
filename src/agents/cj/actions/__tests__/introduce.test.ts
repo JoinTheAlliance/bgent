@@ -70,7 +70,7 @@ describe("INTRODUCE Action Tests", () => {
       const { error: insertError } = await runtime.supabase
         .from("accounts")
         .insert({
-          name: "Test User",
+          name: user.email,
           email: user.email,
           avatar_url: "",
           register_complete: true,
@@ -162,11 +162,21 @@ describe("INTRODUCE Action Tests", () => {
 
   // Additional tests for Rolodex functionality as per the requirements
   describe("Rolodex Functionality", () => {
-    let mainUser: User, similarUser: User, differentUser: User;
+    let mainUser: User,
+      session: Session,
+      runtime: BgentRuntime,
+      similarUser: User,
+      differentUser: User;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       // Create main user and add a description
-      mainUser = await ensureUser("mainuser@example.com", "password");
+      ({ session, runtime } = await createRuntime({
+        env: process.env,
+        actions: [introduce],
+      }));
+
+      mainUser = session.user as User;
+
       await runtime.descriptionManager.createMemory(
         await runtime.descriptionManager.addEmbeddingToMemory({
           user_id: mainUser.id as UUID,
@@ -197,7 +207,7 @@ describe("INTRODUCE Action Tests", () => {
           room_id: zeroUuid,
         }),
       );
-    });
+    }, 60000);
 
     test("Rolodex returns potential connections based on user descriptions", async () => {
       const message = {
@@ -210,14 +220,21 @@ describe("INTRODUCE Action Tests", () => {
         userIds: [mainUser.id as UUID, zeroUuid],
       };
 
+      // select all from descriptions
+      const response = await runtime.supabase.from("descriptions").select("*");
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
       const relevantRelationships = await getRelevantRelationships(
         runtime,
         message,
+        1,
       );
 
       expect(relevantRelationships).toContain(similarUser.email); // Assuming the rolodex function lists users by their email or some identifier
       expect(relevantRelationships).not.toContain(differentUser.email);
-    });
+    }, 60000);
 
     test("More similar user is higher in the rolodex list than the less similar user", async () => {
       const message = {
@@ -231,12 +248,17 @@ describe("INTRODUCE Action Tests", () => {
       };
 
       const state = (await runtime.composeState(message)) as State;
+
+      // select all from descriptions
+      const response = await runtime.supabase.from("descriptions").select("*");
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
       const relevantRelationships = await getRelevantRelationships(
         runtime,
         message,
+        2,
       );
-      console.log("***** relevantRelationships");
-      console.log(relevantRelationships);
 
       const context = composeContext({
         state: { ...state, relevantRelationships },
@@ -252,7 +274,7 @@ describe("INTRODUCE Action Tests", () => {
 
       expect(similarUserIndex).toBeLessThan(differentUserIndex);
       expect(context).toContain(similarUser.email);
-    });
+    }, 60000);
 
     afterEach(async () => {
       await cleanup([

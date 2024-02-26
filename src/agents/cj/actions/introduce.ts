@@ -54,14 +54,16 @@ The response format should include userA, userB and explanation fields, and shou
 export const getRelevantRelationships = async (
   runtime: BgentRuntime,
   message: Message,
+  count?: number,
 ) => {
+  console.log("message.senderId", message.senderId, count);
   // Check if the user has a profile
   const descriptions = await runtime.descriptionManager.getMemoriesByIds({
     userIds: [message.senderId, message.agentId],
   });
   // if they dont, return empty string
   if (descriptions.length === 0) {
-    return "";
+    throw new Error("User does not have a profile");
   }
   // if they do, run the rolodex match and return a list of good matches for them
   const description = descriptions[0] as Memory;
@@ -74,7 +76,9 @@ export const getRelevantRelationships = async (
         count: 5,
       },
     )
-  ).filter((d: Memory) => d.user_id !== message.senderId);
+  )
+    .filter((d: Memory) => d.user_id !== message.senderId)
+    .slice(0, count);
 
   // get all the userIds from the user_ids of the otherPeopleDescriptions, make sure unique
   const userIds = Array.from(

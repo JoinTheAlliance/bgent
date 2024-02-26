@@ -45,8 +45,6 @@ export const composeActionExamples = (actionsData: Action[], count: number) => {
 
     return `\n${example
       .map((message) => {
-        console.log("mapping message:", message);
-        // for each name in example names, replace all
         let messageString = `${message.user}: ${message.content.content}${message.content.action ? ` (${message.content.action})` : ""}`;
         for (let i = 0; i < exampleNames.length; i++) {
           messageString = messageString.replaceAll(
