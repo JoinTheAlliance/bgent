@@ -67,11 +67,11 @@ export class MemoryManager {
    */
   async getMemoriesByIds({
     userIds,
-    count,
+    count = 10,
     unique = true,
   }: {
     userIds: UUID[];
-    count: number;
+    count?: number;
     unique?: boolean;
   }): Promise<Memory[]> {
     const result = await this.runtime.supabase.rpc("get_memories", {
@@ -108,14 +108,14 @@ export class MemoryManager {
     opts: {
       match_threshold?: number;
       count?: number;
-      userIds: UUID[];
+      userIds?: UUID[];
       unique?: boolean;
     },
   ): Promise<Memory[]> {
     const {
       match_threshold = defaultMatchThreshold,
       count = defaultMatchCount,
-      userIds = [],
+      userIds = null,
       unique,
     } = opts;
 
