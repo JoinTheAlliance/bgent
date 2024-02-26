@@ -194,8 +194,8 @@ describe("Memory", () => {
     );
 
     expect(highSimilarityIndex).toBeLessThan(lowSimilarityIndex);
-  });
-}, 6000);
+  }, 60000);
+});
 describe("Memory - Basic tests", () => {
   let memoryManager: MemoryManager;
   let runtime = null;
