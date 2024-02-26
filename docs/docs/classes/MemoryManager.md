@@ -119,7 +119,7 @@ Retrieves a list of memories by user IDs, with optional deduplication.
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
 | `opts` | `Object` | `undefined` | Options including user IDs, count, and uniqueness. |
-| `opts.count` | `number` | `undefined` | The number of memories to retrieve. |
+| `opts.count?` | `number` | `10` | The number of memories to retrieve. |
 | `opts.unique?` | `boolean` | `true` | Whether to retrieve unique memories only. |
 | `opts.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | `undefined` | An array of user IDs to retrieve memories for. |
 
@@ -186,7 +186,7 @@ Searches for memories similar to a given embedding vector.
 | `opts.count?` | `number` | The maximum number of memories to retrieve. |
 | `opts.match_threshold?` | `number` | The similarity threshold for matching memories. |
 | `opts.unique?` | `boolean` | Whether to retrieve unique memories only. |
-| `opts.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | An array of user IDs to retrieve memories for. |
+| `opts.userIds?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | An array of user IDs to retrieve memories for. |
 
 #### Returns
 
