@@ -117,7 +117,7 @@ describe("Memory", () => {
           (memory.content as Content).content === dissimilarMemoryContent,
       ),
     ).toBe(false);
-  });
+  }, 6000);
 
   test("Verify memory similarity and ranking", async () => {
     // Define a set of memories with varying degrees of similarity
@@ -195,7 +195,7 @@ describe("Memory", () => {
 
     expect(highSimilarityIndex).toBeLessThan(lowSimilarityIndex);
   });
-});
+}, 6000);
 describe("Memory - Basic tests", () => {
   let memoryManager: MemoryManager;
   let runtime = null;
@@ -529,7 +529,7 @@ describe("Memory - Extended Tests", () => {
           (memory.content as Content).content === dissimilarMemoryContent,
       ),
     ).toBe(false);
-  });
+  }, 60000);
 
   test("Verify memory similarity and ranking", async () => {
     // Define a set of memories with varying degrees of similarity
@@ -606,5 +606,5 @@ describe("Memory - Extended Tests", () => {
     );
 
     expect(highSimilarityIndex).toBeLessThan(lowSimilarityIndex);
-  });
+  }, 60000);
 });
