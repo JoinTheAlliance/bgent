@@ -7,13 +7,15 @@ import {
   GetTellMeAboutYourselfConversationTroll2,
   Goodbye1,
 } from "../../../test/data";
+import { populateMemories } from "../../../test/populateMemories";
+import { runAiTest } from "../../../test/runAiTest";
+import { zeroUuid } from "../../constants";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../ignore";
-import { populateMemories } from "../../../test/populateMemories";
-import { zeroUuid } from "../../constants";
 
+// use .dev.vars for local testing
 dotenv.config({ path: ".dev.vars" });
 
 describe("Ignore action tests", () => {
@@ -60,84 +62,98 @@ describe("Ignore action tests", () => {
   }
 
   test("Test ignore action", async () => {
-    const message: Message = {
-      senderId: user?.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
-      content: { content: "Never talk to me again" },
-      room_id: room_id as UUID,
-    };
+    await runAiTest("Test ignore action", async () => {
+      const message: Message = {
+        senderId: user?.id as UUID,
+        agentId: zeroUuid,
+        userIds: [user?.id as UUID, zeroUuid],
+        content: { content: "Never talk to me again" },
+        room_id: room_id as UUID,
+      };
 
-    await populateMemories(runtime, user, room_id, [
-      GetTellMeAboutYourselfConversationTroll1,
-    ]);
+      await populateMemories(runtime, user, room_id, [
+        GetTellMeAboutYourselfConversationTroll1,
+      ]);
 
-    const result = await runtime.handleMessage(message);
+      const result = await runtime.handleMessage(message);
 
-    expect(result.action).toBe("IGNORE");
+      return result.action === "IGNORE";
+    });
   }, 60000);
 
   test("Action handler test 1: response should be ignore", async () => {
-    const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
-      content: { content: "" },
-      room_id: room_id as UUID,
-    };
+    await runAiTest(
+      "Action handler test 1: response should be ignore",
+      async () => {
+        const message: Message = {
+          senderId: user.id as UUID,
+          agentId: zeroUuid,
+          userIds: [user?.id as UUID, zeroUuid],
+          content: { content: "" },
+          room_id: room_id as UUID,
+        };
 
-    await populateMemories(runtime, user, room_id, [
-      GetTellMeAboutYourselfConversationTroll1,
-    ]);
+        await populateMemories(runtime, user, room_id, [
+          GetTellMeAboutYourselfConversationTroll1,
+        ]);
 
-    await runtime.handleMessage(message);
+        await runtime.handleMessage(message);
 
-    const state = await runtime.composeState(message);
+        const state = await runtime.composeState(message);
 
-    const lastMessage = state.recentMessagesData[0];
+        const lastMessage = state.recentMessagesData[0];
 
-    expect((lastMessage.content as Content).action).toBe("IGNORE");
+        return (lastMessage.content as Content).action === "IGNORE";
+      },
+    );
   }, 60000);
 
   test("Action handler test 2: response should be ignore", async () => {
-    const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
-      content: { content: "" },
-      room_id: room_id as UUID,
-    };
+    await runAiTest(
+      "Action handler test 2: response should be ignore",
+      async () => {
+        const message: Message = {
+          senderId: user.id as UUID,
+          agentId: zeroUuid,
+          userIds: [user?.id as UUID, zeroUuid],
+          content: { content: "" },
+          room_id: room_id as UUID,
+        };
 
-    await populateMemories(runtime, user, room_id, [
-      GetTellMeAboutYourselfConversationTroll2,
-    ]);
+        await populateMemories(runtime, user, room_id, [
+          GetTellMeAboutYourselfConversationTroll2,
+        ]);
 
-    await runtime.handleMessage(message);
+        await runtime.handleMessage(message);
 
-    const state = await runtime.composeState(message);
+        const state = await runtime.composeState(message);
 
-    const lastMessage = state.recentMessagesData[0];
+        const lastMessage = state.recentMessagesData[0];
 
-    expect((lastMessage.content as Content).action).toBe("IGNORE");
+        return (lastMessage.content as Content).action === "IGNORE";
+      },
+    );
   }, 60000);
 
   test("Expect ignore", async () => {
-    const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
-      content: { content: "Bye" },
-      room_id: room_id as UUID,
-    };
+    await runAiTest("Expect ignore", async () => {
+      const message: Message = {
+        senderId: user.id as UUID,
+        agentId: zeroUuid,
+        userIds: [user?.id as UUID, zeroUuid],
+        content: { content: "Bye" },
+        room_id: room_id as UUID,
+      };
 
-    await populateMemories(runtime, user, room_id, [Goodbye1]);
+      await populateMemories(runtime, user, room_id, [Goodbye1]);
 
-    await runtime.handleMessage(message);
+      await runtime.handleMessage(message);
 
-    const state = await runtime.composeState(message);
+      const state = await runtime.composeState(message);
 
-    const lastMessage = state.recentMessagesData[0];
+      const lastMessage = state.recentMessagesData[0];
 
-    expect((lastMessage.content as Content).action).toBe("IGNORE");
+      return (lastMessage.content as Content).action === "IGNORE";
+    });
   }, 60000);
 });
