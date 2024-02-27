@@ -62,7 +62,6 @@ describe("Goals Evaluator", () => {
         objectives,
       },
     });
-    console.log("*** Created goal", result);
     return result;
   }
 
@@ -127,8 +126,6 @@ describe("Goals Evaluator", () => {
       { description: "Complete all tasks for Goal Y", completed: false },
     ]);
 
-    console.log("*** Goal Y created");
-
     // Simulate a conversation indicating failure to achieve "Goal Y"
     const conversation = (user_id: UUID) => [
       {
@@ -153,9 +150,7 @@ describe("Goals Evaluator", () => {
       room_id,
     };
 
-    const response = await evaluator.handler(runtime, message);
-
-    console.log("*** Response:", response);
+    await evaluator.handler(runtime, message);
 
     const goals = await getGoals({
       runtime,
