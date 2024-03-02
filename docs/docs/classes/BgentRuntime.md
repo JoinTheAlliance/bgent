@@ -225,27 +225,6 @@ The number of recent messages to be kept in memory.
 
 ___
 
-### handleMessage
-
-▸ **handleMessage**(`message`, `state?`): `Promise`\<[`Content`](../interfaces/Content.md)\>
-
-Handle an incoming message, processing it and returning a response.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `message` | [`Message`](../interfaces/Message.md) | The message to handle. |
-| `state?` | [`State`](../interfaces/State.md) | The state of the agent. |
-
-#### Returns
-
-`Promise`\<[`Content`](../interfaces/Content.md)\>
-
-The response to the message.
-
-___
-
 ### processActions
 
 ▸ **processActions**(`message`, `content`): `Promise`\<`void`\>

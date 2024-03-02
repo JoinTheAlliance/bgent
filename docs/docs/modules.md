@@ -30,6 +30,7 @@ custom_edit_url: null
 - [MessageExample](interfaces/MessageExample.md)
 - [Objective](interfaces/Objective.md)
 - [Provider](interfaces/Provider.md)
+- [Relationship](interfaces/Relationship.md)
 - [State](interfaces/State.md)
 
 ## Type Aliases
@@ -49,6 +50,7 @@ custom_edit_url: null
 - [fact](variables/fact.md)
 - [goal](variables/goal-1.md)
 - [ignore](variables/ignore.md)
+- [messageHandlerTemplate](variables/messageHandlerTemplate.md)
 - [wait](variables/wait.md)
 
 ## Functions
@@ -83,4 +85,6 @@ custom_edit_url: null
 - [getProviders](functions/getProviders.md)
 - [getRelationship](functions/getRelationship.md)
 - [getRelationships](functions/getRelationships.md)
+- [parseJSONObjectFromText](functions/parseJSONObjectFromText.md)
+- [parseJsonArrayFromText](functions/parseJsonArrayFromText.md)
 - [updateGoal](functions/updateGoal.md)

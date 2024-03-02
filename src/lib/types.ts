@@ -175,10 +175,26 @@ export interface Evaluator {
   validate: Validator; // The function that validates whether the evaluator is applicable in the current context.
 }
 
+/**
+ * Represents a provider, which is used to retrieve information or perform actions on behalf of the agent, such as fetching data from an external API or service.
+ */
 export interface Provider {
   get: (
     runtime: BgentRuntime,
     message: Message,
     state?: State,
   ) => Promise<unknown>;
+}
+
+/**
+ * Represents a relationship between two users, including their IDs, the status of the relationship, and the room ID in which the relationship is established.
+ */
+export interface Relationship {
+  id: UUID
+  user_a: UUID
+  user_b: UUID
+  user_id: UUID
+  room_id: UUID
+  status: string
+  created_at?: string
 }

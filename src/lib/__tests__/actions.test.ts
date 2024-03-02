@@ -6,8 +6,131 @@ import { TEST_ACTION, TEST_ACTION_FAIL } from "../../test/testAction";
 import { zeroUuid } from "../constants";
 import { createRelationship, getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
-import { type Message } from "../types";
+import { Content, State, type Message } from "../types";
 import { runAiTest } from "../../test/runAiTest";
+import { composeContext } from "../context";
+import logger from "../logger";
+import { embeddingZeroVector } from "../memory";
+import { messageHandlerTemplate } from "../templates";
+import { parseJSONObjectFromText } from "../utils";
+
+async function handleMessage(
+  runtime: BgentRuntime,
+  message: Message,
+  state?: State,
+) {
+  const _saveRequestMessage = async (message: Message, state: State) => {
+    const { content: senderContent, senderId, userIds, room_id } = message;
+
+    const _senderContent = (
+      (senderContent as Content).content ?? senderContent
+    )?.trim();
+    if (_senderContent) {
+      await runtime.messageManager.createMemory({
+        user_ids: userIds!,
+        user_id: senderId!,
+        content: {
+          content: _senderContent,
+          action: (message.content as Content)?.action ?? "null",
+        },
+        room_id,
+        embedding: embeddingZeroVector,
+      });
+      await runtime.evaluate(message, state);
+    }
+  };
+
+  await _saveRequestMessage(message, state as State);
+  if (!state) {
+    state = (await runtime.composeState(message)) as State;
+  }
+
+  const context = composeContext({
+    state,
+    template: messageHandlerTemplate,
+  });
+
+  if (runtime.debugMode) {
+    logger.log(context, "Response Context", "cyan");
+  }
+
+  let responseContent: Content | null = null;
+  const { senderId, room_id, userIds: user_ids, agentId } = message;
+
+  for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+    const response = await runtime.completion({
+      context,
+      stop: [],
+    });
+
+    runtime.supabase
+      .from("logs")
+      .insert({
+        body: { message, context, response },
+        user_id: senderId,
+        room_id,
+        user_ids: user_ids!,
+        agent_id: agentId!,
+        type: "main_completion",
+      })
+      .then(({ error }) => {
+        if (error) {
+          console.error("error", error);
+        }
+      });
+
+    const parsedResponse = parseJSONObjectFromText(
+      response,
+    ) as unknown as Content;
+
+    if (
+      (parsedResponse.user as string)?.includes(
+        (state as State).agentName as string,
+      )
+    ) {
+      responseContent = {
+        content: parsedResponse.content,
+        action: parsedResponse.action,
+      };
+      break;
+    }
+  }
+
+  if (!responseContent) {
+    responseContent = {
+      content: "",
+      action: "IGNORE",
+    };
+  }
+
+  const _saveResponseMessage = async (
+    message: Message,
+    state: State,
+    responseContent: Content,
+  ) => {
+    const { agentId, userIds, room_id } = message;
+
+    responseContent.content = responseContent.content?.trim();
+
+    if (responseContent.content) {
+      await runtime.messageManager.createMemory({
+        user_ids: userIds!,
+        user_id: agentId!,
+        content: responseContent,
+        room_id,
+        embedding: embeddingZeroVector,
+      });
+      await runtime.evaluate(message, { ...state, responseContent });
+    } else {
+      console.warn("Empty response, skipping");
+    }
+  };
+
+  await _saveResponseMessage(message, state, responseContent);
+  await runtime.processActions(message, responseContent);
+
+  return responseContent;
+}
 
 // use .dev.vars for local testing
 dotenv.config({ path: ".dev.vars" });
@@ -157,7 +280,7 @@ describe("Actions", () => {
         room_id,
       };
 
-      const response = await runtime.handleMessage(message);
+      const response = await handleMessage(runtime, message);
       return response.action === "TEST_ACTION"; // Return true if the expected action matches
     });
   }, 60000);

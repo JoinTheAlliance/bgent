@@ -38,6 +38,15 @@ export async function createRuntime({
       email: TEST_EMAIL!,
       password: TEST_PASSWORD!,
     });
+    // change the name of the user
+    const { error } = await supabase
+      .from("accounts")
+      .update({ name: "Test User" })
+      .eq("id", data?.user?.id);
+
+    if (error) {
+      throw error;
+    }
     user = response.data.user as User;
     session = response.data.session as Session;
   }

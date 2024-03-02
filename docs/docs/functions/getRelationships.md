@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **getRelationships**(`«destructured»`): `Promise`\<`Relationship`[]\>
+▸ **getRelationships**(`«destructured»`): `Promise`\<[`Relationship`](../interfaces/Relationship.md)[]\>
 
 #### Parameters
 
@@ -18,4 +18,4 @@ custom_edit_url: null
 
 #### Returns
 
-`Promise`\<`Relationship`[]\>
+`Promise`\<[`Relationship`](../interfaces/Relationship.md)[]\>
