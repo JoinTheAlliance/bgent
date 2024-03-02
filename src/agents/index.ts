@@ -1,7 +1,5 @@
-export { fetch as CjWorker } from "./cj";
-export { fetch as SimpleWorker } from "./simple";
-import { fetch as CjWorker } from "./cj";
+export { fetch } from "./simple";
 
 export default {
-  fetch: CjWorker,
+  fetch,
 };

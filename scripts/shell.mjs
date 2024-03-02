@@ -93,7 +93,7 @@ const checkAndUpdateAccount = async (user) => {
 
     const { error: insertError } = await supabase
       .from('accounts')
-      .insert([{ id: user.id, name, email: user.email, register_complete: true }])
+      .insert([{ id: user.id, name, email: user.email }])
 
     if (insertError) {
       console.error(chalk.red(`Failed to create account: ${insertError.message}`))

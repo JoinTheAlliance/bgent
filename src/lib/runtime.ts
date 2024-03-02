@@ -9,8 +9,7 @@ import {
   formatEvaluators,
 } from "./evaluators";
 import logger from "./logger";
-import { MemoryManager, embeddingZeroVector } from "./memory";
-import { messageHandlerTemplate } from "./templates";
+import { MemoryManager } from "./memory";
 import {
   Content,
   Goal,
@@ -20,7 +19,7 @@ import {
   type Evaluator,
   type Message,
 } from "./types";
-import { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";
+import { parseJsonArrayFromText } from "./utils";
 
 import {
   composeActionExamples,
@@ -297,126 +296,6 @@ export class BgentRuntime {
       console.error(e);
       throw e;
     }
-  }
-
-  /**
-   * Handle an incoming message, processing it and returning a response.
-   * @param message The message to handle.
-   * @param state The state of the agent.
-   * @returns The response to the message.
-   */
-  async handleMessage(message: Message, state?: State) {
-    const _saveRequestMessage = async (message: Message, state: State) => {
-      const { content: senderContent, senderId, userIds, room_id } = message;
-
-      const _senderContent = (
-        (senderContent as Content).content ?? senderContent
-      )?.trim();
-      if (_senderContent) {
-        await this.messageManager.createMemory({
-          user_ids: userIds!,
-          user_id: senderId!,
-          content: {
-            content: _senderContent,
-            action: (message.content as Content)?.action ?? "null",
-          },
-          room_id,
-          embedding: embeddingZeroVector,
-        });
-        await this.evaluate(message, state);
-      }
-    };
-
-    await _saveRequestMessage(message, state as State);
-    if (!state) {
-      state = (await this.composeState(message)) as State;
-    }
-
-    const context = composeContext({
-      state,
-      template: messageHandlerTemplate,
-    });
-
-    if (this.debugMode) {
-      logger.log(context, "Response Context", "cyan");
-    }
-
-    let responseContent: Content | null = null;
-    const { senderId, room_id, userIds: user_ids, agentId } = message;
-
-    for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      const response = await this.completion({
-        context,
-        stop: [],
-      });
-
-      this.supabase
-        .from("logs")
-        .insert({
-          body: { message, context, response },
-          user_id: senderId,
-          room_id,
-          user_ids: user_ids!,
-          agent_id: agentId!,
-          type: "main_completion",
-        })
-        .then(({ error }) => {
-          if (error) {
-            console.error("error", error);
-          }
-        });
-
-      const parsedResponse = parseJSONObjectFromText(
-        response,
-      ) as unknown as Content;
-
-      if (
-        (parsedResponse.user as string)?.includes(
-          (state as State).agentName as string,
-        )
-      ) {
-        responseContent = {
-          content: parsedResponse.content,
-          action: parsedResponse.action,
-        };
-        break;
-      }
-    }
-
-    if (!responseContent) {
-      responseContent = {
-        content: "",
-        action: "IGNORE",
-      };
-    }
-
-    const _saveResponseMessage = async (
-      message: Message,
-      state: State,
-      responseContent: Content,
-    ) => {
-      const { agentId, userIds, room_id } = message;
-
-      responseContent.content = responseContent.content?.trim();
-
-      if (responseContent.content) {
-        await this.messageManager.createMemory({
-          user_ids: userIds!,
-          user_id: agentId!,
-          content: responseContent,
-          room_id,
-          embedding: embeddingZeroVector,
-        });
-        await this.evaluate(message, { ...state, responseContent });
-      } else {
-        console.warn("Empty response, skipping");
-      }
-    };
-
-    await _saveResponseMessage(message, state, responseContent);
-    await this.processActions(message, responseContent);
-
-    return responseContent;
   }
 
   /**

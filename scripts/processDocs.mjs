@@ -129,7 +129,6 @@ const main = async () => {
             id: zeroUuid,
             name: 'Default Agent',
             email: 'default@agent',
-            register_complete: true,
             details: {},
         });
     }

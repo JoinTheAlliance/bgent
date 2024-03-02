@@ -461,7 +461,6 @@ CREATE TABLE IF NOT EXISTS "public"."accounts" (
     "name" "text",
     "email" "text" NOT NULL,
     "avatar_url" "text",
-    "register_complete" boolean NOT NULL,
     "details" "jsonb" DEFAULT '{}'::"jsonb"
 );
 

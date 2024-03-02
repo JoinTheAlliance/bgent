@@ -40,7 +40,6 @@ describe("Actions", () => {
           name: "Test User",
           email: user.email,
           avatar_url: "",
-          register_complete: true,
         },
       ]);
 

@@ -101,7 +101,7 @@ export default {
     // prevent repetition
     const messageExists = state.recentMessagesData
       .filter((m) => m.user_id === message.agentId)
-      .slice(0, maxContinuesInARow)
+      .slice(0, maxContinuesInARow + 1)
       .some((m) => m.content === message.content);
 
     if (messageExists) {
@@ -161,7 +161,7 @@ export default {
     return responseContent;
   },
   condition:
-    "The agent wants to continue speaking and say something else as a continuation of the last thought. If the conversation is done, the agent is waiting for the user to respond, or the user does not want to continue, do not use the continue action.",
+    "Only use CONTINUE if the message requires a continuation to finish the thought. If this actor is waiting for the other actor to respond, or the actor does not have more to say, do not use the CONTINUE action.",
   examples: [
     [
       {
@@ -169,6 +169,7 @@ export default {
         content: {
           content:
             "Planning a solo trip soon. I've always wanted to try backpacking.",
+          action: "WAIT",
         },
       },
       {
@@ -271,8 +272,8 @@ export default {
       {
         user: "{{user1}}",
         content: {
-          content: "Really challenges your perceptions. Highly recommend it!",
-          action: "CONTINUE",
+          content: "Really challenges your perceptions. I highly recommend it!",
+          action: "WAIT",
         },
       },
       {
@@ -289,6 +290,160 @@ export default {
         user: "{{user1}}",
         content: { content: "How about this weekend?" },
         action: "WAIT",
+      },
+    ],
+
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Just finished a marathon session of my favorite series!",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user2}}",
+        content: {
+          content: "Wow, that's quite a binge. Feeling okay?",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Surprisingly, yes.",
+          action: "CONTINUE",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Might go for another round this weekend.",
+          action: "WAIT",
+        },
+      },
+    ],
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content: "I'm thinking of adopting a pet soon.",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user2}}",
+        content: {
+          content: "That's great! What kind are you considering?",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Leaning towards a cat.",
+          action: "CONTINUE",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "They're more independent, and my apartment isn't huge.",
+          action: "WAIT",
+        },
+      },
+    ],
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content: "I've been experimenting with vegan recipes lately.",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user2}}",
+        content: {
+          content: "Nice! Found any favorites?",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "A few, actually.",
+          action: "CONTINUE",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content:
+            "The vegan lasagna was a hit even among my non-vegan friends.",
+          action: "WAIT",
+        },
+      },
+    ],
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Been diving into photography as a new hobby.",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user2}}",
+        content: {
+          content: "That's cool! What do you enjoy taking photos of?",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Mostly nature and urban landscapes.",
+          action: "CONTINUE",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content:
+            "There's something peaceful about capturing the world through a lens.",
+          action: "WAIT",
+        },
+      },
+    ],
+    [
+      {
+        user: "{{user1}}",
+        content: {
+          content: "I've been really into indie music scenes lately.",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user2}}",
+        content: {
+          content: "That sounds awesome. Any recommendations?",
+          action: "WAIT",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content: "Definitely! I'll send you a playlist.",
+          action: "CONTINUE",
+        },
+      },
+      {
+        user: "{{user1}}",
+        content: {
+          content:
+            "It's a mix of everything, so you're bound to find something you like.",
+          action: "WAIT",
+        },
       },
     ],
   ] as ActionExample[][],

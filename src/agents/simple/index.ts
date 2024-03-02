@@ -1,9 +1,136 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
+import { composeContext, embeddingZeroVector } from "../../lib";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
+import { messageHandlerTemplate } from "../../lib/templates";
 import { type Content, type Message, type State } from "../../lib/types";
+import { parseJSONObjectFromText } from "../../lib/utils";
+
+/**
+ * Handle an incoming message, processing it and returning a response.
+ * @param message The message to handle.
+ * @param state The state of the agent.
+ * @returns The response to the message.
+ */
+async function handleMessage(
+  runtime: BgentRuntime,
+  message: Message,
+  state?: State,
+) {
+  const _saveRequestMessage = async (message: Message, state: State) => {
+    const { content: senderContent, senderId, userIds, room_id } = message;
+
+    const _senderContent = (
+      (senderContent as Content).content ?? senderContent
+    )?.trim();
+    if (_senderContent) {
+      await runtime.messageManager.createMemory({
+        user_ids: userIds!,
+        user_id: senderId!,
+        content: {
+          content: _senderContent,
+          action: (message.content as Content)?.action ?? "null",
+        },
+        room_id,
+        embedding: embeddingZeroVector,
+      });
+      await runtime.evaluate(message, state);
+    }
+  };
+
+  await _saveRequestMessage(message, state as State);
+  if (!state) {
+    state = (await runtime.composeState(message)) as State;
+  }
+
+  const context = composeContext({
+    state,
+    template: messageHandlerTemplate,
+  });
+
+  if (runtime.debugMode) {
+    logger.log(context, "Response Context", "cyan");
+  }
+
+  let responseContent: Content | null = null;
+  const { senderId, room_id, userIds: user_ids, agentId } = message;
+
+  for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+    const response = await runtime.completion({
+      context,
+      stop: [],
+    });
+
+    runtime.supabase
+      .from("logs")
+      .insert({
+        body: { message, context, response },
+        user_id: senderId,
+        room_id,
+        user_ids: user_ids!,
+        agent_id: agentId!,
+        type: "main_completion",
+      })
+      .then(({ error }) => {
+        if (error) {
+          console.error("error", error);
+        }
+      });
+
+    const parsedResponse = parseJSONObjectFromText(
+      response,
+    ) as unknown as Content;
+
+    if (
+      (parsedResponse.user as string)?.includes(
+        (state as State).agentName as string,
+      )
+    ) {
+      responseContent = {
+        content: parsedResponse.content,
+        action: parsedResponse.action,
+      };
+      break;
+    }
+  }
+
+  if (!responseContent) {
+    responseContent = {
+      content: "",
+      action: "IGNORE",
+    };
+  }
+
+  const _saveResponseMessage = async (
+    message: Message,
+    state: State,
+    responseContent: Content,
+  ) => {
+    const { agentId, userIds, room_id } = message;
+
+    responseContent.content = responseContent.content?.trim();
+
+    if (responseContent.content) {
+      await runtime.messageManager.createMemory({
+        user_ids: userIds!,
+        user_id: agentId!,
+        content: responseContent,
+        room_id,
+        embedding: embeddingZeroVector,
+      });
+      await runtime.evaluate(message, { ...state, responseContent });
+    } else {
+      console.warn("Empty response, skipping");
+    }
+  };
+
+  await _saveResponseMessage(message, state, responseContent);
+  await runtime.processActions(message, responseContent);
+
+  return responseContent;
+}
 
 const onMessage = async (
   message: Message,
@@ -21,7 +148,7 @@ const onMessage = async (
     return;
   }
 
-  const data = (await runtime.handleMessage(message, state)) as Content;
+  const data = (await handleMessage(runtime, message, state)) as Content;
   return data;
 };
 
