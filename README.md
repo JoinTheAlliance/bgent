@@ -67,6 +67,10 @@ First, you will need to install the Supabase CLI. You can install it using the i
 Once you have the CLI installed, you can run the following commands to set up a local Supabase instance:
 
 ```bash
+supabase init
+```
+
+```bash
 supabase start
 ```
 
