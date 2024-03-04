@@ -20,4 +20,4 @@ jobs:
         - uses: actions/setup-node@v2
 
         - run: npm ci
-        - run: npm run test -- ./src/lib/
+        - run: npm run test -- ./src/lib/ --runInBand
