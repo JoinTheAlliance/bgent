@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 const instructions = 'The above code was taken from my codebase at https://github.com/jointhealliance/bgent. You are writing tests and documentation for my codebase. Please use the above code as a reference. Tests should be written with Jest and Typescript. Do not use mocks or stubs. Keep it very simple and straightforward.'
 
 // Patterns to ignore
-const ignorePatterns = ['test/', 'flavor', 'relationships', 'goals', 'evaluators', 'memory', 'providers', 'messages', 'lore', 'context', 'simple', 'cache', 'supabase',  'utils', 'logger', 'index', 'data', 'constants', 'templates', 'worker']
+const ignorePatterns = ['test/', 'flavor', 'simple', 'cache', 'supabase', 'utils', 'logger', 'index', 'data', 'constants', 'templates', 'worker']
 
 // __dirname is not defined in ES module scope, so we need to create it
 const __filename = fileURLToPath(import.meta.url)

@@ -37,6 +37,6 @@ export const composeContext = ({
   return out;
 };
 
-export const addHeader = (header: string, context: string) => {
-  return context.length > 0 ? `${header}\n${context}` : "";
+export const addHeader = (header: string, body: string) => {
+  return body.length > 0 ? `${header ? header + "\n" : header}${body}\n` : "";
 };

@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",

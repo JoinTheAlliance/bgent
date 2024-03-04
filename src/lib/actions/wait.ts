@@ -104,8 +104,11 @@ export default {
     [
       {
         user: "{{user1}}",
-        content:
-          "Discovered a new dollar store downtown. It's seriously a hidden gem.",
+        content: {
+          content:
+            "Discovered a new dollar store downtown. It's seriously a hidden gem.",
+          action: "WAIT",
+        },
       },
       {
         user: "{{user2}}",
@@ -117,7 +120,10 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: { content: "They sell espresso for a dollar." },
+        content: {
+          content: "They sell espresso for a dollar.",
+          action: "WAIT",
+        },
       },
       {
         user: "{{user2}}",

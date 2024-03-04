@@ -79,7 +79,11 @@ async function handler(
     .map((goal: Goal) => {
       const update = updates?.find((u) => u.id === goal.id);
       if (update) {
-        return { ...goal, ...update }; // Merging the update into the existing goal
+        return {
+          ...goal,
+          ...update,
+          objectives: { ...goal.objectives, ...update.objectives },
+        }; // Merging the update into the existing goal
       }
       return null; // No update for this goal
     })
