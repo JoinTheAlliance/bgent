@@ -47,8 +47,6 @@ custom_edit_url: null
 - [embeddingZeroVector](variables/embeddingZeroVector.md)
 - [evaluationTemplate](variables/evaluationTemplate.md)
 - [messageHandlerTemplate](variables/messageHandlerTemplate.md)
-- [zeroUuid](variables/zeroUuid.md)
-- [zeroUuidPlus1](variables/zeroUuidPlus1.md)
 
 ## Functions
 

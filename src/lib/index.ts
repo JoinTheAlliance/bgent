@@ -8,9 +8,6 @@ export {
   formatActionConditions,
 } from "./actions";
 
-// Export from ./src/constants
-export { zeroUuid, zeroUuidPlus1 } from "./constants";
-
 // Export from ./src/context
 export { composeContext, addHeader } from "./context";
 
