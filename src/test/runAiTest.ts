@@ -8,6 +8,7 @@ export async function runAiTest(
   let successful = 0;
 
   for (let i = 0; i < runs; i++) {
+    console.log("Running test", testName, " (iteration", i + ")");
     if (await testFunc()) successful++;
   }
 
