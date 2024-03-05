@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
@@ -24,6 +24,10 @@
   },
   "bin": {
     "bgent": "./scripts/shell.mjs"
+  },
+  "exports": {
+    "import": "./dist/index.esm.js",
+    "require": "./dist/index.cjs.js"
   },
   "license": "MIT",
   "devDependencies": {
