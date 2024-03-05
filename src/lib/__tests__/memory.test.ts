@@ -256,10 +256,10 @@ describe("Memory - Basic tests", () => {
     });
 
     // Verify creation by counting memories
-    const initialCount = await memoryManager.countMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    const initialCount = await memoryManager.countMemoriesByUserIds(
+      [user?.id as UUID, zeroUuid],
+      false,
+    );
     expect(initialCount).toBeGreaterThan(0);
 
     // Search memories by embedding
