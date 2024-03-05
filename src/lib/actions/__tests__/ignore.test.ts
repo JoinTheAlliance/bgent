@@ -190,7 +190,7 @@ describe("Ignore action tests", () => {
         senderId: user?.id as UUID,
         agentId: zeroUuid,
         userIds: [user?.id as UUID, zeroUuid],
-        content: { content: "Never talk to me again" },
+        content: { content: "Never talk to me again", action: "WAIT" },
         room_id: room_id as UUID,
       };
 
@@ -212,7 +212,7 @@ describe("Ignore action tests", () => {
           senderId: user.id as UUID,
           agentId: zeroUuid,
           userIds: [user?.id as UUID, zeroUuid],
-          content: { content: "" },
+          content: { content: "", action: "IGNORE" },
           room_id: room_id as UUID,
         };
 
@@ -239,7 +239,7 @@ describe("Ignore action tests", () => {
           senderId: user.id as UUID,
           agentId: zeroUuid,
           userIds: [user?.id as UUID, zeroUuid],
-          content: { content: "" },
+          content: { content: "", action: "IGNORE" },
           room_id: room_id as UUID,
         };
 
@@ -264,7 +264,7 @@ describe("Ignore action tests", () => {
         senderId: user.id as UUID,
         agentId: zeroUuid,
         userIds: [user?.id as UUID, zeroUuid],
-        content: { content: "Bye" },
+        content: { content: "Bye", action: "WAIT" },
         room_id: room_id as UUID,
       };
 
