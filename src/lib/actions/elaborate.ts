@@ -15,9 +15,9 @@ import { parseJSONObjectFromText } from "../utils";
 const maxContinuesInARow = 2;
 
 export default {
-  name: "CONTINUE",
+  name: "ELABORATE",
   description:
-    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message was a continue, and the user has not responded, use WAIT instead. Use sparingly!",
+    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly!",
   validate: async (runtime: BgentRuntime, message: Message) => {
     const recentMessagesData = await runtime.messageManager.getMemoriesByIds({
       userIds: message.userIds!,
@@ -33,7 +33,7 @@ export default {
       const lastMessages = agentMessages.slice(0, maxContinuesInARow);
       if (lastMessages.length >= maxContinuesInARow) {
         const allContinues = lastMessages.every(
-          (m) => (m.content as Content).action === "CONTINUE",
+          (m) => (m.content as Content).action === "ELABORATE",
         );
         if (allContinues) {
           return false;
@@ -141,16 +141,16 @@ export default {
 
     await _saveResponseMessage(message, state, responseContent);
 
-    // if the action is CONTINUE, check if we are over maxContinuesInARow
+    // if the action is ELABORATE, check if we are over maxContinuesInARow
     // if so, then we should change the action to WAIT
-    if (responseContent.action === "CONTINUE") {
+    if (responseContent.action === "ELABORATE") {
       const agentMessages = state.recentMessagesData
         .filter((m) => m.user_id === message.agentId)
         .map((m) => (m.content as Content).action);
 
       const lastMessages = agentMessages.slice(0, maxContinuesInARow);
       if (lastMessages.length >= maxContinuesInARow) {
-        const allContinues = lastMessages.every((m) => m === "CONTINUE");
+        const allContinues = lastMessages.every((m) => m === "ELABORATE");
         if (allContinues) {
           responseContent.action = "WAIT";
         }
@@ -161,7 +161,7 @@ export default {
     return responseContent;
   },
   condition:
-    "Only use CONTINUE if the message requires a continuation to finish the thought. If this actor is waiting for the other actor to respond, or the actor does not have more to say, do not use the CONTINUE action.",
+    "Only use ELABORATE if the message requires a continuation to finish the thought. If this actor is waiting for the other actor to respond, or the actor does not have more to say, do not use the ELABORATE action.",
   examples: [
     [
       {
@@ -174,7 +174,7 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: { content: "Adventurous", action: "CONTINUE" },
+        content: { content: "Adventurous", action: "ELABORATE" },
       },
       {
         user: "{{user2}}",
@@ -196,7 +196,7 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: { content: "Challenging, but rewarding.", action: "CONTINUE" },
+        content: { content: "Challenging, but rewarding.", action: "ELABORATE" },
       },
       {
         user: "{{user1}}",
@@ -210,14 +210,14 @@ export default {
         content: {
           content:
             "I've been summarying a lot on what happiness means to me lately.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
         user: "{{user1}}",
         content: {
           content: "That it’s more about moments than things.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -225,7 +225,7 @@ export default {
         content: {
           content:
             "Like the best things that have ever happened were things that happened, or moments that I had with someone.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
     ],
@@ -244,14 +244,14 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: { content: "Not sure lol, they are anon", action: "CONTINUE" },
+        content: { content: "Not sure lol, they are anon", action: "ELABORATE" },
       },
       {
         user: "{{user1}}",
         content: {
           content:
             "But the pieces are just so insane looking. Once sec, let me grab a link.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -266,7 +266,7 @@ export default {
         content: {
           content:
             "The new exhibit downtown is thought-provoking. It's all about tribalism in online spaces.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -284,7 +284,7 @@ export default {
       {
         user: "{{user1}}",
         content: { content: "Hmm, let me check." },
-        action: "CONTINUE",
+        action: "ELABORATE",
       },
       {
         user: "{{user1}}",
@@ -312,7 +312,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "Surprisingly, yes.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -342,7 +342,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "Leaning towards a cat.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -372,7 +372,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "A few, actually.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -403,7 +403,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "Mostly nature and urban landscapes.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {
@@ -434,7 +434,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "Definitely! I'll send you a playlist.",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
       },
       {

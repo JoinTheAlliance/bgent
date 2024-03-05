@@ -1,7 +1,7 @@
 import { names, uniqueNamesGenerator } from "unique-names-generator";
 import { Action, ActionExample } from "./types";
 
-import cont from "./actions/continue";
+import cont from "./actions/elaborate";
 import ignore from "./actions/ignore";
 import wait from "./actions/wait";
 

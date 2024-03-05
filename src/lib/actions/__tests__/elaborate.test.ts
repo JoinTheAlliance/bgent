@@ -7,7 +7,7 @@ import { populateMemories } from "../../../test/populateMemories";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
-import action from "../continue";
+import action from "../elaborate";
 import ignore from "../ignore";
 import { zeroUuid } from "../../constants";
 import wait from "../wait";
@@ -22,7 +22,7 @@ const GetContinueExample1 = (_user_id: UUID) => [
     content: {
       content:
         "Hmm, let think for a second, I was going to tell you about something...",
-      action: "CONTINUE",
+      action: "ELABORATE",
     },
   },
   {
@@ -30,14 +30,14 @@ const GetContinueExample1 = (_user_id: UUID) => [
     content: {
       content:
         "I remember now, I was going to tell you about my favorite food, which is pizza.",
-      action: "CONTINUE",
+      action: "ELABORATE",
     },
   },
   {
     user_id: zeroUuid,
     content: {
       content: "I love pizza, it's so delicious.",
-      action: "CONTINUE",
+      action: "ELABORATE",
     },
   },
 ];
@@ -110,7 +110,7 @@ describe("User Profile", () => {
         userIds: [user.id as UUID, zeroUuid],
         content: {
           content: "Hello",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
         room_id: room_id as UUID,
       };
@@ -121,8 +121,8 @@ describe("User Profile", () => {
     });
   }, 20000);
 
-  test("Test repetition check on continue", async () => {
-    await runAiTest("Test repetition check on continue", async () => {
+  test("Test repetition check on elaborate", async () => {
+    await runAiTest("Test repetition check on elaborate", async () => {
       const message: Message = {
         senderId: zeroUuid as UUID,
         agentId: zeroUuid,
@@ -130,7 +130,7 @@ describe("User Profile", () => {
         content: {
           content:
             "Hmm, let think for a second, I was going to tell you about something...",
-          action: "CONTINUE",
+          action: "ELABORATE",
         },
         room_id: room_id as UUID,
       };
@@ -141,12 +141,12 @@ describe("User Profile", () => {
 
       const result = (await handler(runtime, message)) as Content;
 
-      return result.action !== "CONTINUE";
+      return result.action !== "ELABORATE";
     });
   }, 20000);
 
-  test("Test if not continue", async () => {
-    await runAiTest("Test if not continue", async () => {
+  test("Test if not elaborate", async () => {
+    await runAiTest("Test if not elaborate", async () => {
       // this is basically the same test as the one in ignore.test.ts
       const message: Message = {
         senderId: user?.id as UUID,

@@ -12,7 +12,7 @@ export default {
     return true;
   },
   description:
-    "Ignore the user and do not continue respond. If the user is aggressive, creepy or is simply finished with the conversation, use this action. Or, if both you and the user have already said goodbye, use this action instead of saying bye again. Use IGNORE any time the conversaiton has naturally ended.",
+    "Ignore the user and do not respond. If the user is aggressive, creepy or is simply finished with the conversation, use this action. Or, if both you and the user have already said goodbye, use this action instead of saying bye again. Use IGNORE any time the conversaiton has naturally ended.",
   handler: async (
     runtime: BgentRuntime,
     message: Message,
@@ -130,11 +130,11 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: { content: "Sounds thrilling.", action: "CONTINUE" },
+        content: { content: "Sounds thrilling.", action: "ELABORATE" },
       },
       {
         user: "{{user2}}",
-        content: { content: "Might give it a go.", action: "WAIT" },
+        content: { content: "I might have to give it a go.", action: "WAIT" },
       },
       {
         user: "{{user1}}",
@@ -148,7 +148,10 @@ export default {
           action: "WAIT",
         },
       },
-      { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
+      {
+        user: "{{user2}}",
+        content: { content: "That is not appropriate.", action: "IGNORE" },
+      },
     ],
     [
       {
@@ -162,7 +165,7 @@ export default {
         user: "{{user2}}",
         content: { content: "Sorry, am I being annoying?.", action: "WAIT" },
       },
-      { user: "{{user1}}", content: { content: "Yes.", action: "CONTINUE" } },
+      { user: "{{user1}}", content: { content: "Yes.", action: "ELABORATE" } },
       {
         user: "{{user1}}",
         content: { content: "PLEASE shut up", action: "WAIT" },
@@ -175,7 +178,10 @@ export default {
         user: "{{user1}}",
         content: { content: "I want to have sex with you.", action: "WAIT" },
       },
-      { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
+      {
+        user: "{{user2}}",
+        content: { content: "That is not appropriate.", action: "IGNORE" },
+      },
     ],
   ] as ActionExample[][],
 } as Action;

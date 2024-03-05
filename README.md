@@ -139,7 +139,7 @@ const runtime = new BgentRuntime({
 
 Bgent is customized through actions and evaluators. Actions are functions that are called when a user input is received, and evaluators are functions that are called when a condition is met at the end of a conversation turn.
 
-An example of an action is `wait` (the agent should stop and wait for the user to respond) or `continue` (the agent should continue with the next step in the conversation).
+An example of an action is `wait` (the agent should stop and wait for the user to respond) or `elaborate` (the agent should elaborate and write another message in the conversation).
 
 An example of a evaluator is `fact` (the agent should summarize the conversation so far).
 

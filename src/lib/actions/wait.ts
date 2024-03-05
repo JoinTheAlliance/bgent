@@ -75,7 +75,7 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: { content: "Frustrated.", action: "CONTINUE" },
+        content: { content: "I'm so frustrated!", action: "ELABORATE" },
       },
       {
         user: "{{user1}}",
@@ -113,11 +113,11 @@ export default {
       },
       {
         user: "{{user2}}",
-        content: { content: "Oh sick", action: "CONTINUE" },
+        content: { content: "Oh sick!", action: "ELABORATE" },
       },
       {
         user: "{{user2}}",
-        content: { content: "Oh? What makes it special?", action: "WAIT" },
+        content: { content: "What makes it special?", action: "WAIT" },
       },
       {
         user: "{{user1}}",
