@@ -24,6 +24,7 @@ Creates an instance of BgentRuntime.
 | `opts` | `Object` | The options for configuring the BgentRuntime. |
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
+| `opts.embeddingModel?` | `string` | The model to use for embedding. |
 | `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
 | `opts.model?` | `string` | The model to use for completion. |
 | `opts.providers?` | [`Provider`](../interfaces/Provider.md)[] | Optional context providers. |
@@ -59,6 +60,14 @@ ___
 • **descriptionManager**: [`MemoryManager`](MemoryManager.md)
 
 Store and recall descriptions of users based on conversations.
+
+___
+
+### embeddingModel
+
+• **embeddingModel**: `string` = `"text-embedding-3-large"`
+
+The model to use for embedding.
 
 ___
 

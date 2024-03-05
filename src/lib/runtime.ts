@@ -86,6 +86,11 @@ export class BgentRuntime {
   model = "gpt-3.5-turbo-0125";
 
   /**
+   * The model to use for embedding.
+   */
+  embeddingModel = "text-embedding-3-large";
+
+  /**
    * Store messages that are sent and received by the agent.
    */
   messageManager: MemoryManager = new MemoryManager({
@@ -129,6 +134,7 @@ export class BgentRuntime {
    * @param opts.evaluators - Optional custom evaluators.
    * @param opts.providers - Optional context providers.
    * @param opts.model - The model to use for completion.
+   * @param opts.embeddingModel - The model to use for embedding.
    */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
@@ -140,6 +146,7 @@ export class BgentRuntime {
     evaluators?: Evaluator[]; // Optional custom evaluators
     providers?: Provider[];
     model?: string; // The model to use for completion
+    embeddingModel?: string; // The model to use for embedding
   }) {
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
@@ -147,6 +154,7 @@ export class BgentRuntime {
     this.supabase = opts.supabase;
     this.serverUrl = opts.serverUrl ?? this.serverUrl;
     this.model = opts.model ?? this.model;
+    this.embeddingModel = opts.embeddingModel ?? this.embeddingModel;
     if (!this.serverUrl) {
       console.warn("No serverUrl provided, defaulting to localhost");
     }
@@ -269,7 +277,7 @@ export class BgentRuntime {
    * @returns The embedding of the input.
    */
   async embed(input: string) {
-    const embeddingModel = "text-embedding-3-large";
+    const embeddingModel = this.embeddingModel;
     const requestOptions = {
       method: "POST",
       headers: {
