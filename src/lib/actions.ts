@@ -1,11 +1,11 @@
 import { names, uniqueNamesGenerator } from "unique-names-generator";
 import { Action, ActionExample } from "./types";
 
-import cont from "./actions/elaborate";
+import elaborate from "./actions/elaborate";
 import ignore from "./actions/ignore";
 import wait from "./actions/wait";
 
-export const defaultActions: Action[] = [cont, wait, ignore];
+export const defaultActions: Action[] = [elaborate, wait, ignore];
 
 /**
  * Composes a set of example conversations based on provided actions and a specified count.
