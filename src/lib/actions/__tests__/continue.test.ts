@@ -10,6 +10,7 @@ import { Content, type Message } from "../../types";
 import action from "../continue";
 import ignore from "../ignore";
 import { zeroUuid } from "../../constants";
+import wait from "../wait";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -52,7 +53,7 @@ describe("User Profile", () => {
   beforeAll(async () => {
     const setup = await createRuntime({
       env: process.env as Record<string, string>,
-      actions: [action, ignore],
+      actions: [action, ignore, wait],
     });
     user = setup.session.user;
     runtime = setup.runtime;
