@@ -6,14 +6,14 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **addHeader**(`header`, `context`): `string`
+▸ **addHeader**(`header`, `body`): `string`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `header` | `string` |
-| `context` | `string` |
+| `body` | `string` |
 
 #### Returns
 

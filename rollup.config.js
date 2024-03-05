@@ -17,12 +17,13 @@ export default defineConfig([
         file: pkg.main,
         format: "cjs",
         sourcemap: true,
-        exports: "auto",
+        exports: "named",
       },
       {
         file: pkg.module,
         format: "es",
         sourcemap: true,
+        exports: "named",
       },
     ],
     plugins: [
