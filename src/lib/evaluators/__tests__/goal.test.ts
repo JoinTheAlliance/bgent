@@ -111,13 +111,9 @@ describe("Goals Evaluator", () => {
       onlyInProgress: false,
     });
 
-    console.log("updatedGoals", updatedGoals);
-
     const updatedTestGoal = updatedGoals.find(
       (goal: Goal) => goal.name === "Test Goal",
     );
-
-    console.log("**** updatedTestGoal", updatedTestGoal);
 
     // Verify that the goal status is 'DONE' and all objectives are marked as completed
     expect(updatedTestGoal).toBeDefined();
