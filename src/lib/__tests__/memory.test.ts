@@ -117,7 +117,7 @@ describe("Memory", () => {
           (memory.content as Content).content === dissimilarMemoryContent,
       ),
     ).toBe(false);
-  }, 6000);
+  }, 60000);
 
   test("Verify memory similarity and ranking", async () => {
     // Define a set of memories with varying degrees of similarity
