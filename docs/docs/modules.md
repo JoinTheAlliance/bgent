@@ -40,18 +40,13 @@ custom_edit_url: null
 
 ## Variables
 
-- [continue](variables/continue.md)
 - [defaultActions](variables/defaultActions.md)
 - [defaultEvaluators](variables/defaultEvaluators.md)
 - [defaultProviders](variables/defaultProviders.md)
 - [embeddingDimension](variables/embeddingDimension.md)
 - [embeddingZeroVector](variables/embeddingZeroVector.md)
 - [evaluationTemplate](variables/evaluationTemplate.md)
-- [fact](variables/fact.md)
-- [goal](variables/goal-1.md)
-- [ignore](variables/ignore.md)
 - [messageHandlerTemplate](variables/messageHandlerTemplate.md)
-- [wait](variables/wait.md)
 
 ## Functions
 

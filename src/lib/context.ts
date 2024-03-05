@@ -37,6 +37,25 @@ export const composeContext = ({
   return out;
 };
 
+/**
+ * Adds a header to a body of text.
+ *
+ * This function takes a header string and a body string and returns a new string with the header prepended to the body.
+ * If the body string is empty, the header is returned as is.
+ *
+ * @param {string} header - The header to add to the body.
+ * @param {string} body - The body to which to add the header.
+ * @returns {string} The body with the header prepended.
+ *
+ * @example
+ * // Given a header and a body
+ * const header = "Header";
+ * const body = "Body";
+ *
+ * // Adding the header to the body will result in:
+ * // "Header\nBody"
+ * const text = addHeader(header, body);
+ */
 export const addHeader = (header: string, body: string) => {
   return body.length > 0 ? `${header ? header + "\n" : header}${body}\n` : "";
 };

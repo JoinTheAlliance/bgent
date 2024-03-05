@@ -1,7 +1,9 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
-import { composeContext, embeddingZeroVector } from "../../lib";
+import { composeContext } from "../../lib/context";
+import { embeddingZeroVector } from "../../lib/memory";
+
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
 import { messageHandlerTemplate } from "../../lib/templates";
