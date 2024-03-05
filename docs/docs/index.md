@@ -13,7 +13,7 @@ A flexible, scalable and customizable agent for production apps. Comes with batt
 ![cj](https://github.com/jointhealliance/bgent/assets/18633264/7513b5a6-2352-45f3-8b87-7ee0e2171a30)
 
 [![npm version](https://badge.fury.io/js/bgent.svg)](https://badge.fury.io/js/bgent)
-![build passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/deploy_worker.yaml/badge.svg)
+![build passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/build.yaml/badge.svg)
 ![tests passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/test.yaml/badge.svg)
 ![lint passing](https://github.com/JoinTheAlliance/bgent/actions/workflows/lint.yaml/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-blue)](https://github.com/jointhealliance/bgent/blob/main/LICENSE)
@@ -73,6 +73,10 @@ OPENAI_API_KEY="your-openai-api-key"
 First, you will need to install the Supabase CLI. You can install it using the instructions [here](https://supabase.com/docs/guides/cli/getting-started).
 
 Once you have the CLI installed, you can run the following commands to set up a local Supabase instance:
+
+```bash
+supabase init
+```
 
 ```bash
 supabase start
@@ -156,9 +160,29 @@ const runtime = new BgentRuntime({
   evaluators: [fact],
 });
 
-// You can also register actions and evaluators after the runtime has been created
+// OR you can register actions and evaluators after the runtime has been created
 bgentRuntime.registerAction(wait);
 bgentRuntime.registerEvaluator(fact);
+```
+
+## Custom Data Sources
+If you want to add custom data into the context that is sent to the LLM, you can create a `Provider` and add it to the runtime.
+
+```typescript
+import { type BgentRuntime, type Message, type Provider, type State } from "bgent";
+
+const time: Provider = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  get: async (_runtime: BgentRuntime, _message: Message, _state?: State) => {
+    const currentTime = new Date().toLocaleTimeString("en-US");
+    return "The current time is: " + currentTime;
+  },
+};
+
+const runtime = new BgentRuntime({
+  // ... other options
+  providers: [time],
+});
 ```
 
 ## Handling User Input
