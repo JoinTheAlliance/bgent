@@ -6,7 +6,7 @@ import { populateMemories } from "../../../test/populateMemories";
 import { createGoal, getGoals } from "../../goals";
 import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
-import { Goal, GoalStatus, Objective, type Message } from "../../types";
+import { Goal, GoalStatus, Objective, type Message, State } from "../../types";
 import evaluator from "../goal";
 import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
@@ -100,7 +100,9 @@ describe("Goals Evaluator", () => {
     };
 
     // Process the message with the goal evaluator
-    await evaluator.handler(runtime, message);
+    await evaluator.handler(runtime, message, {} as unknown as State, {
+      onlyInProgress: false,
+    });
 
     // Fetch the updated goal to verify the objectives and status were updated
     const updatedGoals = await getGoals({
@@ -108,9 +110,14 @@ describe("Goals Evaluator", () => {
       userIds: [user.id as UUID, zeroUuid],
       onlyInProgress: false,
     });
+
+    console.log("updatedGoals", updatedGoals);
+
     const updatedTestGoal = updatedGoals.find(
       (goal: Goal) => goal.name === "Test Goal",
     );
+
+    console.log("**** updatedTestGoal", updatedTestGoal);
 
     // Verify that the goal status is 'DONE' and all objectives are marked as completed
     expect(updatedTestGoal).toBeDefined();
@@ -150,7 +157,9 @@ describe("Goals Evaluator", () => {
       room_id,
     };
 
-    await evaluator.handler(runtime, message);
+    await evaluator.handler(runtime, message, {} as State, {
+      onlyInProgress: false,
+    });
 
     const goals = await getGoals({
       runtime,
