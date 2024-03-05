@@ -35,12 +35,12 @@ export const getGoals = async ({
 
 export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
   const goalStrings = goals.map((goal: Goal) => {
-    const header = `Name: ${goal.name}\nid: ${goal.id}`;
+    const header = `Goal: ${goal.name}\nid: ${goal.id}`;
     const objectives =
       "Objectives:\n" +
       goal.objectives
         .map((objective: Objective) => {
-          return `- ${objective.completed ? "[x]" : "[ ]"} ${objective.description}`;
+          return `- ${objective.completed ? "[x]" : "[ ]"} ${objective.description} ${objective.completed ? " (DONE)" : " (IN PROGRESS)"}`;
         })
         .join("\n");
     return `${header}\n${objectives}`;
