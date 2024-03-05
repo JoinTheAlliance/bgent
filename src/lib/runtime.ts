@@ -81,6 +81,11 @@ export class BgentRuntime {
   providers: Provider[] = [];
 
   /**
+   * The model to use for completion.
+   */
+  model = "gpt-3.5-turbo-0125";
+
+  /**
    * Store messages that are sent and received by the agent.
    */
   messageManager: MemoryManager = new MemoryManager({
@@ -123,6 +128,7 @@ export class BgentRuntime {
    * @param opts.actions - Optional custom actions.
    * @param opts.evaluators - Optional custom evaluators.
    * @param opts.providers - Optional context providers.
+   * @param opts.model - The model to use for completion.
    */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
@@ -133,12 +139,14 @@ export class BgentRuntime {
     actions?: Action[]; // Optional custom actions
     evaluators?: Evaluator[]; // Optional custom evaluators
     providers?: Provider[];
+    model?: string; // The model to use for completion
   }) {
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
     this.supabase = opts.supabase;
     this.serverUrl = opts.serverUrl ?? this.serverUrl;
+    this.model = opts.model ?? this.model;
     if (!this.serverUrl) {
       console.warn("No serverUrl provided, defaulting to localhost");
     }
@@ -202,7 +210,7 @@ export class BgentRuntime {
   async completion({
     context = "",
     stop = [],
-    model = "gpt-3.5-turbo-0125",
+    model = this.model,
     frequency_penalty = 0.0,
     presence_penalty = 0.0,
   }) {

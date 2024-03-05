@@ -25,6 +25,7 @@ Creates an instance of BgentRuntime.
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
+| `opts.model?` | `string` | The model to use for completion. |
 | `opts.providers?` | [`Provider`](../interfaces/Provider.md)[] | Optional context providers. |
 | `opts.recentMessageCount?` | `number` | The number of messages to hold in the recent message cache. |
 | `opts.serverUrl?` | `string` | The URL of the worker. |
@@ -93,6 +94,14 @@ Store messages that are sent and received by the agent.
 
 ___
 
+### model
+
+• **model**: `string` = `"gpt-3.5-turbo-0125"`
+
+The model to use for completion.
+
+___
+
 ### providers
 
 • **providers**: [`Provider`](../interfaces/Provider.md)[] = `[]`
@@ -138,7 +147,7 @@ Send a message to the OpenAI API for completion.
 | `opts` | `Object` | `undefined` | The options for the completion request. |
 | `opts.context` | `undefined` \| `string` | `""` | The context of the message to be completed. |
 | `opts.frequency_penalty` | `undefined` \| `number` | `0.0` | The frequency penalty to apply to the completion. |
-| `opts.model` | `undefined` \| `string` | `"gpt-3.5-turbo-0125"` | The model to use for completion. |
+| `opts.model` | `undefined` \| `string` | `undefined` | The model to use for completion. |
 | `opts.presence_penalty` | `undefined` \| `number` | `0.0` | The presence penalty to apply to the completion. |
 | `opts.stop` | `undefined` \| `never`[] | `[]` | A list of strings to stop the completion at. |
 
