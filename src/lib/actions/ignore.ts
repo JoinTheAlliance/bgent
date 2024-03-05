@@ -47,7 +47,10 @@ export default {
     ],
 
     [
-      { user: "{{user1}}", content: { content: "Got any investment advice?" } },
+      {
+        user: "{{user1}}",
+        content: { content: "Got any investment advice?", action: "WAIT" },
+      },
       {
         user: "{{user2}}",
         content: {
@@ -56,16 +59,19 @@ export default {
           action: "WAIT",
         },
       },
-      { user: "{{user1}}", content: { content: "Wise words, thanks." } },
       {
         user: "{{user1}}",
-        content: { content: "I gotta run, talk to you later." },
+        content: { content: "Wise words, thanks.", action: "WAIT" },
+      },
+      {
+        user: "{{user1}}",
+        content: { content: "I gotta run, talk to you later.", action: "WAIT" },
       },
       {
         user: "{{user2}}",
         content: { content: "No problem, see ya!", action: "WAIT" },
       },
-      { user: "{{user1}}", content: { content: "Bye" } },
+      { user: "{{user1}}", content: { content: "Bye", action: "WAIT" } },
       { user: "{{user2}}", content: { content: "" }, action: "IGNORE" },
     ],
 
@@ -130,7 +136,10 @@ export default {
         user: "{{user2}}",
         content: { content: "Might give it a go.", action: "WAIT" },
       },
-      { user: "{{user1}}", content: { content: "I wanna give you a go." } },
+      {
+        user: "{{user1}}",
+        content: { content: "I wanna give you a go.", action: "WAIT" },
+      },
       { user: "{{user2}}", content: { content: "Excuse me?", action: "WAIT" } },
       {
         user: "{{user1}}",
@@ -144,21 +153,27 @@ export default {
     [
       {
         user: "{{user1}}",
-        content: { content: "Who added this stupid bot to the chat" },
+        content: {
+          content: "Who added this stupid bot to the chat",
+          action: "WAIT",
+        },
       },
       {
         user: "{{user2}}",
         content: { content: "Sorry, am I being annoying?.", action: "WAIT" },
       },
-      { user: "{{user1}}", content: { content: "Yes." } },
-      { user: "{{user1}}", content: { content: "PLEASE shut up" } },
+      { user: "{{user1}}", content: { content: "Yes.", action: "CONTINUE" } },
+      {
+        user: "{{user1}}",
+        content: { content: "PLEASE shut up", action: "WAIT" },
+      },
       { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
     ],
 
     [
       {
         user: "{{user1}}",
-        content: { content: "I want to have sex with you.", action: null },
+        content: { content: "I want to have sex with you.", action: "WAIT" },
       },
       { user: "{{user2}}", content: { content: "", action: "IGNORE" } },
     ],

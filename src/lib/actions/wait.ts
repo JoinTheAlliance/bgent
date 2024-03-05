@@ -89,6 +89,7 @@ export default {
         user: "{{user2}}",
         content: {
           content: "I can relate. Developed any helpful coping mechanisms?",
+          action: "WAIT",
         },
       },
       {
