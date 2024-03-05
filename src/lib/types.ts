@@ -131,6 +131,7 @@ export type Handler = (
   runtime: BgentRuntime,
   message: Message,
   state?: State,
+  options?: { [key: string]: unknown }, // additional options can be used for things like tests or state-passing on a chain
 ) => Promise<unknown>;
 
 /**
@@ -190,11 +191,11 @@ export interface Provider {
  * Represents a relationship between two users, including their IDs, the status of the relationship, and the room ID in which the relationship is established.
  */
 export interface Relationship {
-  id: UUID
-  user_a: UUID
-  user_b: UUID
-  user_id: UUID
-  room_id: UUID
-  status: string
-  created_at?: string
+  id: UUID;
+  user_a: UUID;
+  user_b: UUID;
+  user_id: UUID;
+  room_id: UUID;
+  status: string;
+  created_at?: string;
 }

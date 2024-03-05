@@ -1,7 +1,7 @@
 import { composeContext } from "../context";
 import { getGoals } from "../goals";
 import { type BgentRuntime } from "../runtime";
-import { type Goal, type Message, type State } from "../types";
+import { Objective, type Goal, type Message, type State } from "../types";
 import { parseJsonArrayFromText } from "../utils";
 
 const template = `TASK: Update Goal
@@ -44,15 +44,17 @@ Response format should be:
 async function handler(
   runtime: BgentRuntime,
   message: Message,
+  state: State | undefined,
+  options: { [key: string]: unknown } = { onlyInProgress: true },
 ): Promise<Goal[]> {
   // get goals
   let goalsData = await getGoals({
     runtime,
     userIds: message.userIds,
-    onlyInProgress: false,
+    onlyInProgress: options.onlyInProgress as boolean,
   });
 
-  const state = (await runtime.composeState(message)) as State;
+  state = (await runtime.composeState(message)) as State;
   const context = composeContext({
     state,
     template,
@@ -79,11 +81,25 @@ async function handler(
     .map((goal: Goal) => {
       const update = updates?.find((u) => u.id === goal.id);
       if (update) {
+        const objectives = goal.objectives;
+
+        // for each objective in update.objectives, find the objective with the same description in 'objectives' and set the 'completed' value to the update.objectives value
+        for (const objective of objectives) {
+          const updatedObjective = update.objectives.find(
+            (o: Objective) => o.description === objective.description,
+          );
+          if (updatedObjective) {
+            objective.completed = updatedObjective.completed;
+          }
+        }
+
         return {
           ...goal,
           ...update,
-          objectives: { ...goal.objectives, ...update.objectives },
+          objectives: [...goal.objectives, ...update.objectives],
         }; // Merging the update into the existing goal
+      } else {
+        console.warn("**** ID NOT FOUND");
       }
       return null; // No update for this goal
     })
@@ -91,10 +107,16 @@ async function handler(
 
   // Update goals in the database
   for (const goal of updatedGoals) {
-    await runtime.supabase
+    const id = goal.id;
+    // delete id from goal
+    if (goal.id) delete goal.id;
+    const { error } = await runtime.supabase
       .from("goals")
       .update({ ...goal })
-      .match({ id: goal.id });
+      .match({ id });
+    if (error) {
+      console.log("ERROR: " + JSON.stringify(error));
+    }
   }
 
   return updatedGoals; // Return updated goals for further processing or logging
