@@ -5,8 +5,6 @@ import elaborate from "./actions/elaborate";
 import ignore from "./actions/ignore";
 import wait from "./actions/wait";
 
-export { elaborate, ignore, wait };
-
 export const defaultActions: Action[] = [elaborate, wait, ignore];
 
 /**

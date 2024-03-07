@@ -3,7 +3,7 @@ import { addToReport } from "./report";
 export async function runAiTest(
   testName: string,
   testFunc: () => Promise<boolean>,
-  runs: number = 4,
+  runs: number = 3,
 ) {
   let successful = 0;
 

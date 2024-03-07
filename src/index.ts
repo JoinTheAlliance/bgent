@@ -14,6 +14,15 @@ export { zeroUuid, zeroUuidPlus1 } from "./lib/constants";
 // Export from ./src/lib/context
 export { addHeader, composeContext } from "./lib/context";
 
+import wait from "./lib/actions/wait";
+export { wait };
+
+import elaborate from "./lib/actions/elaborate";
+export { elaborate };
+
+import ignore from "./lib/actions/ignore";
+export { ignore };
+
 // Export from ./src/lib/evaluators
 export {
   defaultEvaluators,
