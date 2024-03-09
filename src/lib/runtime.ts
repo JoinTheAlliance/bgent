@@ -324,7 +324,7 @@ export class BgentRuntime {
    * @param message The message to process.
    * @param content The content of the message to process actions from.
    */
-  async processActions(message: Message, content: Content) {
+  async processActions(message: Message, content: Content, state?: State) {
     if (!content.action) {
       return;
     }
@@ -348,7 +348,7 @@ export class BgentRuntime {
       return;
     }
 
-    return await action.handler(this, message);
+    return await action.handler(this, message, state);
   }
 
   /**
