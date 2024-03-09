@@ -1,4 +1,3 @@
-import { type SupabaseClient } from "@supabase/supabase-js";
 import { addHeader, composeContext } from "./context";
 import {
   defaultEvaluators,
@@ -34,6 +33,7 @@ import { formatLore, getLore } from "./lore";
 import { formatActors, formatMessages, getActorDetails } from "./messages";
 import { defaultProviders, getProviders } from "./providers";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
+import { DatabaseAdapter } from "./database";
 
 /**
  * Represents the runtime environment for an agent, handling message processing,
@@ -51,6 +51,11 @@ export class BgentRuntime {
   serverUrl = "http://localhost:7998";
 
   /**
+   * The database adapter used for interacting with the database.
+   */
+  databaseAdapter: DatabaseAdapter;
+
+  /**
    * Authentication token used for securing requests.
    */
   token: string | null;
@@ -59,11 +64,6 @@ export class BgentRuntime {
    * Indicates if debug messages should be logged.
    */
   debugMode: boolean;
-
-  /**
-   * The Supabase client used for database interactions.
-   */
-  supabase: SupabaseClient;
 
   /**
    * Custom actions that the agent can perform.
@@ -127,7 +127,6 @@ export class BgentRuntime {
    * @param opts - The options for configuring the BgentRuntime.
    * @param opts.recentMessageCount - The number of messages to hold in the recent message cache.
    * @param opts.token - The JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker.
-   * @param opts.supabase - The Supabase client.
    * @param opts.debugMode - If true, debug messages will be logged.
    * @param opts.serverUrl - The URL of the worker.
    * @param opts.actions - Optional custom actions.
@@ -135,11 +134,11 @@ export class BgentRuntime {
    * @param opts.providers - Optional context providers.
    * @param opts.model - The model to use for completion.
    * @param opts.embeddingModel - The model to use for embedding.
+   * @param opts.databaseAdapter - The database adapter used for interacting with the database.
    */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
     token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
-    supabase: SupabaseClient; // Supabase client
     debugMode?: boolean; // If true, will log debug messages
     serverUrl?: string; // The URL of the worker
     actions?: Action[]; // Optional custom actions
@@ -147,11 +146,17 @@ export class BgentRuntime {
     providers?: Provider[];
     model?: string; // The model to use for completion
     embeddingModel?: string; // The model to use for embedding
+    databaseAdapter: DatabaseAdapter; // The database adapter used for interacting with the database
   }) {
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
-    this.supabase = opts.supabase;
+    this.databaseAdapter = opts.databaseAdapter;
+
+    if (!opts.databaseAdapter) {
+      throw new Error("No database adapter provided");
+    }
+
     this.serverUrl = opts.serverUrl ?? this.serverUrl;
     this.model = opts.model ?? this.model;
     this.embeddingModel = opts.embeddingModel ?? this.embeddingModel;

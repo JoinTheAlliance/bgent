@@ -2,16 +2,16 @@ import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { runAiTest } from "../../test/runAiTest";
 import { TEST_ACTION, TEST_ACTION_FAIL } from "../../test/testAction";
 import { zeroUuid } from "../constants";
-import { createRelationship, getRelationship } from "../relationships";
-import { type BgentRuntime } from "../runtime";
-import { Content, State, type Message } from "../types";
-import { runAiTest } from "../../test/runAiTest";
 import { composeContext } from "../context";
 import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
+import { createRelationship, getRelationship } from "../relationships";
+import { type BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
+import { Content, State, type Message } from "../types";
 import { parseJSONObjectFromText } from "../utils";
 
 async function handleMessage(
@@ -63,21 +63,14 @@ async function handleMessage(
       stop: [],
     });
 
-    runtime.supabase
-      .from("logs")
-      .insert({
-        body: { message, context, response },
-        user_id: senderId,
-        room_id,
-        user_ids: user_ids!,
-        agent_id: agentId!,
-        type: "main_completion",
-      })
-      .then(({ error }) => {
-        if (error) {
-          console.error("error", error);
-        }
-      });
+    runtime.databaseAdapter.log({
+      body: { message, context, response },
+      user_id: senderId,
+      room_id,
+      user_ids: user_ids!,
+      agent_id: agentId!,
+      type: "actions_test_completion",
+    });
 
     const parsedResponse = parseJSONObjectFromText(
       response,
@@ -151,23 +144,17 @@ describe("Actions", () => {
 
     // check if the user id exists in the 'accounts' table
     // if it doesn't, create it with the name 'Test User'
-    const { data: accounts } = await runtime.supabase
-      .from("accounts")
-      .select("*")
-      .eq("id", user.id as UUID);
+    let account = await runtime.databaseAdapter.getAccountById(user.id as UUID);
 
-    if (accounts && accounts.length === 0) {
-      const { error } = await runtime.supabase.from("accounts").insert([
-        {
-          id: user.id,
+    if (!account) {
+      account = await runtime.databaseAdapter.getAccountById(user.id as UUID);
+      if (!account) {
+        await runtime.databaseAdapter.createAccount({
+          id: user.id as UUID,
           name: "Test User",
           email: user.email,
           avatar_url: "",
-        },
-      ]);
-
-      if (error) {
-        throw new Error(error.message);
+        });
       }
     }
 

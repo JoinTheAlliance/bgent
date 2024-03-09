@@ -199,3 +199,14 @@ export interface Relationship {
   status: string;
   created_at?: string;
 }
+
+/**
+ * Represents a user, including their name, details, and a unique identifier.
+ */
+export type Account = {
+  id: UUID;
+  name: string;
+  details?: string;
+  email?: string;
+  avatar_url?: string;
+};

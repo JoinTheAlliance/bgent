@@ -49,8 +49,8 @@ describe("Relationships Module", () => {
       userB,
     });
     expect(relationship).toBeDefined();
-    expect(relationship.user_a).toBe(userA);
-    expect(relationship.user_b).toBe(userB);
+    expect(relationship?.user_a).toBe(userA);
+    expect(relationship?.user_b).toBe(userB);
   });
 
   test("getRelationships retrieves all relationships for a user", async () => {

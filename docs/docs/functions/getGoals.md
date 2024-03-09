@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **getGoals**(`«destructured»`): `Promise`\<`any`\>
+▸ **getGoals**(`«destructured»`): `Promise`\<[`Goal`](../interfaces/Goal.md)[]\>
 
 #### Parameters
 
@@ -16,9 +16,9 @@ custom_edit_url: null
 | › `count?` | `number` | `5` |
 | › `onlyInProgress?` | `boolean` | `true` |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | `undefined` |
-| › `userId?` | ``null`` \| `string` | `null` |
-| › `userIds` | `string`[] | `undefined` |
+| › `userId?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
+| › `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | `undefined` |
 
 #### Returns
 
-`Promise`\<`any`\>
+`Promise`\<[`Goal`](../interfaces/Goal.md)[]\>

@@ -34,6 +34,10 @@ describe("Goals Evaluator", () => {
       userB: zeroUuid,
     });
 
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
+
     room_id = data.room_id;
 
     await cleanup();
@@ -45,11 +49,10 @@ describe("Goals Evaluator", () => {
 
   async function cleanup() {
     // delete all goals for the user
-    await runtime.supabase.from("goals").delete().match({ user_id: user.id });
-    runtime.messageManager.removeAllMemoriesByUserIds([
-      user.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
+      [user.id as UUID],
+      "goals",
+    );
   }
 
   async function createTestGoal(name: string, objectives: Objective[]) {

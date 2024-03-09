@@ -5,32 +5,22 @@ import { type Goal, GoalStatus, type Objective } from "./types";
 export const getGoals = async ({
   runtime,
   userIds,
-  userId = null,
+  userId,
   onlyInProgress = true,
   count = 5,
 }: {
   runtime: BgentRuntime;
-  userIds: string[];
-  userId?: string | null;
+  userIds: UUID[];
+  userId?: UUID;
   onlyInProgress?: boolean;
   count?: number;
 }) => {
-  const opts = {
-    query_user_ids: userIds,
-    query_user_id: userId,
-    only_in_progress: onlyInProgress,
-    row_count: count,
-  };
-  const { data: goals, error } = await runtime.supabase.rpc(
-    "get_goals_by_user_ids",
-    opts,
-  );
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return goals;
+  return runtime.databaseAdapter.getGoals({
+    userIds,
+    userId,
+    onlyInProgress,
+    count,
+  });
 };
 
 export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
@@ -55,10 +45,7 @@ export const updateGoal = async ({
   runtime: BgentRuntime;
   goal: Goal;
 }) => {
-  return await runtime.supabase
-    .from("goals")
-    .update(goal)
-    .match({ id: goal.id });
+  return runtime.databaseAdapter.updateGoal(goal);
 };
 
 export const createGoal = async ({
@@ -68,7 +55,7 @@ export const createGoal = async ({
   runtime: BgentRuntime;
   goal: Goal;
 }) => {
-  return await runtime.supabase.from("goals").upsert(goal);
+  return runtime.databaseAdapter.createGoal(goal);
 };
 
 export const cancelGoal = async ({
@@ -78,10 +65,10 @@ export const cancelGoal = async ({
   runtime: BgentRuntime;
   goalId: UUID;
 }) => {
-  return await runtime.supabase
-    .from("goals")
-    .update({ status: GoalStatus.FAILED })
-    .match({ id: goalId });
+  return await runtime.databaseAdapter.updateGoalStatus({
+    goalId,
+    status: GoalStatus.FAILED,
+  });
 };
 
 export const finishGoal = async ({
@@ -91,10 +78,16 @@ export const finishGoal = async ({
   runtime: BgentRuntime;
   goalId: UUID;
 }) => {
-  return await runtime.supabase
-    .from("goals")
-    .update({ status: GoalStatus.DONE })
-    .match({ id: goalId });
+  const goal = await runtime.databaseAdapter.getGoals({
+    userIds: [],
+    userId: null,
+    onlyInProgress: false,
+    count: 1,
+  });
+  if (goal[0]?.id === goalId) {
+    goal[0].status = GoalStatus.DONE;
+    return runtime.databaseAdapter.updateGoal(goal[0]);
+  }
 };
 
 export const finishGoalObjective = async ({
@@ -106,25 +99,18 @@ export const finishGoalObjective = async ({
   goalId: UUID;
   objectiveId: string;
 }) => {
-  const { data: goal, error } = await runtime.supabase
-    .from("goals")
-    .select("*")
-    .match({ id: goalId })
-    .single();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  const updatedObjectives = goal.objectives.map((objective: Objective) => {
-    if (objective.id === objectiveId) {
-      return { ...objective, completed: true };
-    }
-    return objective;
+  const goals = await runtime.databaseAdapter.getGoals({
+    userIds: [],
+    userId: null,
+    onlyInProgress: false,
+    count: 1,
   });
-
-  return await runtime.supabase
-    .from("goals")
-    .update({ objectives: updatedObjectives })
-    .match({ id: goalId });
+  const goal = goals.find((g) => g.id === goalId);
+  if (goal) {
+    const objective = goal.objectives.find((o) => o.id === objectiveId);
+    if (objective) {
+      objective.completed = true;
+      return runtime.databaseAdapter.updateGoal(goal);
+    }
+  }
 };

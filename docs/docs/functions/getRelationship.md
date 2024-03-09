@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **getRelationship**(`«destructured»`): `Promise`\<`any`\>
+▸ **getRelationship**(`«destructured»`): `Promise`\<``null`` \| [`Relationship`](../interfaces/Relationship.md)\>
 
 #### Parameters
 
@@ -14,9 +14,9 @@ custom_edit_url: null
 | :------ | :------ |
 | `«destructured»` | `Object` |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) |
-| › `userA` | `string` |
-| › `userB` | `string` |
+| › `userA` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| › `userB` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
-`Promise`\<`any`\>
+`Promise`\<``null`` \| [`Relationship`](../interfaces/Relationship.md)\>

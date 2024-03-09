@@ -64,21 +64,14 @@ export default {
         stop: [],
       });
 
-      runtime.supabase
-        .from("logs")
-        .insert({
-          body: { message, context, response },
-          user_id: senderId,
-          room_id,
-          user_ids: user_ids!,
-          agent_id: agentId!,
-          type: "main_completion",
-        })
-        .then(({ error }) => {
-          if (error) {
-            console.error("error", error);
-          }
-        });
+      runtime.databaseAdapter.log({
+        body: { message, context, response },
+        user_id: senderId,
+        room_id,
+        user_ids: user_ids!,
+        agent_id: agentId!,
+        type: "elaborate",
+      });
 
       const parsedResponse = parseJSONObjectFromText(
         response,
@@ -196,7 +189,10 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: { content: "Challenging, but rewarding.", action: "ELABORATE" },
+        content: {
+          content: "Challenging, but rewarding.",
+          action: "ELABORATE",
+        },
       },
       {
         user: "{{user1}}",
@@ -244,7 +240,10 @@ export default {
       },
       {
         user: "{{user1}}",
-        content: { content: "Not sure lol, they are anon", action: "ELABORATE" },
+        content: {
+          content: "Not sure lol, they are anon",
+          action: "ELABORATE",
+        },
       },
       {
         user: "{{user1}}",

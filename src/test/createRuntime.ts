@@ -7,6 +7,8 @@ import {
   TEST_EMAIL,
   TEST_PASSWORD,
 } from "./constants";
+import { DatabaseAdapter } from "../lib/database";
+import { SupabaseDatabaseAdapter } from "../lib/adapters/supabase";
 
 export async function createRuntime({
   env,
@@ -14,12 +16,14 @@ export async function createRuntime({
   evaluators = [],
   actions = [],
   providers = [],
+  databaseAdapter,
 }: {
   env?: Record<string, string> | NodeJS.ProcessEnv;
   recentMessageCount?: number;
   evaluators?: Evaluator[];
   actions?: Action[];
   providers?: Provider[];
+  databaseAdapter?: DatabaseAdapter;
 }) {
   const supabase = createClient(
     env?.SUPABASE_URL ?? SUPABASE_URL,
@@ -54,12 +58,17 @@ export async function createRuntime({
   const runtime = new BgentRuntime({
     debugMode: false,
     serverUrl: "https://api.openai.com/v1",
-    supabase,
     recentMessageCount,
     token: env!.OPENAI_API_KEY!,
     actions: actions ?? [],
     evaluators: evaluators ?? [],
     providers: providers ?? [],
+    databaseAdapter:
+      databaseAdapter ??
+      new SupabaseDatabaseAdapter(
+        env?.SUPABASE_URL ?? SUPABASE_URL,
+        env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
+      ),
   });
 
   return { user, session, runtime };

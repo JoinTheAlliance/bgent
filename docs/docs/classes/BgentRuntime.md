@@ -23,6 +23,7 @@ Creates an instance of BgentRuntime.
 | :------ | :------ | :------ |
 | `opts` | `Object` | The options for configuring the BgentRuntime. |
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
+| `opts.databaseAdapter` | `DatabaseAdapter` | The database adapter used for interacting with the database. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.embeddingModel?` | `string` | The model to use for embedding. |
 | `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
@@ -30,7 +31,6 @@ Creates an instance of BgentRuntime.
 | `opts.providers?` | [`Provider`](../interfaces/Provider.md)[] | Optional context providers. |
 | `opts.recentMessageCount?` | `number` | The number of messages to hold in the recent message cache. |
 | `opts.serverUrl?` | `string` | The URL of the worker. |
-| `opts.supabase` | `default`\<`any`, ``"public"``, `any`\> | The Supabase client. |
 | `opts.token` | `string` | The JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker. |
 
 #### Returns
@@ -44,6 +44,14 @@ Creates an instance of BgentRuntime.
 • **actions**: [`Action`](../interfaces/Action.md)[] = `[]`
 
 Custom actions that the agent can perform.
+
+___
+
+### databaseAdapter
+
+• **databaseAdapter**: `DatabaseAdapter`
+
+The database adapter used for interacting with the database.
 
 ___
 
@@ -124,14 +132,6 @@ ___
 • **serverUrl**: `string` = `"http://localhost:7998"`
 
 The base URL of the server where the agent's requests are processed.
-
-___
-
-### supabase
-
-• **supabase**: `default`\<`any`, ``"public"``, `any`\>
-
-The Supabase client used for database interactions.
 
 ___
 

@@ -14,7 +14,7 @@ custom_edit_url: null
 | :------ | :------ |
 | `«destructured»` | `Object` |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) |
-| › `userId` | `string` |
+| › `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
