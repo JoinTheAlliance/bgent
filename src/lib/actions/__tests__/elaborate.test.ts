@@ -149,6 +149,95 @@ describe("User Profile", () => {
     });
   }, 20000);
 
+  test("Test multiple elaborate messages in a conversation", async () => {
+    await runAiTest(
+      "Test multiple elaborate messages in a conversation",
+      async () => {
+        const message: Message = {
+          senderId: user?.id as UUID,
+          agentId: zeroUuid,
+          userIds: [user?.id as UUID, zeroUuid],
+          content: {
+            content:
+              "Write a short story in three parts, using the ELABORATE action for each part.",
+            action: "WAIT",
+          },
+          room_id: room_id as UUID,
+        };
+
+        const initialMessageCount =
+          await runtime.messageManager.countMemoriesByUserIds(
+            [user?.id as UUID, zeroUuid],
+            false,
+          );
+
+        await action.handler!(runtime, message);
+
+        const finalMessageCount =
+          await runtime.messageManager.countMemoriesByUserIds(
+            [user?.id as UUID, zeroUuid],
+            false,
+          );
+
+        const agentMessages = await runtime.messageManager.getMemoriesByIds({
+          userIds: [user?.id as UUID, zeroUuid],
+          count: finalMessageCount - initialMessageCount,
+          unique: false,
+        });
+
+        const elaborateMessages = agentMessages.filter(
+          (m) =>
+            m.user_id === zeroUuid &&
+            (m.content as Content).action === "ELABORATE",
+        );
+
+        // Check if the agent sent more than one message
+        const sentMultipleMessages =
+          finalMessageCount - initialMessageCount > 2;
+
+        // Check if the agent used the ELABORATE action for each part
+        const usedElaborateAction = elaborateMessages.length === 3;
+
+        // Check if the agent's responses are not empty
+        const responsesNotEmpty = agentMessages.every(
+          (m) => (m.content as Content).content.trim() !== "",
+        );
+
+        return sentMultipleMessages && usedElaborateAction && responsesNotEmpty;
+      },
+    );
+  }, 20000);
+
+  test("Test if message is added to database", async () => {
+    await runAiTest("Test if message is added to database", async () => {
+      const message: Message = {
+        senderId: user?.id as UUID,
+        agentId: zeroUuid,
+        userIds: [user?.id as UUID, zeroUuid],
+        content: {
+          content: "Tell me more about your favorite food.",
+          action: "WAIT",
+        },
+        room_id: room_id as UUID,
+      };
+
+      const initialMessageCount =
+        await runtime.messageManager.countMemoriesByUserIds(
+          [user?.id as UUID, zeroUuid],
+          false,
+        );
+
+      await action.handler!(runtime, message);
+
+      const finalMessageCount =
+        await runtime.messageManager.countMemoriesByUserIds(
+          [user?.id as UUID, zeroUuid],
+          false,
+        );
+
+      return finalMessageCount - initialMessageCount === 2;
+    });
+  }, 20000);
   test("Test if not elaborate", async () => {
     await runAiTest("Test if not elaborate", async () => {
       // this is basically the same test as the one in ignore.test.ts
