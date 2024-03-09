@@ -510,7 +510,10 @@ export class BgentRuntime {
       actors: addHeader("# Actors", actors),
       actorsData,
       room_id,
-      goals: addHeader("### Goals", goals),
+      goals: addHeader(
+        "### Goals\n{{agentName}} should prioritize accomplishing the objectives that are in progress.",
+        goals,
+      ),
       lore: addHeader("### Important Information", lore),
       loreData,
       providers,
