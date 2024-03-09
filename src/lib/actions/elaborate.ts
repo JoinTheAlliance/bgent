@@ -106,6 +106,14 @@ export default {
         );
       }
 
+      await runtime.messageManager.createMemory({
+        user_ids: user_ids!,
+        user_id: agentId!,
+        content: responseContent,
+        room_id,
+        embedding: embeddingZeroVector,
+      });
+
       return responseContent;
     }
 
