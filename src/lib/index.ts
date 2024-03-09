@@ -58,6 +58,9 @@ export {
   formatRelationships,
 } from "./relationships";
 
+export { DatabaseAdapter } from "./database";
+export { SupabaseDatabaseAdapter } from "./adapters/supabase";
+
 // Export from ./src/runtime
 export { BgentRuntime } from "./runtime";
 
