@@ -348,7 +348,7 @@ export class BgentRuntime {
       return;
     }
 
-    await action.handler(this, message);
+    return await action.handler(this, message);
   }
 
   /**
