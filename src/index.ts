@@ -14,6 +14,9 @@ export { zeroUuid, zeroUuidPlus1 } from "./lib/constants";
 // Export from ./src/lib/context
 export { addHeader, composeContext } from "./lib/context";
 
+export { DatabaseAdapter } from "./lib/database";
+export { SupabaseDatabaseAdapter } from "./lib/adapters/supabase";
+
 import wait from "./lib/actions/wait";
 export { wait };
 
