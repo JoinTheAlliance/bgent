@@ -23,7 +23,7 @@ Creates an instance of BgentRuntime.
 | :------ | :------ | :------ |
 | `opts` | `Object` | The options for configuring the BgentRuntime. |
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
-| `opts.databaseAdapter` | `DatabaseAdapter` | The database adapter used for interacting with the database. |
+| `opts.databaseAdapter` | [`DatabaseAdapter`](DatabaseAdapter.md) | The database adapter used for interacting with the database. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.embeddingModel?` | `string` | The model to use for embedding. |
 | `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
@@ -49,7 +49,7 @@ ___
 
 ### databaseAdapter
 
-• **databaseAdapter**: `DatabaseAdapter`
+• **databaseAdapter**: [`DatabaseAdapter`](DatabaseAdapter.md)
 
 The database adapter used for interacting with the database.
 
@@ -245,7 +245,7 @@ ___
 
 ### processActions
 
-▸ **processActions**(`message`, `content`): `Promise`\<`void`\>
+▸ **processActions**(`message`, `content`): `Promise`\<`unknown`\>
 
 Process the actions of a message.
 
@@ -258,7 +258,7 @@ Process the actions of a message.
 
 #### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`unknown`\>
 
 ___
 

@@ -13,7 +13,9 @@ custom_edit_url: null
 ## Classes
 
 - [BgentRuntime](classes/BgentRuntime.md)
+- [DatabaseAdapter](classes/DatabaseAdapter.md)
 - [MemoryManager](classes/MemoryManager.md)
+- [SupabaseDatabaseAdapter](classes/SupabaseDatabaseAdapter.md)
 
 ## Interfaces
 
