@@ -61,9 +61,13 @@ describe("User Profile", () => {
 
     const data = await getRelationship({
       runtime,
-      userA: user.id,
+      userA: user.id as UUID,
       userB: zeroUuid,
     });
+
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
 
     room_id = data?.room_id;
 

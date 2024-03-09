@@ -40,6 +40,10 @@ describe("Facts Evaluator", () => {
       userB: zeroUuid,
     });
 
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
+
     room_id = data.room_id;
   });
 

@@ -50,7 +50,7 @@ npx bgent
 
 ## Installation
 
-Currently bgent is dependent on Supabase. You can install it with the following command:
+Currently bgent is dependent on Supabase for local development. You can install it with the following command:
 
 ```bash
 npm install bgent @supabase/supabase-js
@@ -123,17 +123,17 @@ npm run shell # start the shell in another terminal to talk to the default agent
 ## Usage
 
 ```typescript
-import { BgentRuntime } from "bgent";
-import { createClient } from "@supabase/supabase-js";
-const supabase = new createClient(
+import { BgentRuntime, SupabaseDatabaseAdapter } from "bgent";
+
+const databaseAdapter = new SupabaseDatabaseAdapter(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_API_KEY,
-);
+  process.env.SUPABASE_SERVICE_API_KEY)
+  ;
 
 const runtime = new BgentRuntime({
   serverUrl: "https://api.openai.com/v1",
   token: process.env.OPENAI_API_KEY, // Can be an API key or JWT token for your AI services
-  supabase,
+  databaseAdapter,
   actions: [
     /* your custom actions */
   ],

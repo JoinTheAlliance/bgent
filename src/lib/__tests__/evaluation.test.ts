@@ -32,6 +32,11 @@ describe("Evaluation Process", () => {
       userA: user.id as UUID,
       userB: zeroUuid,
     });
+
+    if (!relationship) {
+      throw new Error("Relationship not found");
+    }
+
     room_id = relationship?.room_id;
   });
 

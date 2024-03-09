@@ -1,9 +1,9 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { type UUID } from "crypto";
 import { composeContext } from "../../lib/context";
 import { embeddingZeroVector } from "../../lib/memory";
 
+import { SupabaseDatabaseAdapter } from "../../lib/adapters/supabase";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
 import { messageHandlerTemplate } from "../../lib/templates";
@@ -65,21 +65,14 @@ async function handleMessage(
       stop: [],
     });
 
-    runtime.supabase
-      .from("logs")
-      .insert({
-        body: { message, context, response },
-        user_id: senderId,
-        room_id,
-        user_ids: user_ids!,
-        agent_id: agentId!,
-        type: "main_completion",
-      })
-      .then(({ error }) => {
-        if (error) {
-          console.error("error", error);
-        }
-      });
+    runtime.databaseAdapter.log({
+      body: { message, context, response },
+      user_id: senderId,
+      room_id,
+      user_ids: user_ids!,
+      agent_id: agentId!,
+      type: "simple_agent_main_completion",
+    });
 
     const parsedResponse = parseJSONObjectFromText(
       response,
@@ -164,7 +157,6 @@ interface HandlerArgs {
   };
   match?: RegExpMatchArray;
   userId: UUID;
-  supabase: SupabaseClient;
 }
 
 class Route {
@@ -186,7 +178,7 @@ class Route {
 const routes: Route[] = [
   {
     path: /^\/api\/agents\/message/,
-    async handler({ req, env, userId, supabase }: HandlerArgs) {
+    async handler({ req, env, userId }: HandlerArgs) {
       if (req.method === "OPTIONS") {
         return;
       }
@@ -194,10 +186,15 @@ const routes: Route[] = [
       // parse the body from the request
       const message = await req.json();
 
+      const databaseAdapter = new SupabaseDatabaseAdapter(
+        env.SUPABASE_URL,
+        env.SUPABASE_SERVICE_API_KEY,
+      );
+
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === "development",
         serverUrl: "https://api.openai.com/v1",
-        supabase,
+        databaseAdapter,
         token: env.OPENAI_API_KEY,
       });
 
@@ -258,16 +255,6 @@ async function handleRequest(
 
     if (matchUrl) {
       try {
-        const supabase = createClient(
-          env.SUPABASE_URL,
-          env.SUPABASE_SERVICE_API_KEY,
-          {
-            auth: {
-              persistSession: false,
-            },
-          },
-        );
-
         const token = req.headers.get("Authorization")?.replace("Bearer ", "");
 
         const out = (token && jwt.decode(token)) as {
@@ -292,7 +279,6 @@ async function handleRequest(
           env,
           match: matchUrl,
           userId: userId as UUID,
-          supabase,
         });
 
         return response;

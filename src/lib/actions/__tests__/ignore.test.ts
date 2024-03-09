@@ -69,21 +69,14 @@ async function handleMessage(
       stop: [],
     });
 
-    runtime.supabase
-      .from("logs")
-      .insert({
-        body: { message, context, response },
-        user_id: senderId,
-        room_id,
-        user_ids: user_ids!,
-        agent_id: agentId!,
-        type: "main_completion",
-      })
-      .then(({ error }) => {
-        if (error) {
-          console.error("error", error);
-        }
-      });
+    await runtime.databaseAdapter.log({
+      body: { message, context, response },
+      user_id: senderId,
+      room_id,
+      user_ids: user_ids!,
+      agent_id: agentId!,
+      type: "ignore_test_completion",
+    });
 
     const parsedResponse = parseJSONObjectFromText(
       response,
@@ -163,6 +156,10 @@ describe("Ignore action tests", () => {
       userA: user?.id as UUID,
       userB: zeroUuid,
     });
+
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
 
     room_id = data?.room_id;
 

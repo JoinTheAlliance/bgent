@@ -64,6 +64,10 @@ describe("Agent Runtime", () => {
       userB: zeroUuid,
     });
 
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
+
     room_id = data?.room_id;
     await clearMemories(); // Clear memories before each test
   });

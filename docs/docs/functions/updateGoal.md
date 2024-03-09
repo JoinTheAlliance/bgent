@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **updateGoal**(`«destructured»`): `Promise`\<`PostgrestSingleResponse`\<``null``\>\>
+▸ **updateGoal**(`«destructured»`): `Promise`\<`void`\>
 
 #### Parameters
 
@@ -18,4 +18,4 @@ custom_edit_url: null
 
 #### Returns
 
-`Promise`\<`PostgrestSingleResponse`\<``null``\>\>
+`Promise`\<`void`\>

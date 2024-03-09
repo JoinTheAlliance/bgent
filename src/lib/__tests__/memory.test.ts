@@ -28,6 +28,10 @@ describe("Memory", () => {
       userB: zeroUuid,
     });
 
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
+
     room_id = data?.room_id;
 
     memoryManager = new MemoryManager({
@@ -216,6 +220,10 @@ describe("Memory - Basic tests", () => {
       userB: zeroUuid,
     });
 
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
+
     room_id = data?.room_id;
 
     memoryManager = new MemoryManager({
@@ -306,6 +314,10 @@ describe("Memory - Extended Tests", () => {
       userA: user.id as UUID,
       userB: zeroUuid,
     });
+
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
 
     room_id = data?.room_id;
 

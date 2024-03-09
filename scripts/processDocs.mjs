@@ -3,7 +3,7 @@ const { SupabaseClient } = s;
 import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
-import { BgentRuntime, addLore } from '../dist/index.esm.js';
+import { BgentRuntime, SupabaseDatabaseAdapter, addLore } from '../dist/index.esm.js';
 dotenv.config({ path: '.dev.vars' });
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? "https://rnxwpsbkzcugmqauwdax.supabase.co";
@@ -18,9 +18,14 @@ const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_API_KEY);
 // The first argument from the command line is the starting path
 const startingPath = process.argv[2];
 
+const databaseAdapter = new SupabaseDatabaseAdapter(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_API_KEY)
+  ;
+
 const runtime = new BgentRuntime({
     debugMode: process.env.NODE_ENV === "development",
-    supabase,
+    databaseAdapter,
     serverUrl: SERVER_URL,
     token: OPENAI_API_KEY,
     actions: [],

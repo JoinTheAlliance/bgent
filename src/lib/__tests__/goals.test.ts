@@ -24,17 +24,24 @@ describe("Goals", () => {
     });
     runtime = result.runtime;
     user = result.session.user;
-    await runtime.supabase.from("goals").delete().match({ user_id: user.id });
-
-    // delete all goals for the user
+    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
+      [user.id as UUID],
+      "goals",
+    );
   });
 
   beforeEach(async () => {
-    await runtime.supabase.from("goals").delete().match({ user_id: user.id });
+    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
+      [user.id as UUID],
+      "goals",
+    );
   });
 
   afterAll(async () => {
-    await runtime.supabase.from("goals").delete().match({ user_id: user.id });
+    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
+      [user.id as UUID],
+      "goals",
+    );
   });
 
   // TODO: Write goal tests here
@@ -96,8 +103,10 @@ describe("Goals", () => {
       userIds: [user?.id as UUID],
       onlyInProgress: false,
     });
-    const existingGoal = goals.find((goal: Goal) => goal.name === newGoal.name);
-    const updatedGoal = { ...existingGoal, status: "COMPLETED" };
+    const existingGoal = goals.find(
+      (goal: Goal) => goal.name === newGoal.name,
+    ) as Goal;
+    const updatedGoal = { ...existingGoal, status: GoalStatus.DONE };
     await updateGoal({
       runtime,
       goal: updatedGoal,
@@ -114,7 +123,7 @@ describe("Goals", () => {
       (goal: Goal) => goal.id === existingGoal.id,
     );
 
-    expect(updatedGoalInDb?.status).toEqual("COMPLETED");
+    expect(updatedGoalInDb?.status).toEqual(GoalStatus.DONE);
   });
 
   // Finishing a goal
@@ -138,13 +147,15 @@ describe("Goals", () => {
     });
 
     // Verify the goal is created in the database
-    let goals = await getGoals({
+    let goals = (await getGoals({
       runtime,
       userIds: [user?.id as UUID],
       onlyInProgress: false,
-    });
+    })) as Goal[];
 
-    const goalToFinish = goals.find((goal: Goal) => goal.name === newGoal.name);
+    const goalToFinish = goals.find(
+      (goal: Goal) => goal.name === newGoal.name,
+    ) as Goal;
 
     // now create the goal
 
@@ -188,13 +199,15 @@ describe("Goals", () => {
     });
 
     // Verify the goal is created in the database
-    let goals = await getGoals({
+    let goals: Goal[] = await getGoals({
       runtime,
       userIds: [user?.id as UUID],
       onlyInProgress: false,
     });
 
-    const goalToFinish = goals.find((goal: Goal) => goal.name === newGoal.name);
+    const goalToFinish = goals.find(
+      (goal: Goal) => goal.name === newGoal.name,
+    ) as Goal;
 
     await cancelGoal({
       runtime,
@@ -236,13 +249,15 @@ describe("Goals", () => {
     });
 
     // Verify the goal is created in the database
-    const goals = await getGoals({
+    const goals: Goal[] = await getGoals({
       runtime,
       userIds: [user?.id as UUID],
       onlyInProgress: false,
     });
 
-    const goalToFinish = goals.find((goal: Goal) => goal.name === newGoal.name);
+    const goalToFinish = goals.find(
+      (goal: Goal) => goal.name === newGoal.name,
+    ) as Goal;
 
     const objectiveToFinish = goalToFinish.objectives[0];
 

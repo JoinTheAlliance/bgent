@@ -12,25 +12,7 @@ export async function getActorDetails({
   runtime: BgentRuntime;
   userIds: UUID[];
 }) {
-  const response = await runtime.supabase
-    .from("accounts")
-    .select("*")
-    .in("id", userIds);
-  if (response.error) {
-    console.error(response.error);
-    return [];
-  }
-
-  const { data } = response;
-
-  const actors = data.map((actor: Actor) => {
-    const { name, details, id } = actor;
-    return {
-      name,
-      details,
-      id,
-    };
-  });
+  const actors = await runtime.databaseAdapter.getActorDetails({ userIds });
 
   return actors as Actor[];
 }

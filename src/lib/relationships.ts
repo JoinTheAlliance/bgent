@@ -11,17 +11,10 @@ export async function createRelationship({
   userA: UUID;
   userB: UUID;
 }): Promise<boolean> {
-  const { error } = await runtime.supabase.from("relationships").upsert({
-    user_a: userA,
-    user_b: userB,
-    user_id: userA,
+  return runtime.databaseAdapter.createRelationship({
+    userA,
+    userB,
   });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return true;
 }
 
 export async function getRelationship({
@@ -30,19 +23,13 @@ export async function getRelationship({
   userB,
 }: {
   runtime: BgentRuntime;
-  userA: string;
-  userB: string;
+  userA: UUID;
+  userB: UUID;
 }) {
-  const { data, error } = await runtime.supabase.rpc("get_relationship", {
-    usera: userA,
-    userb: userB,
+  return runtime.databaseAdapter.getRelationship({
+    userA,
+    userB,
   });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data[0];
 }
 
 export async function getRelationships({
@@ -50,19 +37,9 @@ export async function getRelationships({
   userId,
 }: {
   runtime: BgentRuntime;
-  userId: string;
+  userId: UUID;
 }) {
-  const { data, error } = await runtime.supabase
-    .from("relationships")
-    .select("*")
-    .or(`user_a.eq.${userId},user_b.eq.${userId}`)
-    .eq("status", "FRIENDS");
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data as Relationship[];
+  return runtime.databaseAdapter.getRelationships({ userId });
 }
 
 export async function formatRelationships({
@@ -70,7 +47,7 @@ export async function formatRelationships({
   userId,
 }: {
   runtime: BgentRuntime;
-  userId: string;
+  userId: UUID;
 }) {
   const relationships = await getRelationships({ runtime, userId });
 

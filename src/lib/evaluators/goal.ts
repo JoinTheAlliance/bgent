@@ -112,13 +112,7 @@ async function handler(
     const id = goal.id;
     // delete id from goal
     if (goal.id) delete goal.id;
-    const { error } = await runtime.supabase
-      .from("goals")
-      .update({ ...goal })
-      .match({ id });
-    if (error) {
-      console.log("ERROR: " + JSON.stringify(error));
-    }
+    await runtime.databaseAdapter.updateGoal({ ...goal, id });
   }
 
   return updatedGoals; // Return updated goals for further processing or logging
