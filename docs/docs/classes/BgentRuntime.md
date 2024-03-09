@@ -73,7 +73,7 @@ ___
 
 ### embeddingModel
 
-• **embeddingModel**: `string` = `"text-embedding-3-large"`
+• **embeddingModel**: `string` = `"text-embedding-3-small"`
 
 The model to use for embedding.
 

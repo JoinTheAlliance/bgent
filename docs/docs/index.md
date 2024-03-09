@@ -141,7 +141,7 @@ const runtime = new BgentRuntime({
     /* your custom evaluators */
   ],
   model: "gpt-3.5-turbo", // whatever model you want to use
-  embeddingModel: "text-embedding-3-large", // whatever model you want to use
+  embeddingModel: "text-embedding-3-small", // whatever model you want to use
 });
 ```
 

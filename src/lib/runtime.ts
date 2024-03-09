@@ -88,7 +88,7 @@ export class BgentRuntime {
   /**
    * The model to use for embedding.
    */
-  embeddingModel = "text-embedding-3-large";
+  embeddingModel = "text-embedding-3-small";
 
   /**
    * Store messages that are sent and received by the agent.
