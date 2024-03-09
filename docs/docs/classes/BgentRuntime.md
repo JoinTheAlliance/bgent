@@ -210,7 +210,7 @@ ___
 
 ### evaluate
 
-▸ **evaluate**(`message`, `state`): `Promise`\<`string`[]\>
+▸ **evaluate**(`message`, `state?`): `Promise`\<`string`[]\>
 
 Evaluate the message and state using the registered evaluators.
 
@@ -219,7 +219,7 @@ Evaluate the message and state using the registered evaluators.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `message` | [`Message`](../interfaces/Message.md) | The message to evaluate. |
-| `state` | [`State`](../interfaces/State.md) | The state of the agent. |
+| `state?` | [`State`](../interfaces/State.md) | The state of the agent. |
 
 #### Returns
 
@@ -245,7 +245,7 @@ ___
 
 ### processActions
 
-▸ **processActions**(`message`, `content`): `Promise`\<`unknown`\>
+▸ **processActions**(`message`, `content`, `state?`): `Promise`\<`unknown`\>
 
 Process the actions of a message.
 
@@ -255,6 +255,7 @@ Process the actions of a message.
 | :------ | :------ | :------ |
 | `message` | [`Message`](../interfaces/Message.md) | The message to process. |
 | `content` | [`Content`](../interfaces/Content.md) | The content of the message to process actions from. |
+| `state?` | [`State`](../interfaces/State.md) | - |
 
 #### Returns
 

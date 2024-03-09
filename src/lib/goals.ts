@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
 import { BgentRuntime } from "./runtime";
-import { type Goal, GoalStatus, type Objective } from "./types";
+import { type Goal, type Objective } from "./types";
 
 export const getGoals = async ({
   runtime,
@@ -56,61 +56,4 @@ export const createGoal = async ({
   goal: Goal;
 }) => {
   return runtime.databaseAdapter.createGoal(goal);
-};
-
-export const cancelGoal = async ({
-  runtime,
-  goalId,
-}: {
-  runtime: BgentRuntime;
-  goalId: UUID;
-}) => {
-  return await runtime.databaseAdapter.updateGoalStatus({
-    goalId,
-    status: GoalStatus.FAILED,
-  });
-};
-
-export const finishGoal = async ({
-  runtime,
-  goalId,
-}: {
-  runtime: BgentRuntime;
-  goalId: UUID;
-}) => {
-  const goal = await runtime.databaseAdapter.getGoals({
-    userIds: [],
-    userId: null,
-    onlyInProgress: false,
-    count: 1,
-  });
-  if (goal[0]?.id === goalId) {
-    goal[0].status = GoalStatus.DONE;
-    return runtime.databaseAdapter.updateGoal(goal[0]);
-  }
-};
-
-export const finishGoalObjective = async ({
-  runtime,
-  goalId,
-  objectiveId,
-}: {
-  runtime: BgentRuntime;
-  goalId: UUID;
-  objectiveId: string;
-}) => {
-  const goals = await runtime.databaseAdapter.getGoals({
-    userIds: [],
-    userId: null,
-    onlyInProgress: false,
-    count: 1,
-  });
-  const goal = goals.find((g) => g.id === goalId);
-  if (goal) {
-    const objective = goal.objectives.find((o) => o.id === objectiveId);
-    if (objective) {
-      objective.completed = true;
-      return runtime.databaseAdapter.updateGoal(goal);
-    }
-  }
 };

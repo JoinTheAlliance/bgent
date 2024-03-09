@@ -40,10 +40,7 @@ export {
 
 // Export from ./src/lib/goals
 export {
-  cancelGoal,
   createGoal,
-  finishGoal,
-  finishGoalObjective,
   formatGoalsAsString,
   getGoals,
   updateGoal,

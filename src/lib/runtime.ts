@@ -387,7 +387,12 @@ export class BgentRuntime {
     );
 
     const context = composeContext({
-      state: { ...state, evaluators, evaluatorNames, evaluatorConditions },
+      state: {
+        ...state,
+        evaluators,
+        evaluatorNames,
+        evaluatorConditions,
+      } as State,
       template: evaluationTemplate,
     });
 

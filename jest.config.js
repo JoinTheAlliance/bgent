@@ -9,4 +9,7 @@ export default {
     __TEST__: true,
     __VERSION__: "0.0.1",
   },
+  // collectCoverage: true,
+  // collectCoverageFrom: ["**/*.{ts}", "!**/*.test.{ts}", "!**/node_modules/**", "!**/vendor/**"],
+  // coverageDirectory: "../coverage",
 };

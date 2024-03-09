@@ -54,13 +54,10 @@ custom_edit_url: null
 
 - [addHeader](functions/addHeader.md)
 - [addLore](functions/addLore.md)
-- [cancelGoal](functions/cancelGoal.md)
 - [composeActionExamples](functions/composeActionExamples.md)
 - [composeContext](functions/composeContext.md)
 - [createGoal](functions/createGoal.md)
 - [createRelationship](functions/createRelationship.md)
-- [finishGoal](functions/finishGoal.md)
-- [finishGoalObjective](functions/finishGoalObjective.md)
 - [formatActionConditions](functions/formatActionConditions.md)
 - [formatActionNames](functions/formatActionNames.md)
 - [formatActions](functions/formatActions.md)

@@ -24,15 +24,7 @@ export {
 } from "./evaluators";
 
 // Export from ./src/goals
-export {
-  getGoals,
-  formatGoalsAsString,
-  updateGoal,
-  createGoal,
-  cancelGoal,
-  finishGoal,
-  finishGoalObjective,
-} from "./goals";
+export { getGoals, formatGoalsAsString, updateGoal, createGoal } from "./goals";
 
 // Export from ./src/lore
 export { addLore, getLore, formatLore } from "./lore";
