@@ -357,7 +357,7 @@ export class BgentRuntime {
    * @param state The state of the agent.
    * @returns The results of the evaluation.
    */
-  async evaluate(message: Message, state: State) {
+  async evaluate(message: Message, state?: State) {
     const evaluatorPromises = this.evaluators.map(
       async (evaluator: Evaluator) => {
         if (!evaluator.handler) {
