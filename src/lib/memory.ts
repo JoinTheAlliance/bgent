@@ -103,7 +103,7 @@ export class MemoryManager {
         query_match_count: 10,
       };
       
-      if (!this.runtime || Object.hasOwnProperty.call(this.runtime, 'supabase') === false) {
+      if (!this.runtime || 'undefined' === typeof this.runtime.supabase) {
         return [];
       }
       const result = await this.runtime.supabase.rpc("get_embedding_list", opts);
