@@ -102,6 +102,10 @@ export class MemoryManager {
         query_field_sub_name: 'content',
         query_match_count: 10,
       };
+      
+      if (this.runtime.supabase === null) {
+        return [];
+      }
       const result = await this.runtime.supabase.rpc("get_embedding_list", opts);
       if (result.error) {
         throw new Error(JSON.stringify(result.error));
