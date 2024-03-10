@@ -1,8 +1,8 @@
 import { type UUID } from "crypto";
 import { type BgentRuntime } from "./runtime";
-import { type Memory } from "./types";
+import { type Memory, type SimilaritySearch } from "./types";
 
-export const embeddingDimension = 3072;
+export const embeddingDimension = 1536;
 export const embeddingZeroVector = Array(embeddingDimension).fill(0);
 
 const defaultMatchThreshold = 0.1;
@@ -91,6 +91,22 @@ export class MemoryManager {
       return [];
     }
     return result.data;
+  }
+
+  async getMemoryByContent(content: string): Promise<SimilaritySearch[]> {
+      const opts = {
+        query_table_name: this.tableName,
+        query_threshold: 2,
+        query_input: content,
+        query_field_name: 'content',
+        query_field_sub_name: 'content',
+        query_match_count: 10,
+      };
+      const result = await this.runtime.supabase.rpc("get_embedding_list", opts);
+      if (result.error) {
+        throw new Error(JSON.stringify(result.error));
+      }
+      return result.data;
   }
 
   /**
