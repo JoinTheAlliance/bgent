@@ -1,4 +1,4 @@
-export { fetch } from "./simple";
+import { fetch } from "./simple";
 
 export default {
   fetch,

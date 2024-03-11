@@ -193,9 +193,8 @@ async function startApplication() {
     console.error('Error fetching room data', error)
     return
   }
-
-  // get the room_id from the data
-  const room_id = data[0].id
+  
+  const room_id = data[0] ? data[0].id : "00000000-0000-0000-0000-000000000000"
   supabase.realtime.accessToken = session?.access_token // THIS IS REQUIRED FOR RLS!!!
 
   // Listen to the 'messages' table for new messages in the specific room

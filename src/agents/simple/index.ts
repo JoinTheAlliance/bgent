@@ -23,7 +23,6 @@ async function handleMessage(
 ) {
   const _saveRequestMessage = async (message: Message, state: State) => {
     const { content: senderContent, senderId, userIds, room_id } = message;
-
     const _senderContent = (
       (senderContent as Content).content ?? senderContent
     )?.trim();
@@ -142,7 +141,7 @@ const onMessage = async (
     logger.warn("Sender content null, skipping");
     return;
   }
-
+  
   const data = (await handleMessage(runtime, message, state)) as Content;
   return data;
 };
@@ -184,7 +183,14 @@ const routes: Route[] = [
       }
 
       // parse the body from the request
-      const message = await req.json();
+      const message = await req.json() as {content: any} & Message
+      // Validate the message content
+      if (message.hasOwnProperty("content") === false) {
+        return new Response("content is required", { status: 400 });
+      } else {
+        const content = message.content
+        message.content = {content: content, action: "null"} as Content
+      }
 
       const databaseAdapter = new SupabaseDatabaseAdapter(
         env.SUPABASE_URL,

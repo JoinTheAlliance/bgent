@@ -283,6 +283,13 @@ export class BgentRuntime {
    */
   async embed(input: string) {
     const embeddingModel = this.embeddingModel;
+
+    // Check if we already have the embedding in the lore
+    const cachedEmbedding = await this.retriveCachedEmbedding(input);
+    if (cachedEmbedding) {
+      return cachedEmbedding;
+    }
+
     const requestOptions = {
       method: "POST",
       headers: {
@@ -317,6 +324,14 @@ export class BgentRuntime {
       console.error(e);
       throw e;
     }
+  }
+
+  async retriveCachedEmbedding(input: string) {
+    const similaritySearchResult = await this.messageManager.getMemoryByContent(input);
+    if (similaritySearchResult.length > 0) {
+      return similaritySearchResult[0].embedding;
+    }
+    return null;
   }
 
   /**
