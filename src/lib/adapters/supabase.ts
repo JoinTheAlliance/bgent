@@ -8,6 +8,7 @@ import {
   Actor,
   GoalStatus,
   Account,
+  SimilaritySearch,
 } from "../types";
 import { DatabaseAdapter } from "../database";
 
@@ -62,6 +63,11 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     match_count: number;
     unique: boolean;
   }): Promise<Memory[]> {
+    console.log(
+      "searching memories",
+      params.tableName,
+      params.embedding.length,
+    );
     const result = await this.supabase.rpc("search_memories", {
       query_table_name: params.tableName,
       query_user_ids: params.userIds,
@@ -70,6 +76,21 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       query_match_count: params.match_count,
       query_unique: params.unique,
     });
+    if (result.error) {
+      throw new Error(JSON.stringify(result.error));
+    }
+    return result.data;
+  }
+
+  async getMemoryByContent(opts: {
+    query_table_name: string;
+    query_threshold: number;
+    query_input: string;
+    query_field_name: string;
+    query_field_sub_name: string;
+    query_match_count: number;
+  }): Promise<SimilaritySearch[]> {
+    const result = await this.supabase.rpc("get_embedding_list", opts);
     if (result.error) {
       throw new Error(JSON.stringify(result.error));
     }

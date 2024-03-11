@@ -183,6 +183,28 @@ ___
 
 ___
 
+### getMemoryByContent
+
+▸ **getMemoryByContent**(`«destructured»`): `Promise`\<`SimilaritySearch`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `query_field_name` | `string` |
+| › `query_field_sub_name` | `string` |
+| › `query_input` | `string` |
+| › `query_match_count` | `number` |
+| › `query_table_name` | `string` |
+| › `query_threshold` | `number` |
+
+#### Returns
+
+`Promise`\<`SimilaritySearch`[]\>
+
+___
+
 ### getRelationship
 
 ▸ **getRelationship**(`params`): `Promise`\<``null`` \| [`Relationship`](../interfaces/Relationship.md)\>

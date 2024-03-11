@@ -314,3 +314,19 @@ Register an evaluator to assess and guide the agent's responses.
 #### Returns
 
 `void`
+
+___
+
+### retriveCachedEmbedding
+
+▸ **retriveCachedEmbedding**(`input`): `Promise`\<``null`` \| `number`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `string` |
+
+#### Returns
+
+`Promise`\<``null`` \| `number`[]\>

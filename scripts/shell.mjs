@@ -240,7 +240,7 @@ async function startApplication() {
         Authorization: 'Bearer ' + session.access_token
       },
       body: JSON.stringify({
-        content,
+        content: { content, action: "WAIT"},
         agentId: agentUUID,
         room_id
       })

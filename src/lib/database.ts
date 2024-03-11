@@ -6,6 +6,7 @@ import {
   Actor,
   GoalStatus,
   Account,
+  SimilaritySearch,
 } from "./types";
 
 export abstract class DatabaseAdapter {
@@ -18,6 +19,22 @@ export abstract class DatabaseAdapter {
     unique?: boolean;
     tableName: string;
   }): Promise<Memory[]>;
+
+  abstract getMemoryByContent({
+    query_table_name,
+    query_threshold,
+    query_input,
+    query_field_name,
+    query_field_sub_name,
+    query_match_count,
+  }: {
+    query_table_name: string;
+    query_threshold: number;
+    query_input: string;
+    query_field_name: string;
+    query_field_sub_name: string;
+    query_match_count: number;
+  }): Promise<SimilaritySearch[]>;
 
   abstract log(params: {
     body: { [key: string]: unknown };

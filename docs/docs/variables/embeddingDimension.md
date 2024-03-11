@@ -6,4 +6,4 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-• `Const` **embeddingDimension**: ``3072``
+• `Const` **embeddingDimension**: ``1536``

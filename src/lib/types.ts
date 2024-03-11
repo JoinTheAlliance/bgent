@@ -49,7 +49,6 @@ export interface Memory {
   room_id: UUID; // The room or conversation ID associated with the memory.
 }
 
-
 /**
  * Represents a similarity search result, including the embedding vector and the Levenshtein score for a given search query.
  */
@@ -57,7 +56,6 @@ export interface SimilaritySearch {
   embedding: number[];
   levenshtein_score: number;
 }
-
 
 /**
  * Represents an objective within a goal, detailing what needs to be achieved and whether it has been completed.

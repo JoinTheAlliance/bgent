@@ -89,7 +89,7 @@ describe("Memory", () => {
       content: { content: dissimilarMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
       room_id: room_id as UUID,
-      embedding: getCachedEmbedding(dissimilarMemoryContent),
+      embedding,
     });
     if (!embedding) {
       writeCachedEmbedding(

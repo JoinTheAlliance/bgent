@@ -84,23 +84,15 @@ export class MemoryManager {
   }
 
   async getMemoryByContent(content: string): Promise<SimilaritySearch[]> {
-      const opts = {
-        query_table_name: this.tableName,
-        query_threshold: 2,
-        query_input: content,
-        query_field_name: 'content',
-        query_field_sub_name: 'content',
-        query_match_count: 10,
-      };
-      
-      if (!this.runtime || 'undefined' === typeof this.runtime.supabase) {
-        return [];
-      }
-      const result = await this.runtime.supabase.rpc("get_embedding_list", opts);
-      if (result.error) {
-        throw new Error(JSON.stringify(result.error));
-      }
-      return result.data;
+    const result = await this.runtime.databaseAdapter.getMemoryByContent({
+      query_table_name: this.tableName,
+      query_threshold: 2,
+      query_input: content,
+      query_field_name: "content",
+      query_field_sub_name: "content",
+      query_match_count: 10,
+    });
+    return result;
   }
 
   /**
@@ -129,6 +121,11 @@ export class MemoryManager {
       unique,
     } = opts;
 
+    console.log("embedding length to search is", embedding.length);
+
+    console.log("opts are", opts);
+    console.log(opts);
+
     const result = await this.runtime.databaseAdapter.searchMemories({
       tableName: this.tableName,
       userIds: userIds,
@@ -137,6 +134,8 @@ export class MemoryManager {
       match_count: count,
       unique: !!unique,
     });
+
+    console.log("result.embedding.length", result[0]?.embedding?.length);
 
     return result;
   }

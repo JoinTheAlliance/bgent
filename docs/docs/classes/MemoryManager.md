@@ -131,6 +131,22 @@ A Promise resolving to an array of Memory objects.
 
 ___
 
+### getMemoryByContent
+
+▸ **getMemoryByContent**(`content`): `Promise`\<`SimilaritySearch`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `content` | `string` |
+
+#### Returns
+
+`Promise`\<`SimilaritySearch`[]\>
+
+___
+
 ### removeAllMemoriesByUserIds
 
 ▸ **removeAllMemoriesByUserIds**(`userIds`): `Promise`\<`void`\>

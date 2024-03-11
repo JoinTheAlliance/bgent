@@ -230,6 +230,32 @@ ___
 
 ___
 
+### getMemoryByContent
+
+▸ **getMemoryByContent**(`opts`): `Promise`\<`SimilaritySearch`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `opts` | `Object` |
+| `opts.query_field_name` | `string` |
+| `opts.query_field_sub_name` | `string` |
+| `opts.query_input` | `string` |
+| `opts.query_match_count` | `number` |
+| `opts.query_table_name` | `string` |
+| `opts.query_threshold` | `number` |
+
+#### Returns
+
+`Promise`\<`SimilaritySearch`[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getMemoryByContent](DatabaseAdapter.md#getmemorybycontent)
+
+___
+
 ### getRelationship
 
 ▸ **getRelationship**(`params`): `Promise`\<``null`` \| [`Relationship`](../interfaces/Relationship.md)\>

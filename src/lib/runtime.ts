@@ -299,6 +299,7 @@ export class BgentRuntime {
       body: JSON.stringify({
         input,
         model: embeddingModel,
+        length: 1536,
       }),
     };
     try {
@@ -319,6 +320,8 @@ export class BgentRuntime {
 
       const data: OpenAIEmbeddingResponse = await response.json();
 
+      console.log("*** EMBEDDING LENGTH IS", data?.data?.[0].embedding.length);
+
       return data?.data?.[0].embedding;
     } catch (e) {
       console.error(e);
@@ -327,7 +330,8 @@ export class BgentRuntime {
   }
 
   async retriveCachedEmbedding(input: string) {
-    const similaritySearchResult = await this.messageManager.getMemoryByContent(input);
+    const similaritySearchResult =
+      await this.messageManager.getMemoryByContent(input);
     if (similaritySearchResult.length > 0) {
       return similaritySearchResult[0].embedding;
     }
