@@ -9,5 +9,5 @@ scripts/docs
 output.log
 test-report.json
 
-# mac os artifacts
+# mac os artefacts
 .DS_Store
