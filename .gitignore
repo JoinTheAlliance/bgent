@@ -8,3 +8,6 @@ dist
 scripts/docs
 output.log
 test-report.json
+
+# mac os artifacts
+.DS_Store
