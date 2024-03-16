@@ -285,7 +285,7 @@ export class BgentRuntime {
     const embeddingModel = this.embeddingModel;
 
     // Check if we already have the embedding in the lore
-    const cachedEmbedding = await this.retriveCachedEmbedding(input);
+    const cachedEmbedding = await this.retrieveCachedEmbedding(input);
     if (cachedEmbedding) {
       return cachedEmbedding;
     }
@@ -329,7 +329,7 @@ export class BgentRuntime {
     }
   }
 
-  async retriveCachedEmbedding(input: string) {
+  async retrieveCachedEmbedding(input: string) {
     const similaritySearchResult =
       await this.messageManager.getMemoryByContent(input);
     if (similaritySearchResult.length > 0) {

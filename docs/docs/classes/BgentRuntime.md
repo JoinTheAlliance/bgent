@@ -317,9 +317,9 @@ Register an evaluator to assess and guide the agent's responses.
 
 ___
 
-### retriveCachedEmbedding
+### retrieveCachedEmbedding
 
-▸ **retriveCachedEmbedding**(`input`): `Promise`\<``null`` \| `number`[]\>
+▸ **retrieveCachedEmbedding**(`input`): `Promise`\<``null`` \| `number`[]\>
 
 #### Parameters
 

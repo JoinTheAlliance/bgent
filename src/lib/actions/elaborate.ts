@@ -17,7 +17,7 @@ const maxContinuesInARow = 2;
 export default {
   name: "ELABORATE",
   description:
-    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly!",
+    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly! DO NOT USE WHEN ASKING A QUESTION, ALWAYS USE WAIT WHEN ASKING A QUESTION.",
   validate: async (runtime: BgentRuntime, message: Message) => {
     const recentMessagesData = await runtime.messageManager.getMemoriesByIds({
       userIds: message.userIds!,
@@ -58,11 +58,16 @@ export default {
     let responseContent;
     const { senderId, room_id, userIds: user_ids, agentId } = message;
 
+    console.log("*** ELABORATING");
+    console.log(context);
+
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
       const response = await runtime.completion({
         context,
         stop: [],
       });
+
+      console.log("RESPONSE")
 
       runtime.databaseAdapter.log({
         body: { message, context, response },
@@ -72,6 +77,7 @@ export default {
         agent_id: agentId!,
         type: "elaborate",
       });
+
 
       const parsedResponse = parseJSONObjectFromText(
         response,
@@ -221,7 +227,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "That it’s more about moments than things.",
-          action: "ELABORATE",
+          action: "WAIT",
         },
       },
       {

@@ -90,6 +90,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     query_field_sub_name: string;
     query_match_count: number;
   }): Promise<SimilaritySearch[]> {
+    console.log("get_memory_by_content", opts);
     const result = await this.supabase.rpc("get_embedding_list", opts);
     if (result.error) {
       throw new Error(JSON.stringify(result.error));
