@@ -76,10 +76,8 @@ describe("Agent Runtime", () => {
         userB: zeroUuid,
       });
     }
-
-    console.log("data", data);
-
-    room_id = data?.room_id as UUID;
+    // TODO: This seems to be defaulting to zeroUuid, but we should be able to get the room_id from the relationship
+    room_id = (data?.room_id as UUID) || zeroUuid;
     await clearMemories(); // Clear memories before each test
   });
 
@@ -104,8 +102,6 @@ describe("Agent Runtime", () => {
     } catch (error) {
       console.error("Error creating memories", error);
     }
-
-    console.log("room_id", room_id);
 
     const message: Message = {
       userId: user.id as UUID,

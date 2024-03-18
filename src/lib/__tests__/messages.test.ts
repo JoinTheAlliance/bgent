@@ -7,6 +7,9 @@ import { type Actor, type Content, type Memory } from "../types";
 import { formatFacts } from "../evaluators/fact";
 import { createRelationship, getRelationship } from "../relationships";
 import { zeroUuid } from "../constants";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".dev.vars" });
 
 describe("Messages Library", () => {
   let runtime: BgentRuntime, user: User, actors: Actor[];
@@ -57,11 +60,8 @@ describe("Messages Library", () => {
   });
 
   test("formatActors should format actors into a readable string", () => {
-    console.log("*** actors", actors);
     const formattedActors = formatActors({ actors });
-    console.log("*** formattedActors", formattedActors);
     actors.forEach((actor) => {
-      console.log("*** actor.name", actor.name);
       expect(formattedActors).toContain(actor.name);
     });
   });

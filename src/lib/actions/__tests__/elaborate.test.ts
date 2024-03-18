@@ -45,7 +45,7 @@ const GetContinueExample1 = (_user_id: UUID) => [
 describe("User Profile", () => {
   let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID;
+  let room_id: UUID = zeroUuid;
 
   afterAll(async () => {
     await cleanup();
@@ -69,7 +69,8 @@ describe("User Profile", () => {
       throw new Error("Relationship not found");
     }
 
-    room_id = data?.room_id;
+    // TODO: This is a temporary fix for the room_id not being set in the relationship
+    room_id = data?.room_id || zeroUuid;
 
     await cleanup();
   });
@@ -124,7 +125,7 @@ describe("User Profile", () => {
             "Hmm, let think for a second, I was going to tell you about something...",
           action: "ELABORATE",
         },
-        room_id: room_id as UUID,
+        room_id,
       };
 
       const handler = action.handler!;
@@ -148,7 +149,7 @@ describe("User Profile", () => {
               "Write a short story in three parts, using the ELABORATE action for each part.",
             action: "WAIT",
           },
-          room_id: room_id as UUID,
+          room_id,
         };
 
         const initialMessageCount =

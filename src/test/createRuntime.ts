@@ -52,6 +52,10 @@ export async function createRuntime({
     case "supabase":
     default:
       {
+        console.log(
+          "env?.SUPABASE_SERVICE_API_KEY",
+          env?.SUPABASE_SERVICE_API_KEY,
+        );
         const supabase = createClient(
           env?.SUPABASE_URL ?? SUPABASE_URL,
           env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
@@ -91,7 +95,7 @@ export async function createRuntime({
         );
       }
       break;
-    }
+  }
 
   const runtime = new BgentRuntime({
     debugMode: false,

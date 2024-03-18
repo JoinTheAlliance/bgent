@@ -42,8 +42,6 @@ describe("Goals", () => {
       ],
     };
 
-    console.log("newGoal", newGoal);
-
     await createGoal({
       runtime,
       goal: newGoal,
@@ -90,7 +88,6 @@ describe("Goals", () => {
       room_id: zeroUuid,
       onlyInProgress: false,
     });
-    console.log("goals", goals);
     const existingGoal = goals.find(
       (goal: Goal) => goal.name === newGoal.name,
     ) as Goal;

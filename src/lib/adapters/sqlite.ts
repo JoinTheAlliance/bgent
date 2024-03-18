@@ -152,9 +152,6 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       sql += ` LIMIT ${params.count}`;
     }
 
-    console.log("sql");
-    console.log(sql);
-
     return this.db.prepare(sql).all() as Memory[];
   }
 

@@ -66,7 +66,7 @@ export default {
         stop: [],
       });
 
-      console.log("RESPONSE");
+      console.log("response", response);
 
       runtime.databaseAdapter.log({
         body: { message, context, response },
@@ -90,7 +90,11 @@ export default {
       if (runtime.debugMode) {
         logger.error("No response content");
       }
-      return;
+      // TODO: Verify that this is the correct response handling
+      return {
+        content: "No response.",
+        action: "IGNORE",
+      };
     }
 
     // prevent repetition

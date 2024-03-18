@@ -329,8 +329,6 @@ export class BgentRuntime {
 
       const data: OpenAIEmbeddingResponse = await response.json();
 
-      console.log("*** EMBEDDING LENGTH IS", data?.data?.[0].embedding.length);
-
       return data?.data?.[0].embedding;
     } catch (e) {
       console.error(e);
@@ -448,8 +446,6 @@ export class BgentRuntime {
    */
   async composeState(message: Message) {
     const { userId, room_id } = message;
-
-    console.log("message", message);
 
     const recentMessageCount = this.getRecentMessageCount();
     const recentFactsCount = Math.ceil(this.getRecentMessageCount() / 2);

@@ -121,11 +121,6 @@ export class MemoryManager {
       unique,
     } = opts;
 
-    console.log("embedding length to search is", embedding.length);
-
-    console.log("opts are", opts);
-    console.log(opts);
-
     const result = await this.runtime.databaseAdapter.searchMemories({
       tableName: this.tableName,
       room_id,
@@ -134,8 +129,6 @@ export class MemoryManager {
       match_count: count,
       unique: !!unique,
     });
-
-    console.log("result.embedding.length", result[0]?.embedding?.length);
 
     return result;
   }

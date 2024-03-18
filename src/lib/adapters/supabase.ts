@@ -79,11 +79,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     match_count: number;
     unique: boolean;
   }): Promise<Memory[]> {
-    console.log(
-      "searching memories",
-      params.tableName,
-      params.embedding.length,
-    );
     const result = await this.supabase.rpc("search_memories", {
       query_table_name: params.tableName,
       query_room_id: params.room_id,
@@ -106,7 +101,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     query_field_sub_name: string;
     query_match_count: number;
   }): Promise<SimilaritySearch[]> {
-    console.log("get_memory_by_content", opts);
     const result = await this.supabase.rpc("get_embedding_list", opts);
     if (result.error) {
       throw new Error(JSON.stringify(result.error));
@@ -285,7 +279,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       only_in_progress: params.onlyInProgress,
       row_count: params.count,
     };
-    console.log("opts", opts)
+
     const { data: goals, error } = await this.supabase.rpc("get_goals", opts);
 
     if (error) {

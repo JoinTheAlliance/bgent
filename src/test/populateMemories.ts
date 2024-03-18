@@ -21,7 +21,7 @@ export async function populateMemories(
           content: c.content.content,
           action: c.content.action as string,
         },
-        room_id: room_id as UUID,
+        room_id,
         embedding: existingEmbedding,
       });
       await runtime.messageManager.createMemory(bakedMemory);
