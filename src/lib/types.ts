@@ -211,10 +211,10 @@ export interface Relationship {
 /**
  * Represents a user, including their name, details, and a unique identifier.
  */
-export type Account = {
+export interface Account {
   id: UUID;
   name: string;
   details?: string;
   email?: string;
   avatar_url?: string;
-};
+}

@@ -11,7 +11,8 @@ import {
 } from "../types";
 
 import { Database } from "better-sqlite3";
-import * as sqlite_vss from "sqlite-vss";
+import { load } from "./sqlite/sqlite_vss";
+import { sqliteTables } from "./sqlite/sqliteTables";
 
 export class SqliteDatabaseAdapter extends DatabaseAdapter {
   private db: Database;
@@ -19,7 +20,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   constructor(db: Database) {
     super();
     this.db = db;
-    sqlite_vss.load(this.db);
+    load(this.db);
+    // sqliteTables is a string of SQL commands
+    this.db.exec(sqliteTables);
   }
 
   async getAccountById(userId: UUID): Promise<Account | null> {
