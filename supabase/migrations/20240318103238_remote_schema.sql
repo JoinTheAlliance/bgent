@@ -33,6 +33,17 @@ CREATE TABLE IF NOT EXISTS "public"."secrets" (
 
 ALTER TABLE "public"."secrets" OWNER TO "postgres";
 
+CREATE TABLE "public"."user_data" (
+    owner_id INT,
+    target_id INT,
+    data JSONB,
+    PRIMARY KEY (owner_id, target_id),
+    FOREIGN KEY (owner_id) REFERENCES accounts(id),
+    FOREIGN KEY (target_id) REFERENCES accounts(id)
+);
+
+ALTER TABLE "public"."user_data" OWNER TO "postgres";
+
 CREATE OR REPLACE FUNCTION "public"."after_account_created"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'extensions', 'public', 'pg_temp'
@@ -61,9 +72,10 @@ $$;
 
 ALTER FUNCTION "public"."after_account_created"() OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."check_similarity_and_insert"("query_table_name" "text", "query_user_id" "uuid", "query_content" "jsonb", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "similarity_threshold" double precision) RETURNS "void"
-    LANGUAGE "plpgsql"
-    AS $$
+CREATE OR REPLACE FUNCTION "public"."check_similarity_and_insert"("query_table_name" "text", "query_user_id" "uuid", "query_content" "jsonb", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "similarity_threshold" double precision)
+RETURNS "void"
+LANGUAGE "plpgsql"
+AS $$
 DECLARE
     similar_found BOOLEAN := FALSE;
     select_query TEXT;
@@ -73,20 +85,21 @@ BEGIN
     IF query_embedding IS NOT NULL THEN
         -- Build a dynamic query to check for existing similar embeddings using cosine distance
         select_query := format(
-        'SELECT EXISTS (' ||
-            'SELECT 1 ' ||
-            'FROM %I ' ||
-            'WHERE user_id = %L ' ||
-            'AND room_id = %L ' ||  -- Assuming this is correct
-            'AND embedding <=> %L < %L ' ||
-            'LIMIT 1' ||
-        ')',
-        query_table_name,
-        query_user_id,
-        query_room_id,  -- First usage
-        query_embedding,
-        similarity_threshold
-    );
+            'SELECT EXISTS (' ||
+                'SELECT 1 ' ||
+                'FROM memories ' ||
+                'WHERE user_id = %L ' ||
+                'AND room_id = %L ' ||
+                'AND type = %L ' ||  -- Filter by the 'type' field using query_table_name
+                'AND embedding <=> %L < %L ' ||
+                'LIMIT 1' ||
+            ')',
+            query_user_id,
+            query_room_id,
+            query_table_name,  -- Use query_table_name to filter by 'type'
+            query_embedding,
+            similarity_threshold
+        );
 
         -- Execute the query to check for similarity
         EXECUTE select_query INTO similar_found;
@@ -94,12 +107,12 @@ BEGIN
 
     -- Prepare the insert query with 'unique' field set based on the presence of similar records or NULL query_embedding
     insert_query := format(
-        'INSERT INTO %I (user_id, content, room_id, embedding, "unique") ' ||
-        'VALUES (%L, %L, %L, %L, %L)',
-        query_table_name,
+        'INSERT INTO memories (user_id, content, room_id, type, embedding, "unique") ' ||  -- Insert into the 'memories' table
+        'VALUES (%L, %L, %L, %L, %L, %L)',
         query_user_id,
         query_content,
         query_room_id,
+        query_table_name,  -- Use query_table_name as the 'type' value
         query_embedding,
         NOT similar_found OR query_embedding IS NULL  -- Set 'unique' to true if no similar record is found or query_embedding is NULL
     );
@@ -111,7 +124,7 @@ $$;
 
 ALTER FUNCTION "public"."check_similarity_and_insert"("query_table_name" "text", "query_user_id" "uuid", "query_content" "jsonb", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "similarity_threshold" double precision) OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."count_memories"("query_type" "text", "query_room_id" "uuid", "query_unique" boolean DEFAULT false) RETURNS bigint
+CREATE OR REPLACE FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean DEFAULT false) RETURNS bigint
     LANGUAGE "plpgsql"
     AS $$
 DECLARE
@@ -119,7 +132,7 @@ DECLARE
     total BIGINT;
 BEGIN
     -- Initialize the base query
-    query := format('SELECT COUNT(*) FROM memories WHERE type = %L', query_type);
+    query := format('SELECT COUNT(*) FROM memories WHERE type = %L', query_table_name);
 
     -- Add condition for room_id if not null, ensuring proper spacing
     IF query_room_id IS NOT NULL THEN
@@ -221,15 +234,13 @@ $$;
 
 ALTER FUNCTION "public"."fn_notify_agents"() OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) RETURNS TABLE("embedding" "extensions"."vector", "levenshtein_score" integer)
-    LANGUAGE "plpgsql"
-    AS $_$DECLARE
+CREATE OR REPLACE FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer)
+RETURNS TABLE("embedding" "extensions"."vector", "levenshtein_score" integer)
+LANGUAGE "plpgsql"
+AS $$
+DECLARE
     QUERY TEXT;
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = query_table_name) THEN
-        RAISE EXCEPTION 'Table % does not exist', query_table_name;
-    END IF;
-
     -- Check the length of query_input
     IF LENGTH(query_input) > 255 THEN
         -- For inputs longer than 255 characters, use exact match only
@@ -237,34 +248,36 @@ BEGIN
             SELECT
                 embedding
             FROM
-                %I
+                memories
             WHERE
-                (content->>''%s'')::TEXT = $1
+                type = $1 AND
+                (content->>''%s'')::TEXT = $2
             LIMIT
-                $2
-        ', query_table_name, query_field_name);
+                $3
+        ', query_field_name);
         -- Execute the query with adjusted parameters for exact match
-        RETURN QUERY EXECUTE QUERY USING query_input, query_match_count;
+        RETURN QUERY EXECUTE QUERY USING query_table_name, query_input, query_match_count;
     ELSE
         -- For inputs of 255 characters or less, use Levenshtein distance
         QUERY := format('
             SELECT
                 embedding,
-                levenshtein($1, (content->>''%s'')::TEXT) AS levenshtein_score
+                levenshtein($2, (content->>''%s'')::TEXT) AS levenshtein_score
             FROM
-                %I
+                memories
             WHERE
-                levenshtein($1, (content->>''%s'')::TEXT) <= $2
+                type = $1 AND
+                levenshtein($2, (content->>''%s'')::TEXT) <= $3
             ORDER BY
                 levenshtein_score
             LIMIT
-                $3
-        ', query_field_name, query_table_name, query_field_name);
+                $4
+        ', query_field_name, query_field_name);
         -- Execute the query with original parameters for Levenshtein distance
-        RETURN QUERY EXECUTE QUERY USING query_input, query_threshold, query_match_count;
+        RETURN QUERY EXECUTE QUERY USING query_table_name, query_input, query_threshold, query_match_count;
     END IF;
 END;
-$_$;
+$$;
 
 ALTER FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) OWNER TO "postgres";
 
@@ -276,6 +289,7 @@ CREATE TABLE IF NOT EXISTS "public"."goals" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "user_id" "uuid",
+    "room_id": "uuid",
     "status" "text",
     "objectives" "jsonb"[] DEFAULT '{}'::"jsonb"[] NOT NULL
 );
@@ -298,9 +312,10 @@ $$;
 
 ALTER FUNCTION "public"."get_goals"("query_room_id" "uuid", "query_user_id" "uuid", "only_in_progress" boolean, "row_count" integer) OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."get_memories"("query_type" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean DEFAULT false) RETURNS TABLE("id" "uuid", "user_id" "uuid", "content" "jsonb", "created_at" timestamp with time zone, "room_id" "uuid", "embedding" "extensions"."vector")
-    LANGUAGE "plpgsql"
-    AS $_$
+CREATE OR REPLACE FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean DEFAULT false) 
+RETURNS TABLE("id" "uuid", "user_id" "uuid", "content" "jsonb", "created_at" timestamp with time zone, "room_id" "uuid", "embedding" "extensions"."vector")
+LANGUAGE "plpgsql"
+AS $_$
 DECLARE
     query TEXT;
 BEGIN
@@ -316,19 +331,19 @@ BEGIN
         WHERE TRUE
         AND type = %L
         %s -- Additional condition for 'unique' column based on query_unique
+        %s -- Additional condition for room_id based on query_room_id
         ORDER BY created_at DESC
         LIMIT %L
         $fmt$,
-        query_type,
+        query_table_name,
+        CASE WHEN query_unique THEN ' AND "unique" IS TRUE' ELSE '' END,
         CASE WHEN query_room_id IS NOT NULL THEN format(' AND room_id = %L', query_room_id) ELSE '' END,
-        CASE WHEN query_unique THEN ' AND "unique" = TRUE' ELSE '' END, -- Enclose 'unique' in double quotes
         query_count
     );
 
     RETURN QUERY EXECUTE query;
 END;
 $_$;
-
 
 ALTER FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean) OWNER TO "postgres";
 
@@ -338,7 +353,7 @@ CREATE OR REPLACE FUNCTION "public"."get_message_count"("p_user_id" "uuid") RETU
   RETURN QUERY
   SELECT p.room_id, COALESCE(COUNT(m.id)::integer, 0) AS unread_messages_count
   FROM participants p
-  LEFT JOIN messages m ON p.room_id = m.room_id
+  LEFT JOIN memories m ON p.room_id = m.room_id AND m.type = "messages"
   WHERE p.user_id = p_user_id
   GROUP BY p.room_id;
 END;
@@ -372,22 +387,23 @@ $$;
 
 ALTER FUNCTION "public"."get_relationship"("usera" "uuid", "userb" "uuid") OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."remove_memories"("query_type" "text", "query_room_id" "uuid") RETURNS "void"
+CREATE OR REPLACE FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") RETURNS "void"
     LANGUAGE "plpgsql"
     AS $_$DECLARE
     dynamic_query TEXT;
 BEGIN
     dynamic_query := format('DELETE FROM memories WHERE room_id = $1 AND type = $2');
-    EXECUTE dynamic_query USING query_room_id, query_type;
+    EXECUTE dynamic_query USING query_room_id, query_table_name;
 END;
 $_$;
 
 
 ALTER FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."search_memories"("query_type" "text", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "query_match_threshold" double precision, "query_match_count" integer, "query_unique" boolean) RETURNS TABLE("id" "uuid", "user_id" "uuid", "content" "jsonb", "created_at" timestamp with time zone, "similarity" double precision, "room_id" "uuid", "embedding" "extensions"."vector")
-    LANGUAGE "plpgsql"
-    AS $_$
+CREATE OR REPLACE FUNCTION "public"."search_memories"("query_table_name" "text", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "query_match_threshold" double precision, "query_match_count" integer, "query_unique" boolean)
+RETURNS TABLE("id" "uuid", "user_id" "uuid", "content" "jsonb", "created_at" timestamp with time zone, "similarity" double precision, "room_id" "uuid", "embedding" "extensions"."vector")
+LANGUAGE "plpgsql"
+AS $$
 DECLARE
     query TEXT;
 BEGIN
@@ -404,21 +420,23 @@ BEGIN
         WHERE (1 - (embedding <=> %L) > %L)
         AND type = %L
         %s -- Additional condition for 'unique' column
+        %s -- Additional condition for 'room_id'
         ORDER BY similarity DESC
         LIMIT %L
         $fmt$,
         query_embedding,
         query_embedding,
         query_match_threshold,
-        query_type,
+        query_table_name,
+        CASE WHEN query_unique THEN ' AND "unique" IS TRUE' ELSE '' END,
         CASE WHEN query_room_id IS NOT NULL THEN format(' AND room_id = %L', query_room_id) ELSE '' END,
-        CASE WHEN query_unique THEN ' AND "unique"' ELSE '' END, -- Use "unique" instead of unique = TRUE
         query_match_count
     );
 
     RETURN QUERY EXECUTE query;
 END;
-$_$;
+$$;
+
 
 
 ALTER FUNCTION "public"."search_memories"("query_table_name" "text", "query_room_id" "uuid", "query_embedding" "extensions"."vector", "query_match_threshold" double precision, "query_match_count" integer, "query_unique" boolean) OWNER TO "postgres";
@@ -595,106 +613,118 @@ ALTER TABLE "public"."rooms" ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "select_own_account" ON "public"."accounts" FOR SELECT USING (("auth"."uid"() = "id"));
 
 GRANT USAGE ON SCHEMA "public" TO "postgres";
-GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
+GRANT USAGE ON SCHEMA "public" TO "supabase_admin";
+GRANT USAGE ON SCHEMA "public" TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."after_account_created"() TO "anon";
 GRANT ALL ON FUNCTION "public"."after_account_created"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."after_account_created"() TO "service_role";
+GRANT ALL ON FUNCTION "public"."after_account_created"() TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."after_account_created"() TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean) TO "anon";
 GRANT ALL ON FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean) TO "service_role";
+GRANT ALL ON FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean) TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean) TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."create_friendship_with_host_agent"() TO "anon";
 GRANT ALL ON FUNCTION "public"."create_friendship_with_host_agent"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."create_friendship_with_host_agent"() TO "service_role";
+GRANT ALL ON FUNCTION "public"."create_friendship_with_host_agent"() TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."create_friendship_with_host_agent"() TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."fn_notify_agents"() TO "anon";
 GRANT ALL ON FUNCTION "public"."fn_notify_agents"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."fn_notify_agents"() TO "service_role";
+GRANT ALL ON FUNCTION "public"."fn_notify_agents"() TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."fn_notify_agents"() TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) TO "service_role";
+GRANT ALL ON FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."get_embedding_list"("query_table_name" "text", "query_threshold" integer, "query_input" "text", "query_field_name" "text", "query_field_sub_name" "text", "query_match_count" integer) TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."goals" TO "anon";
 GRANT ALL ON TABLE "public"."goals" TO "authenticated";
 GRANT ALL ON TABLE "public"."goals" TO "service_role";
 GRANT ALL ON TABLE "public"."goals" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."goals" TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."get_goals"("query_room_id" "uuid", "query_user_id" "uuid", "only_in_progress" boolean, "row_count" integer) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_goals"("query_room_id" "uuid", "query_user_id" "uuid", "only_in_progress" boolean, "row_count" integer) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_goals"("query_room_id" "uuid", "query_user_id" "uuid", "only_in_progress" boolean, "row_count" integer) TO "service_role";
+GRANT ALL ON FUNCTION "public"."get_goals"("query_room_id" "uuid", "query_user_id" "uuid", "only_in_progress" boolean, "row_count" integer) TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."get_goals"("query_room_id" "uuid", "query_user_id" "uuid", "only_in_progress" boolean, "row_count" integer) TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean) TO "service_role";
+GRANT ALL ON FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean) TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."get_memories"("query_table_name" "text", "query_room_id" "uuid", "query_count" integer, "query_unique" boolean) TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."get_message_count"("p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_message_count"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_message_count"("p_user_id" "uuid") TO "service_role";
+GRANT ALL ON FUNCTION "public"."get_message_count"("p_user_id" "uuid") TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."get_message_count"("p_user_id" "uuid") TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."relationships" TO "anon";
 GRANT ALL ON TABLE "public"."relationships" TO "authenticated";
 GRANT ALL ON TABLE "public"."relationships" TO "service_role";
 GRANT ALL ON TABLE "public"."relationships" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."relationships" TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."get_relationship"("usera" "uuid", "userb" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_relationship"("usera" "uuid", "userb" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_relationship"("usera" "uuid", "userb" "uuid") TO "service_role";
+GRANT ALL ON FUNCTION "public"."get_relationship"("usera" "uuid", "userb" "uuid") TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."get_relationship"("usera" "uuid", "userb" "uuid") TO "supabase_auth_admin";
 
-GRANT ALL ON FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") TO "service_role";
+GRANT ALL ON FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") TO "supabase_admin";
+GRANT ALL ON FUNCTION "public"."remove_memories"("query_table_name" "text", "query_room_id" "uuid") TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."accounts" TO "anon";
 GRANT ALL ON TABLE "public"."accounts" TO "authenticated";
 GRANT ALL ON TABLE "public"."accounts" TO "service_role";
 GRANT SELECT,INSERT ON TABLE "public"."accounts" TO "authenticator";
 GRANT ALL ON TABLE "public"."accounts" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."accounts" TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."logs" TO "anon";
 GRANT ALL ON TABLE "public"."logs" TO "authenticated";
 GRANT ALL ON TABLE "public"."logs" TO "service_role";
 GRANT ALL ON TABLE "public"."logs" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."logs" TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."memories" TO "anon";
 GRANT ALL ON TABLE "public"."memories" TO "authenticated";
 GRANT ALL ON TABLE "public"."memories" TO "service_role";
 GRANT ALL ON TABLE "public"."memories" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."memories" TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."participants" TO "anon";
 GRANT ALL ON TABLE "public"."participants" TO "authenticated";
 GRANT ALL ON TABLE "public"."participants" TO "service_role";
 GRANT ALL ON TABLE "public"."participants" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."participants" TO "supabase_auth_admin";
 
-GRANT ALL ON TABLE "public"."rooms" TO "anon";
 GRANT ALL ON TABLE "public"."rooms" TO "authenticated";
 GRANT ALL ON TABLE "public"."rooms" TO "service_role";
 GRANT ALL ON TABLE "public"."rooms" TO "supabase_admin";
 GRANT ALL ON TABLE "public"."rooms" TO "supabase_auth_admin";
 
+GRANT ALL ON TABLE "public"."secrets" TO "authenticated";
+GRANT ALL ON TABLE "public"."secrets" TO "service_role";
+GRANT ALL ON TABLE "public"."secrets" TO "supabase_admin";
+GRANT ALL ON TABLE "public"."secrets" TO "supabase_auth_admin";
+
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "postgres";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "service_role";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "supabase_admin";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "supabase_auth_admin";
 
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "postgres";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "service_role";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "supabase_admin";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "supabase_auth_admin";
 
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "postgres";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "service_role";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "supabase_admin";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "supabase_auth_admin";
 
 RESET ALL;

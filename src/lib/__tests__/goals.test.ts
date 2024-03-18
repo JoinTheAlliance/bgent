@@ -1,52 +1,38 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { type User } from "../../test/types";
+import { zeroUuid } from "../constants";
 import { createGoal, getGoals, updateGoal } from "../goals";
 import { BgentRuntime } from "../runtime";
 import { GoalStatus, type Goal } from "../types";
-import { getRelationship } from "../relationships";
-import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Goals", () => {
   let runtime: BgentRuntime;
   let user: User;
-  let room_id = beforeAll(async () => {
+  beforeAll(async () => {
     const result = await createRuntime({
       env: process.env as Record<string, string>,
     });
     runtime = result.runtime;
     user = result.session.user;
-    const data = await getRelationship({
-      runtime,
-      userA: user?.id as UUID,
-      userB: zeroUuid,
-    });
-
-    if (!data) {
-      throw new Error("Relationship not found");
-    }
-
-    room_id = data.room_id;
-
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(room_id, "goals");
+    await runtime.databaseAdapter.removeAllMemoriesByRoomId(zeroUuid, "goals");
   });
 
   beforeEach(async () => {
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(room_id, "goals");
+    await runtime.databaseAdapter.removeAllMemoriesByRoomId(zeroUuid, "goals");
   });
 
   afterAll(async () => {
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(room_id, "goals");
+    await runtime.databaseAdapter.removeAllMemoriesByRoomId(zeroUuid, "goals");
   });
 
-  // TODO: Write goal tests here
   test("createGoal - successfully creates a new goal", async () => {
     const newGoal: Goal = {
       name: "Test Create Goal",
       status: GoalStatus.IN_PROGRESS,
-      room_id,
+      room_id: zeroUuid,
       user_id: user?.id as UUID,
       objectives: [
         {
@@ -56,6 +42,8 @@ describe("Goals", () => {
       ],
     };
 
+    console.log("newGoal", newGoal);
+
     await createGoal({
       runtime,
       goal: newGoal,
@@ -64,9 +52,11 @@ describe("Goals", () => {
     // Verify the goal is created in the database
     const goals = await getGoals({
       runtime,
-      room_id,
+      userId: user?.id as UUID,
+      room_id: zeroUuid,
       onlyInProgress: false,
     });
+
     const createdGoal = goals.find((goal: Goal) => goal.name === newGoal.name);
 
     expect(createdGoal).toBeDefined();
@@ -79,7 +69,7 @@ describe("Goals", () => {
     const newGoal: Goal = {
       name: "Test Create Goal",
       status: GoalStatus.IN_PROGRESS,
-      room_id,
+      room_id: zeroUuid,
       user_id: user?.id as UUID,
       objectives: [
         {
@@ -97,9 +87,10 @@ describe("Goals", () => {
     // retrieve the goal from the database
     let goals = await getGoals({
       runtime,
-      room_id,
+      room_id: zeroUuid,
       onlyInProgress: false,
     });
+    console.log("goals", goals);
     const existingGoal = goals.find(
       (goal: Goal) => goal.name === newGoal.name,
     ) as Goal;
@@ -112,7 +103,7 @@ describe("Goals", () => {
     // Verify the goal's status is updated in the database
     goals = await getGoals({
       runtime,
-      room_id,
+      room_id: zeroUuid,
       onlyInProgress: false,
     });
 

@@ -42,7 +42,11 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     const response = await this.supabase
       .from("rooms")
       .select(
-        "participants:participants!inner(*), participants!inner(user_id:accounts(*))",
+        `
+        participants:participants!inner(
+          user_id:accounts(id, name, details)
+        )
+      `,
       )
       .eq("id", params.room_id);
 
@@ -55,11 +59,14 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
 
     return data
       .map((room) =>
-        room.participants.map((participant) => ({
-          name: participant.user_id.name,
-          details: participant.user_id.details,
-          id: participant.user_id.id,
-        })),
+        room.participants.map((participant) => {
+          const user = participant.user_id[0]; // Assuming user_id is an array with a single object
+          return {
+            name: user?.name,
+            details: user?.details,
+            id: user?.id,
+          };
+        }),
       )
       .flat();
   }
@@ -209,7 +216,9 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
         throw new Error(JSON.stringify(result.error));
       }
     } else {
-      const result = await this.supabase.from(tableName).insert(memory);
+      const result = await this.supabase
+        .from("memories")
+        .insert({ ...memory, type: tableName });
       const { error } = result;
       if (error) {
         throw new Error(JSON.stringify(error));
@@ -217,9 +226,9 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async removeMemory(memoryId: UUID, tableName: string): Promise<void> {
+  async removeMemory(memoryId: UUID): Promise<void> {
     const result = await this.supabase
-      .from(tableName)
+      .from("memories")
       .delete()
       .eq("id", memoryId);
     const { error } = result;
@@ -276,6 +285,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       only_in_progress: params.onlyInProgress,
       row_count: params.count,
     };
+    console.log("opts", opts)
     const { data: goals, error } = await this.supabase.rpc("get_goals", opts);
 
     if (error) {
@@ -297,10 +307,30 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     userA: UUID;
     userB: UUID;
   }): Promise<boolean> {
+    const { data, error: roomsError } = (await this.supabase
+      .from("rooms")
+      .insert({ name: "test relationship" })
+      .single()) as { data: { id: UUID } | null; error: Error | null };
+    if (roomsError) {
+      throw new Error(roomsError.message);
+    }
+    const room_id = data?.id;
+    const { error: participantsError } = await this.supabase
+      .from("participants")
+      .insert([
+        { user_id: params.userA, room_id },
+        { user_id: params.userB, room_id },
+      ]);
+    if (participantsError) {
+      throw new Error(participantsError.message);
+    }
+    // then create a relationship between the two users with the room_id as the relationship's room_id
+
     const { error } = await this.supabase.from("relationships").upsert({
       user_a: params.userA,
       user_b: params.userB,
       user_id: params.userA,
+      room_id,
     });
 
     if (error) {

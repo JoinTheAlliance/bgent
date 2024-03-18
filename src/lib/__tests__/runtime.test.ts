@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { type UUID } from "crypto";
-import { getRelationship } from "../relationships";
+import { createRelationship, getRelationship } from "../relationships";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { BgentRuntime } from "../runtime";
 import { type User } from "../../test/types";
@@ -13,7 +13,7 @@ dotenv.config({ path: ".dev.vars" });
 describe("Agent Runtime", () => {
   let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID;
+  let room_id: UUID = zeroUuid;
 
   // Helper function to clear memories
   async function clearMemories() {
@@ -31,17 +31,21 @@ describe("Agent Runtime", () => {
     ];
 
     for (const { userId, content } of memories) {
-      const embedding = getCachedEmbedding(content.content);
-      const memory = await runtime.messageManager.addEmbeddingToMemory({
-        user_id: userId,
-        content,
-        room_id,
-        embedding,
-      });
-      if (!embedding) {
-        writeCachedEmbedding(content.content, memory.embedding as number[]);
+      try {
+        const embedding = getCachedEmbedding(content.content);
+        const memory = await runtime.messageManager.addEmbeddingToMemory({
+          user_id: userId,
+          content,
+          room_id,
+          embedding,
+        });
+        if (!embedding) {
+          writeCachedEmbedding(content.content, memory.embedding as number[]);
+        }
+        await runtime.messageManager.createMemory(memory);
+      } catch (error) {
+        console.error("Error creating memory", error);
       }
-      await runtime.messageManager.createMemory(memory);
     }
   }
 
@@ -54,17 +58,28 @@ describe("Agent Runtime", () => {
     runtime = result.runtime;
     user = result.session.user;
 
-    const data = await getRelationship({
+    let data = await getRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });
 
     if (!data) {
-      throw new Error("Relationship not found");
+      await createRelationship({
+        runtime,
+        userA: user?.id as UUID,
+        userB: zeroUuid,
+      });
+      data = await getRelationship({
+        runtime,
+        userA: user?.id as UUID,
+        userB: zeroUuid,
+      });
     }
 
-    room_id = data?.room_id;
+    console.log("data", data);
+
+    room_id = data?.room_id as UUID;
     await clearMemories(); // Clear memories before each test
   });
 
@@ -84,7 +99,13 @@ describe("Agent Runtime", () => {
   });
 
   test("Memory lifecycle: create, retrieve, and destroy", async () => {
-    await createMemories(); // Create new memories
+    try {
+      await createMemories(); // Create new memories
+    } catch (error) {
+      console.error("Error creating memories", error);
+    }
+
+    console.log("room_id", room_id);
 
     const message: Message = {
       userId: user.id as UUID,

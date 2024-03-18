@@ -5,6 +5,8 @@ import { formatActors, formatMessages, getActorDetails } from "../messages";
 import { type BgentRuntime } from "../runtime";
 import { type Actor, type Content, type Memory } from "../types";
 import { formatFacts } from "../evaluators/fact";
+import { createRelationship, getRelationship } from "../relationships";
+import { zeroUuid } from "../constants";
 
 describe("Messages Library", () => {
   let runtime: BgentRuntime, user: User, actors: Actor[];
@@ -22,9 +24,29 @@ describe("Messages Library", () => {
   });
 
   test("getActorDetails should return actors based on given room_id", async () => {
+    // create a room and add a user to it
+    const userA = user?.id as UUID;
+    const userB = zeroUuid;
+
+    await createRelationship({
+      runtime,
+      userA,
+      userB,
+    });
+
+    const relationship = await getRelationship({
+      runtime,
+      userA,
+      userB,
+    });
+
+    if (!relationship?.room_id) {
+      throw new Error("Room not found");
+    }
+
     const result = await getActorDetails({
       runtime,
-      room_id: "00000000-0000-0000-0000-000000000000",
+      room_id: relationship?.room_id as UUID,
     });
     expect(result.length).toBeGreaterThan(0);
     result.forEach((actor: Actor) => {

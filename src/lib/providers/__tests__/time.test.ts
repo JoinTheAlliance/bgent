@@ -5,6 +5,7 @@ import { composeContext } from "../../context";
 import { BgentRuntime } from "../../runtime";
 import { type Message, type State } from "../../types";
 import timeProvider from "../time";
+import { zeroUuid } from "../../constants";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -20,7 +21,7 @@ describe("Time Provider", () => {
     });
     runtime = setup.runtime;
     user = { id: setup.session.user?.id as UUID };
-    room_id = "some-room-id" as UUID; // Assume room_id is fetched or set up in your environment
+    room_id = zeroUuid;
   });
 
   test("Time provider should return the current time in the correct format", async () => {

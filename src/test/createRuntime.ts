@@ -32,7 +32,25 @@ export async function createRuntime({
   let session: Session;
 
   switch (env?.TEST_DATABASE_CLIENT as string) {
+    case "sqlite":
+      {
+        // SQLite adapter
+        adapter = new SqliteDatabaseAdapter(new Database(":memory:"));
+
+        // Create a test user and session
+        user = {
+          id: "test-user-id" as UUID,
+          email: "test@example.com",
+        } as User;
+        session = {
+          access_token: "test-access-token",
+          refresh_token: "test-refresh-token",
+          user: user,
+        } as Session;
+      }
+      break;
     case "supabase":
+    default:
       {
         const supabase = createClient(
           env?.SUPABASE_URL ?? SUPABASE_URL,
@@ -73,25 +91,7 @@ export async function createRuntime({
         );
       }
       break;
-
-    default:
-      {
-        // SQLite adapter
-        adapter = new SqliteDatabaseAdapter(new Database(":memory:"));
-
-        // Create a test user and session
-        user = {
-          id: "test-user-id" as UUID,
-          email: "test@example.com",
-        } as User;
-        session = {
-          access_token: "test-access-token",
-          refresh_token: "test-refresh-token",
-          user: user,
-        } as Session;
-      }
-      break;
-  }
+    }
 
   const runtime = new BgentRuntime({
     debugMode: false,
