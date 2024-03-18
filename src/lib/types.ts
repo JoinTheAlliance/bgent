@@ -45,7 +45,6 @@ export interface Memory {
   created_at?: string; // An optional timestamp indicating when the memory was created.
   content: Content; // The content of the memory, which can be a structured object or a plain string.
   embedding?: number[]; // An optional embedding vector representing the semantic content of the memory.
-  user_ids: UUID[]; // A list of user IDs associated with the memory, for group contexts.
   room_id: UUID; // The room or conversation ID associated with the memory.
 }
 
@@ -77,7 +76,7 @@ export enum GoalStatus {
  */
 export interface Goal {
   id?: UUID; // A unique identifier for the goal.
-  user_ids: UUID[]; // A list of user IDs associated with the goal, for goals relevant to specific users or groups.
+  room_id: UUID; // A list of user IDs associated with the goal, for goals relevant to specific users or groups.
   user_id: UUID; // The user ID of the goal's owner or the user who is primarily responsible for the goal.
   name: string; // The name or title of the goal.
   status: GoalStatus; // The current status of the goal, such as "in progress" or "completed".
@@ -88,8 +87,7 @@ export interface Goal {
  * Represents the state of the conversation or context in which the agent is operating, including information about users, messages, goals, and other relevant data.
  */
 export interface State {
-  userIds: UUID[]; // A list of user IDs involved in the current conversation or context.
-  senderId?: UUID; // An optional ID of the user who sent the current message.
+  userId?: UUID; // An optional ID of the user who sent the current message.
   agentId?: UUID; // An optional ID of the agent within the current conversation or context.
   room_id: UUID; // The ID of the current room or conversation context.
   agentName?: string; // An optional name of the agent, used for referencing the agent in conversations.
@@ -117,9 +115,7 @@ export interface State {
  * Represents a message within the conversation, including its content and associated metadata such as the sender, agent, and room IDs.
  */
 export interface Message {
-  agentId: UUID; // The ID of the agent associated with the message.
-  senderId: UUID; // The ID of the user who sent the message.
-  userIds: UUID[]; // A list of user IDs involved in the message, for group contexts.
+  userId: UUID; // The ID of the user who sent the message.
   content: Content; // The content of the message, which can be a structured object or a plain string.
   room_id: UUID; // The ID of the room or conversation context in which the message was sent.
 }

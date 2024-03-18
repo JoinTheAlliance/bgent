@@ -13,8 +13,8 @@ export abstract class DatabaseAdapter {
   abstract getAccountById(userId: UUID): Promise<Account | null>;
   abstract createAccount(account: Account): Promise<void>;
 
-  abstract getMemoriesByIds(params: {
-    userIds: UUID[];
+  abstract getMemoriesByRoomId(params: {
+    room_id: UUID;
     count?: number;
     unique?: boolean;
     tableName: string;
@@ -40,16 +40,14 @@ export abstract class DatabaseAdapter {
     body: { [key: string]: unknown };
     user_id: UUID;
     room_id: UUID;
-    user_ids: UUID[];
-    agent_id: UUID;
     type: string;
   }): Promise<void>;
 
-  abstract getActorDetails(params: { userIds: UUID[] }): Promise<Actor[]>;
+  abstract getActorDetails(params: { room_id: UUID }): Promise<Actor[]>;
 
   abstract searchMemories(params: {
     tableName: string;
-    userIds: UUID[];
+    room_id: UUID;
     embedding: number[];
     match_threshold: number;
     match_count: number;
@@ -65,7 +63,7 @@ export abstract class DatabaseAdapter {
     params: {
       match_threshold?: number;
       count?: number;
-      userIds?: UUID[];
+      room_id?: UUID;
       unique?: boolean;
       tableName: string;
     },
@@ -79,19 +77,19 @@ export abstract class DatabaseAdapter {
 
   abstract removeMemory(memoryId: UUID, tableName: string): Promise<void>;
 
-  abstract removeAllMemoriesByUserIds(
-    userIds: UUID[],
+  abstract removeAllMemoriesByRoomId(
+    room_id: UUID,
     tableName: string,
   ): Promise<void>;
 
-  abstract countMemoriesByUserIds(
-    userIds: UUID[],
+  abstract countMemoriesByRoomId(
+    room_id: UUID,
     unique?: boolean,
     tableName?: string,
   ): Promise<number>;
 
   abstract getGoals(params: {
-    userIds: UUID[];
+    room_id: UUID;
     userId?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;

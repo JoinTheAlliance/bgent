@@ -23,6 +23,7 @@ Creates an instance of BgentRuntime.
 | :------ | :------ | :------ |
 | `opts` | `Object` | The options for configuring the BgentRuntime. |
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
+| `opts.agentId?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | Optional ID of the agent. |
 | `opts.databaseAdapter` | [`DatabaseAdapter`](DatabaseAdapter.md) | The database adapter used for interacting with the database. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.embeddingModel?` | `string` | The model to use for embedding. |
@@ -44,6 +45,14 @@ Creates an instance of BgentRuntime.
 • **actions**: [`Action`](../interfaces/Action.md)[] = `[]`
 
 Custom actions that the agent can perform.
+
+___
+
+### agentId
+
+• **agentId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` = `zeroUuid`
+
+The ID of the agent
 
 ___
 
@@ -170,7 +179,7 @@ ___
 
 ### composeState
 
-▸ **composeState**(`message`): `Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string` ; `userIds`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]  }\>
+▸ **composeState**(`message`): `Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string`  }\>
 
 Compose the state of the agent into an object that can be passed or used for response generation.
 
@@ -182,7 +191,7 @@ Compose the state of the agent into an object that can be passed or used for res
 
 #### Returns
 
-`Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string` ; `userIds`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]  }\>
+`Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string`  }\>
 
 The state of the agent.
 

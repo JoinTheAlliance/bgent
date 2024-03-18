@@ -44,14 +44,14 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       );
   }
 
-  async getActorDetails(params: { userIds: UUID[] }): Promise<Actor[]> {
+  async getActorDetails(params: { room_id: UUID }): Promise<Actor[]> {
     const sql = "SELECT * FROM accounts WHERE id IN (?)";
-    return this.db.prepare(sql).all(params.userIds) as Actor[];
+    return this.db.prepare(sql).all(params.room_id) as Actor[];
   }
 
   async searchMemories(params: {
     tableName: string;
-    userIds: UUID[];
+    room_id: UUID;
     embedding: number[];
     match_threshold: number;
     match_count: number;
@@ -60,12 +60,12 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     let sql = `
       SELECT *
       FROM ${params.tableName}
-      WHERE user_ids @> ? AND vss_search(embedding, ?)
+      WHERE room_id = ? AND vss_search(embedding, ?)
       ORDER BY vss_search(embedding, ?) DESC
       LIMIT ?
     `;
     const queryParams = [
-      JSON.stringify(params.userIds),
+      JSON.stringify(params.room_id),
       JSON.stringify(params.embedding),
       JSON.stringify(params.embedding),
       params.match_count,
@@ -114,32 +114,28 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     body: { [key: string]: unknown };
     user_id: UUID;
     room_id: UUID;
-    user_ids: UUID[];
-    agent_id: UUID;
     type: string;
   }): Promise<void> {
     const sql =
-      "INSERT INTO logs (body, user_id, room_id, user_ids, agent_id, type) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO logs (body, user_id, room_id, type) VALUES (?, ?, ?, ?)";
     this.db
       .prepare(sql)
       .run(
         JSON.stringify(params.body),
         params.user_id,
         params.room_id,
-        JSON.stringify(params.user_ids),
-        params.agent_id,
         params.type,
       );
   }
 
-  async getMemoriesByIds(params: {
-    userIds: UUID[];
+  async getMemoriesByRoomId(params: {
+    room_id: UUID;
     count?: number;
     unique?: boolean;
     tableName: string;
   }): Promise<Memory[]> {
-    let sql = `SELECT * FROM ${params.tableName} WHERE user_ids @> ?`;
-    const queryParams = [JSON.stringify(params.userIds)];
+    let sql = `SELECT * FROM ${params.tableName} WHERE room_id = ?`;
+    const queryParams = [JSON.stringify(params.room_id)];
 
     if (params.unique) {
       sql += " AND unique = 1";
@@ -158,7 +154,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     params: {
       match_threshold?: number;
       count?: number;
-      userIds?: UUID[];
+      room_id?: UUID;
       unique?: boolean;
       tableName: string;
     },
@@ -171,9 +167,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     `;
     const queryParams = [JSON.stringify(embedding), JSON.stringify(embedding)];
 
-    if (params.userIds) {
-      sql += " AND user_ids @> ?";
-      queryParams.push(JSON.stringify(params.userIds));
+    if (params.room_id) {
+      sql += " AND room_id = ?";
+      queryParams.push(JSON.stringify(params.room_id));
     }
 
     if (params.unique) {
@@ -193,36 +189,36 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     tableName: string,
     unique = false,
   ): Promise<void> {
-    const sql = `INSERT INTO ${tableName} (id, created_at, content, embedding, user_id, user_ids, room_id, unique) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO memories (id, type, created_at, content, embedding, user_id, room_id, unique) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     this.db
       .prepare(sql)
       .run(
         memory.id,
+        tableName,
         memory.created_at,
         JSON.stringify(memory.content),
         JSON.stringify(memory.embedding),
         memory.user_id,
-        JSON.stringify(memory.user_ids),
         memory.room_id,
         unique ? 1 : 0,
       );
   }
 
   async removeMemory(memoryId: UUID, tableName: string): Promise<void> {
-    const sql = `DELETE FROM ${tableName} WHERE id = ?`;
-    this.db.prepare(sql).run(memoryId);
+    const sql = `DELETE FROM memories WHERE type = ? AND id = ?`;
+    this.db.prepare(sql).run(tableName, memoryId);
   }
 
-  async removeAllMemoriesByUserIds(
-    userIds: UUID[],
+  async removeAllMemoriesByRoomId(
+    room_id: UUID,
     tableName: string,
   ): Promise<void> {
-    const sql = `DELETE FROM ${tableName} WHERE user_ids @> ?`;
-    this.db.prepare(sql).run(JSON.stringify(userIds));
+    const sql = `DELETE FROM memories WHERE tableName = ? AND room_id = ?`;
+    this.db.prepare(sql).run(tableName, JSON.stringify(room_id));
   }
 
-  async countMemoriesByUserIds(
-    userIds: UUID[],
+  async countMemoriesByRoomId(
+    room_id: UUID,
     unique = true,
     tableName = "",
   ): Promise<number> {
@@ -230,8 +226,8 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       throw new Error("tableName is required");
     }
 
-    let sql = `SELECT COUNT(*) as count FROM ${tableName} WHERE user_ids @> ?`;
-    const queryParams = [JSON.stringify(userIds)] as string[];
+    let sql = `SELECT COUNT(*) as count FROM memories WHERE tableName = ? AND room_id = ?`;
+    const queryParams = [tableName, JSON.stringify(room_id)] as string[];
 
     if (unique) {
       sql += " AND unique = 1";
@@ -242,13 +238,13 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   }
 
   async getGoals(params: {
-    userIds: UUID[];
+    room_id: UUID;
     userId?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;
   }): Promise<Goal[]> {
-    let sql = "SELECT * FROM goals WHERE user_ids @> ?";
-    const queryParams = [JSON.stringify(params.userIds)];
+    let sql = "SELECT * FROM goals WHERE room_id = ?";
+    const queryParams = [JSON.stringify(params.room_id)];
 
     if (params.userId) {
       sql += " AND user_id = ?";
@@ -277,12 +273,12 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
   async createGoal(goal: Goal): Promise<void> {
     const sql =
-      "INSERT INTO goals (id, user_ids, user_id, name, status, objectives) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO goals (id, room_id, user_id, name, status, objectives) VALUES (?, ?, ?, ?, ?, ?)";
     this.db
       .prepare(sql)
       .run(
         goal.id,
-        JSON.stringify(goal.user_ids),
+        JSON.stringify(goal.room_id),
         goal.user_id,
         goal.name,
         goal.status,

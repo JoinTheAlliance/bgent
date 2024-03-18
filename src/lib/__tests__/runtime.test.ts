@@ -17,10 +17,7 @@ describe("Agent Runtime", () => {
 
   // Helper function to clear memories
   async function clearMemories() {
-    await runtime.messageManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
   }
 
   // Helper function to create memories
@@ -37,7 +34,6 @@ describe("Agent Runtime", () => {
       const embedding = getCachedEmbedding(content.content);
       const memory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: userId,
-        user_ids: [user?.id as UUID, zeroUuid],
         content,
         room_id,
         embedding,
@@ -91,9 +87,7 @@ describe("Agent Runtime", () => {
     await createMemories(); // Create new memories
 
     const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
+      userId: user.id as UUID,
       content: { content: "test message" },
       room_id: room_id as UUID,
     };

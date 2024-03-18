@@ -4,19 +4,19 @@ import { type Goal, type Objective } from "./types";
 
 export const getGoals = async ({
   runtime,
-  userIds,
+  room_id,
   userId,
   onlyInProgress = true,
   count = 5,
 }: {
   runtime: BgentRuntime;
-  userIds: UUID[];
+  room_id: UUID;
   userId?: UUID;
   onlyInProgress?: boolean;
   count?: number;
 }) => {
   return runtime.databaseAdapter.getGoals({
-    userIds,
+    room_id,
     userId,
     onlyInProgress,
     count,

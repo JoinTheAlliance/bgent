@@ -38,26 +38,35 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async getActorDetails(params: { userIds: UUID[] }): Promise<Actor[]> {
+  async getActorDetails(params: { room_id: UUID }): Promise<Actor[]> {
     const response = await this.supabase
-      .from("accounts")
-      .select("*")
-      .in("id", params.userIds);
+      .from("rooms")
+      .select(
+        "participants:participants!inner(*), participants!inner(user_id:accounts(*))",
+      )
+      .eq("id", params.room_id);
+
     if (response.error) {
       console.error(response.error);
       return [];
     }
+
     const { data } = response;
-    return data.map((actor: Actor) => ({
-      name: actor.name,
-      details: actor.details,
-      id: actor.id,
-    }));
+
+    return data
+      .map((room) =>
+        room.participants.map((participant) => ({
+          name: participant.user_id.name,
+          details: participant.user_id.details,
+          id: participant.user_id.id,
+        })),
+      )
+      .flat();
   }
 
   async searchMemories(params: {
     tableName: string;
-    userIds: UUID[];
+    room_id: UUID;
     embedding: number[];
     match_threshold: number;
     match_count: number;
@@ -70,7 +79,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     );
     const result = await this.supabase.rpc("search_memories", {
       query_table_name: params.tableName,
-      query_user_ids: params.userIds,
+      query_room_id: params.room_id,
       query_embedding: params.embedding,
       query_match_threshold: params.match_threshold,
       query_match_count: params.match_count,
@@ -112,16 +121,12 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     body: { [key: string]: unknown };
     user_id: UUID;
     room_id: UUID;
-    user_ids: UUID[];
-    agent_id: UUID;
     type: string;
   }): Promise<void> {
     const { error } = await this.supabase.from("logs").insert({
       body: params.body,
       user_id: params.user_id,
       room_id: params.room_id,
-      user_ids: params.user_ids,
-      agent_id: params.agent_id,
       type: params.type,
     });
 
@@ -131,15 +136,15 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async getMemoriesByIds(params: {
-    userIds: UUID[];
+  async getMemoriesByRoomId(params: {
+    room_id: UUID;
     count?: number;
     unique?: boolean;
     tableName: string;
   }): Promise<Memory[]> {
     const result = await this.supabase.rpc("get_memories", {
       query_table_name: params.tableName,
-      query_user_ids: params.userIds,
+      query_room_id: params.room_id,
       query_count: params.count,
       query_unique: !!params.unique,
     });
@@ -148,7 +153,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
     if (!result.data) {
       console.warn("data was null, no memories found for", {
-        userIds: params.userIds,
+        room_id: params.room_id,
         count: params.count,
       });
       return [];
@@ -161,14 +166,14 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     params: {
       match_threshold?: number;
       count?: number;
-      userIds?: UUID[];
+      room_id?: UUID;
       unique?: boolean;
       tableName: string;
     },
   ): Promise<Memory[]> {
     const result = await this.supabase.rpc("search_memories", {
       query_table_name: params.tableName,
-      query_user_ids: params.userIds,
+      query_room_id: params.room_id,
       query_embedding: embedding,
       query_match_threshold: params.match_threshold,
       query_match_count: params.count,
@@ -189,7 +194,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       const opts = {
         query_table_name: tableName,
         query_user_id: memory.user_id,
-        query_user_ids: memory.user_ids,
         query_content: memory.content.content,
         query_room_id: memory.room_id,
         query_embedding: memory.embedding,
@@ -224,13 +228,13 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async removeAllMemoriesByUserIds(
-    userIds: UUID[],
+  async removeAllMemoriesByRoomId(
+    room_id: UUID,
     tableName: string,
   ): Promise<void> {
     const result = await this.supabase.rpc("remove_memories", {
       query_table_name: tableName,
-      query_user_ids: userIds,
+      query_room_id: room_id,
     });
 
     if (result.error) {
@@ -238,8 +242,8 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async countMemoriesByUserIds(
-    userIds: UUID[],
+  async countMemoriesByRoomId(
+    room_id: UUID,
     unique = true,
     tableName: string,
   ): Promise<number> {
@@ -248,7 +252,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
     const query = {
       query_table_name: tableName,
-      query_user_ids: userIds,
+      query_room_id: room_id,
       query_unique: !!unique,
     };
     const result = await this.supabase.rpc("count_memories", query);
@@ -261,21 +265,18 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   }
 
   async getGoals(params: {
-    userIds: UUID[];
+    room_id: UUID;
     userId?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;
   }): Promise<Goal[]> {
     const opts = {
-      query_user_ids: params.userIds,
+      query_room_id: params.room_id,
       query_user_id: params.userId,
       only_in_progress: params.onlyInProgress,
       row_count: params.count,
     };
-    const { data: goals, error } = await this.supabase.rpc(
-      "get_goals_by_user_ids",
-      opts,
-    );
+    const { data: goals, error } = await this.supabase.rpc("get_goals", opts);
 
     if (error) {
       throw new Error(error.message);

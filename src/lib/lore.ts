@@ -38,7 +38,6 @@ export async function addLore({
 
   await loreManager.createMemory({
     user_id,
-    user_ids: [user_id],
     content: { content: content.content, source },
     room_id,
     embedding: embedding,
@@ -59,17 +58,19 @@ export async function getLore({
   runtime,
   message,
   match_threshold,
+  room_id = zeroUuid,
   count,
 }: {
   runtime: BgentRuntime;
   message: string;
   match_threshold?: number;
+  room_id?: UUID;
   count?: number;
 }) {
   const loreManager = runtime.loreManager;
   const embedding = await runtime.embed(message);
   const lore = await loreManager.searchMemoriesByEmbedding(embedding, {
-    userIds: [zeroUuid],
+    room_id,
     match_threshold,
     count,
   });

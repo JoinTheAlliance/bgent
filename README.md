@@ -188,13 +188,11 @@ const runtime = new BgentRuntime({
 
 The BgentRuntime instance has a `handleMessage` method that can be used to handle user input. The method returns a promise that resolves to the agent's response.
 
-You will need to make sure that the userIds and room_id already exist in the database. You can use the Supabase client to create new users and rooms if necessary.
+You will need to make sure that the room_id already exists in the database. You can use the Supabase client to create new users and rooms if necessary.
 
 ```typescript
 const message = {
-  agentId: "agent-uuid", // Replace with your agent's UUID
-  senderId: "user-uuid", // Replace with the sender's UUID
-  userIds: ["user-uuid"], // List of user UUIDs involved in the conversation
+  userId: "user-uuid", // Replace with the sender's UUID
   content: { content: content }, // The message content
   room_id: "room-uuid", // Replace with the room's UUID
 };

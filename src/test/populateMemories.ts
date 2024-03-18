@@ -1,6 +1,5 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
-import { zeroUuid } from "../lib/constants";
+import { type User } from "./types";
 import { type BgentRuntime } from "../lib/runtime";
 import { Content } from "../lib/types";
 import { getCachedEmbedding, writeCachedEmbedding } from "./cache";
@@ -18,7 +17,6 @@ export async function populateMemories(
       const existingEmbedding = getCachedEmbedding(c.content.content);
       const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: c.user_id as UUID,
-        user_ids: [user?.id as UUID, zeroUuid],
         content: {
           content: c.content.content,
           action: c.content.action as string,

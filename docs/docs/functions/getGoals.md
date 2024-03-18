@@ -15,9 +15,9 @@ custom_edit_url: null
 | `«destructured»` | `Object` | `undefined` |
 | › `count?` | `number` | `5` |
 | › `onlyInProgress?` | `boolean` | `true` |
+| › `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | `undefined` |
 | › `userId?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
-| › `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | `undefined` |
 
 #### Returns
 

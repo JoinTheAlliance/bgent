@@ -79,14 +79,8 @@ describe("User Profile", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByUserIds([
-      user.id as UUID,
-      zeroUuid,
-    ]);
-    await runtime.messageManager.removeAllMemoriesByUserIds([
-      user.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
   }
 
   // test validate function response
@@ -94,9 +88,7 @@ describe("User Profile", () => {
   test("Test validate function response", async () => {
     await runAiTest("Test validate function response", async () => {
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "Hello", action: "WAIT" },
         room_id: room_id as UUID,
       };
@@ -109,9 +101,7 @@ describe("User Profile", () => {
       await populateMemories(runtime, user, room_id, [GetContinueExample1]);
 
       const message2: Message = {
-        senderId: zeroUuid as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: zeroUuid as UUID,
         content: {
           content: "Hello",
           action: "ELABORATE",
@@ -128,9 +118,7 @@ describe("User Profile", () => {
   test("Test repetition check on elaborate", async () => {
     await runAiTest("Test repetition check on elaborate", async () => {
       const message: Message = {
-        senderId: zeroUuid as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: zeroUuid as UUID,
         content: {
           content:
             "Hmm, let think for a second, I was going to tell you about something...",
@@ -154,9 +142,7 @@ describe("User Profile", () => {
       "Test multiple elaborate messages in a conversation",
       async () => {
         const message: Message = {
-          senderId: user?.id as UUID,
-          agentId: zeroUuid,
-          userIds: [user?.id as UUID, zeroUuid],
+          userId: user?.id as UUID,
           content: {
             content:
               "Write a short story in three parts, using the ELABORATE action for each part.",
@@ -166,21 +152,15 @@ describe("User Profile", () => {
         };
 
         const initialMessageCount =
-          await runtime.messageManager.countMemoriesByUserIds(
-            [user?.id as UUID, zeroUuid],
-            false,
-          );
+          await runtime.messageManager.countMemoriesByRoomId(room_id, false);
 
         await action.handler!(runtime, message);
 
         const finalMessageCount =
-          await runtime.messageManager.countMemoriesByUserIds(
-            [user?.id as UUID, zeroUuid],
-            false,
-          );
+          await runtime.messageManager.countMemoriesByRoomId(room_id, false);
 
-        const agentMessages = await runtime.messageManager.getMemoriesByIds({
-          userIds: [user?.id as UUID, zeroUuid],
+        const agentMessages = await runtime.messageManager.getMemoriesByRoomId({
+          room_id,
           count: finalMessageCount - initialMessageCount,
           unique: false,
         });
@@ -211,9 +191,7 @@ describe("User Profile", () => {
   test("Test if message is added to database", async () => {
     await runAiTest("Test if message is added to database", async () => {
       const message: Message = {
-        senderId: user?.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: user?.id as UUID,
         content: {
           content: "Tell me more about your favorite food.",
           action: "WAIT",
@@ -222,18 +200,12 @@ describe("User Profile", () => {
       };
 
       const initialMessageCount =
-        await runtime.messageManager.countMemoriesByUserIds(
-          [user?.id as UUID, zeroUuid],
-          false,
-        );
+        await runtime.messageManager.countMemoriesByRoomId(room_id, false);
 
       await action.handler!(runtime, message);
 
       const finalMessageCount =
-        await runtime.messageManager.countMemoriesByUserIds(
-          [user?.id as UUID, zeroUuid],
-          false,
-        );
+        await runtime.messageManager.countMemoriesByRoomId(room_id, false);
 
       return finalMessageCount - initialMessageCount === 2;
     });
@@ -242,9 +214,7 @@ describe("User Profile", () => {
     await runAiTest("Test if not elaborate", async () => {
       // this is basically the same test as the one in ignore.test.ts
       const message: Message = {
-        senderId: user?.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: user?.id as UUID,
         content: { content: "Bye" },
         room_id: room_id as UUID,
       };

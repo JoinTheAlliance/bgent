@@ -1,4 +1,3 @@
-import { type User } from "../../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
@@ -9,6 +8,7 @@ import {
 } from "../../../test/data";
 import { populateMemories } from "../../../test/populateMemories";
 import { runAiTest } from "../../../test/runAiTest";
+import { type User } from "../../../test/types";
 import { zeroUuid } from "../../constants";
 import { composeContext } from "../../context";
 import logger from "../../logger";
@@ -26,15 +26,14 @@ async function handleMessage(
   state?: State,
 ) {
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, senderId, userIds, room_id } = message;
+    const { content: senderContent, userId, room_id } = message;
 
     const _senderContent = (
       (senderContent as Content).content ?? senderContent
     )?.trim();
     if (_senderContent) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: senderId!,
+        user_id: userId!,
         content: {
           content: _senderContent,
           action: (message.content as Content)?.action ?? "null",
@@ -61,7 +60,7 @@ async function handleMessage(
   }
 
   let responseContent: Content | null = null;
-  const { senderId, room_id, userIds: user_ids, agentId } = message;
+  const { userId, room_id } = message;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     const response = await runtime.completion({
@@ -71,10 +70,8 @@ async function handleMessage(
 
     await runtime.databaseAdapter.log({
       body: { message, context, response },
-      user_id: senderId,
+      user_id: userId,
       room_id,
-      user_ids: user_ids!,
-      agent_id: agentId!,
       type: "ignore_test_completion",
     });
 
@@ -107,14 +104,13 @@ async function handleMessage(
     state: State,
     responseContent: Content,
   ) => {
-    const { agentId, userIds, room_id } = message;
+    const { room_id } = message;
 
     responseContent.content = responseContent.content?.trim();
 
     if (responseContent.content) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: agentId!,
+        user_id: runtime.agentId,
         content: responseContent,
         room_id,
         embedding: embeddingZeroVector,
@@ -171,22 +167,14 @@ describe("Ignore action tests", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
-    await runtime.messageManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
   }
 
   test("Test ignore action", async () => {
     await runAiTest("Test ignore action", async () => {
       const message: Message = {
-        senderId: user?.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: user?.id as UUID,
         content: { content: "Never talk to me again", action: "WAIT" },
         room_id: room_id as UUID,
       };
@@ -206,9 +194,7 @@ describe("Ignore action tests", () => {
       "Action handler test 1: response should be ignore",
       async () => {
         const message: Message = {
-          senderId: user.id as UUID,
-          agentId: zeroUuid,
-          userIds: [user?.id as UUID, zeroUuid],
+          userId: user.id as UUID,
           content: { content: "", action: "IGNORE" },
           room_id: room_id as UUID,
         };
@@ -233,9 +219,7 @@ describe("Ignore action tests", () => {
       "Action handler test 2: response should be ignore",
       async () => {
         const message: Message = {
-          senderId: user.id as UUID,
-          agentId: zeroUuid,
-          userIds: [user?.id as UUID, zeroUuid],
+          userId: user.id as UUID,
           content: { content: "", action: "IGNORE" },
           room_id: room_id as UUID,
         };
@@ -258,9 +242,7 @@ describe("Ignore action tests", () => {
   test("Expect ignore", async () => {
     await runAiTest("Expect ignore", async () => {
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "Bye", action: "WAIT" },
         room_id: room_id as UUID,
       };

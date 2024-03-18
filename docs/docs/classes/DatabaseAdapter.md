@@ -12,6 +12,8 @@ custom_edit_url: null
 
   ↳ [`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
 
+  ↳ [`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
+
 ## Constructors
 
 ### constructor
@@ -24,15 +26,15 @@ custom_edit_url: null
 
 ## Methods
 
-### countMemoriesByUserIds
+### countMemoriesByRoomId
 
-▸ **countMemoriesByUserIds**(`userIds`, `unique?`, `tableName?`): `Promise`\<`number`\>
+▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `unique?` | `boolean` |
 | `tableName?` | `string` |
 
@@ -50,7 +52,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `account` | `Account` |
+| `account` | [`Account`](../interfaces/Account.md) |
 
 #### Returns
 
@@ -112,7 +114,7 @@ ___
 
 ### getAccountById
 
-▸ **getAccountById**(`userId`): `Promise`\<``null`` \| `Account`\>
+▸ **getAccountById**(`userId`): `Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
 
 #### Parameters
 
@@ -122,7 +124,7 @@ ___
 
 #### Returns
 
-`Promise`\<``null`` \| `Account`\>
+`Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
 
 ___
 
@@ -135,7 +137,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `params` | `Object` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -154,8 +156,8 @@ ___
 | `params` | `Object` |
 | `params.count?` | `number` |
 | `params.onlyInProgress?` | `boolean` |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.userId?` | ``null`` \| \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -163,9 +165,9 @@ ___
 
 ___
 
-### getMemoriesByIds
+### getMemoriesByRoomId
 
-▸ **getMemoriesByIds**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **getMemoriesByRoomId**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 #### Parameters
 
@@ -173,9 +175,9 @@ ___
 | :------ | :------ |
 | `params` | `Object` |
 | `params.count?` | `number` |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.tableName` | `string` |
 | `params.unique?` | `boolean` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -249,12 +251,10 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `params` | `Object` |
-| `params.agent_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.body` | `Object` |
 | `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.type` | `string` |
 | `params.user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `params.user_ids` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -262,15 +262,15 @@ ___
 
 ___
 
-### removeAllMemoriesByUserIds
+### removeAllMemoriesByRoomId
 
-▸ **removeAllMemoriesByUserIds**(`userIds`, `tableName`): `Promise`\<`void`\>
+▸ **removeAllMemoriesByRoomId**(`room_id`, `tableName`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `tableName` | `string` |
 
 #### Returns
@@ -308,9 +308,9 @@ ___
 | `params.embedding` | `number`[] |
 | `params.match_count` | `number` |
 | `params.match_threshold` | `number` |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.tableName` | `string` |
 | `params.unique` | `boolean` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -330,9 +330,9 @@ ___
 | `params` | `Object` |
 | `params.count?` | `number` |
 | `params.match_threshold?` | `number` |
+| `params.room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.tableName` | `string` |
 | `params.unique?` | `boolean` |
-| `params.userIds?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 

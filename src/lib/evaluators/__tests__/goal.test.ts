@@ -49,10 +49,7 @@ describe("Goals Evaluator", () => {
 
   async function cleanup() {
     // delete all goals for the user
-    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
-      [user.id as UUID],
-      "goals",
-    );
+    await runtime.databaseAdapter.removeAllMemoriesByRoomId(room_id, "goals");
   }
 
   async function createTestGoal(name: string, objectives: Objective[]) {
@@ -61,7 +58,7 @@ describe("Goals Evaluator", () => {
       goal: {
         name,
         status: GoalStatus.IN_PROGRESS,
-        user_ids: [user.id as UUID, zeroUuid],
+        room_id,
         user_id: user.id as UUID,
         objectives,
       },
@@ -98,9 +95,7 @@ describe("Goals Evaluator", () => {
 
         // Simulate a conversation indicating the completion of both objectives
         const message: Message = {
-          agentId: zeroUuid,
-          senderId: user.id as UUID,
-          userIds: [user.id as UUID, zeroUuid],
+          userId: user.id as UUID,
           content: {
             content:
               "I've completed task 1 and task 2 for the Test Goal. Both are finished. Everything is done and I'm ready for the next goal.",
@@ -116,7 +111,7 @@ describe("Goals Evaluator", () => {
         // Fetch the updated goal to verify the objectives and status were updated
         const updatedGoals = await getGoals({
           runtime,
-          userIds: [user.id as UUID, zeroUuid],
+          room_id,
           onlyInProgress: false,
         });
 
@@ -160,9 +155,7 @@ describe("Goals Evaluator", () => {
         await populateMemories(runtime, user, room_id, [conversation]);
 
         const message: Message = {
-          senderId: user.id as UUID,
-          agentId: zeroUuid,
-          userIds: [user.id as UUID, zeroUuid],
+          userId: user.id as UUID,
           content: { content: "I've decided to mark Goal Y as failed." },
           room_id,
         };
@@ -173,7 +166,7 @@ describe("Goals Evaluator", () => {
 
         const goals = await getGoals({
           runtime,
-          userIds: [user.id as UUID, zeroUuid],
+          room_id,
           onlyInProgress: false,
         });
 

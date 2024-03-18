@@ -10,12 +10,6 @@ Represents a message within the conversation, including its content and associat
 
 ## Properties
 
-### agentId
-
-• **agentId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
-
-___
-
 ### content
 
 • **content**: [`Content`](Content.md)
@@ -28,12 +22,6 @@ ___
 
 ___
 
-### senderId
+### userId
 
-• **senderId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
-
-___
-
-### userIds
-
-• **userIds**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]
+• **userId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`

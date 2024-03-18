@@ -58,7 +58,7 @@ Response should be a JSON object array inside a JSON markdown block. Correct res
 async function handler(runtime: BgentRuntime, message: Message) {
   const state = await runtime.composeState(message);
 
-  const { userIds, agentId, room_id } = state;
+  const { agentId, room_id } = state;
 
   const context = composeContext({
     state,
@@ -110,7 +110,6 @@ async function handler(runtime: BgentRuntime, message: Message) {
 
   for (const fact of filteredFacts) {
     const factMemory = await runtime.factManager.addEmbeddingToMemory({
-      user_ids: userIds,
       user_id: agentId!,
       content: { content: fact },
       room_id,
@@ -131,8 +130,8 @@ export default {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     message: Message,
   ): Promise<boolean> => {
-    const messageCount = (await runtime.messageManager.countMemoriesByUserIds(
-      message.userIds,
+    const messageCount = (await runtime.messageManager.countMemoriesByRoomId(
+      message.room_id,
     )) as number;
 
     const reflectionCount = Math.ceil(runtime.getRecentMessageCount() / 2);

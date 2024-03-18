@@ -28,6 +28,12 @@ ___
 
 ___
 
+### room\_id
+
+• **room\_id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
+
+___
+
 ### status
 
 • **status**: [`GoalStatus`](../enums/GoalStatus.md)
@@ -37,9 +43,3 @@ ___
 ### user\_id
 
 • **user\_id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
-
-___
-
-### user\_ids
-
-• **user\_ids**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]

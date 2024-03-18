@@ -12,8 +12,8 @@ dotenv.config({ path: ".dev.vars" });
 describe("Memory", () => {
   let memoryManager: MemoryManager;
   let runtime = null;
-  let user: User | null = null;
-  let room_id: UUID | null = null;
+  let user: User;
+  let room_id: UUID;
 
   beforeAll(async () => {
     const result = await createRuntime({
@@ -41,17 +41,11 @@ describe("Memory", () => {
   });
 
   beforeEach(async () => {
-    await memoryManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await memoryManager.removeAllMemoriesByRoomId(room_id);
   });
 
   afterAll(async () => {
-    await memoryManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await memoryManager.removeAllMemoriesByRoomId(room_id);
   });
 
   test("Search memories by embedding similarity", async () => {
@@ -70,8 +64,7 @@ describe("Memory", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -87,8 +80,7 @@ describe("Memory", () => {
     const dissimilarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: dissimilarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -103,7 +95,7 @@ describe("Memory", () => {
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
       baseMemory!,
       {
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 1,
       },
     );
@@ -135,8 +127,7 @@ describe("Memory", () => {
     const queryMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: queryMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -152,8 +143,7 @@ describe("Memory", () => {
     const highSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: highSimilarityContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -168,8 +158,7 @@ describe("Memory", () => {
     const lowSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: lowSimilarityContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -184,7 +173,7 @@ describe("Memory", () => {
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
       queryMemory.embedding!,
       {
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 10,
       },
     );
@@ -203,8 +192,8 @@ describe("Memory", () => {
 describe("Memory - Basic tests", () => {
   let memoryManager: MemoryManager;
   let runtime = null;
-  let user: User | null = null;
-  let room_id: UUID | null = null;
+  let user: User;
+  let room_id: UUID;
 
   // Setup before all tests
   beforeAll(async () => {
@@ -224,7 +213,7 @@ describe("Memory - Basic tests", () => {
       throw new Error("Relationship not found");
     }
 
-    room_id = data?.room_id;
+    room_id = data.room_id;
 
     memoryManager = new MemoryManager({
       tableName: "messages", // Adjust based on your actual table name
@@ -234,10 +223,7 @@ describe("Memory - Basic tests", () => {
 
   // Cleanup after all tests
   afterAll(async () => {
-    await memoryManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await memoryManager.removeAllMemoriesByRoomId(room_id);
   });
 
   test("Memory lifecycle: create, search, count, and remove", async () => {
@@ -246,8 +232,7 @@ describe("Memory - Basic tests", () => {
     const testMemory: Memory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: "Test content for memory lifecycle" },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -258,14 +243,14 @@ describe("Memory - Basic tests", () => {
     }
     await memoryManager.createMemory(testMemory);
 
-    const createdMemories = await memoryManager.getMemoriesByIds({
-      userIds: [user?.id as UUID, zeroUuid],
+    const createdMemories = await memoryManager.getMemoriesByRoomId({
+      room_id,
       count: 100,
     });
 
     // Verify creation by counting memories
-    const initialCount = await memoryManager.countMemoriesByUserIds(
-      [user?.id as UUID, zeroUuid],
+    const initialCount = await memoryManager.countMemoriesByRoomId(
+      room_id,
       false,
     );
     expect(initialCount).toBeGreaterThan(0);
@@ -274,7 +259,7 @@ describe("Memory - Basic tests", () => {
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
       testMemory.embedding!,
       {
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 5,
       },
     );
@@ -282,25 +267,21 @@ describe("Memory - Basic tests", () => {
 
     // Remove a specific memory
     await memoryManager.removeMemory(createdMemories[0].id!);
-    const afterRemovalCount = await memoryManager.countMemoriesByUserIds([
-      user?.id as UUID,
-    ]);
+    const afterRemovalCount =
+      await memoryManager.countMemoriesByRoomId(room_id);
     expect(afterRemovalCount).toBeLessThan(initialCount);
 
     // Remove all memories for the test user
-    await memoryManager.removeAllMemoriesByUserIds([user?.id as UUID]);
-    const finalCount = await memoryManager.countMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await memoryManager.removeAllMemoriesByRoomId(room_id);
+    const finalCount = await memoryManager.countMemoriesByRoomId(room_id);
     expect(finalCount).toEqual(0);
   });
 });
 describe("Memory - Extended Tests", () => {
   let memoryManager: MemoryManager;
   let runtime = null;
-  let user: User | null = null;
-  let room_id: UUID | null = null;
+  let user: User;
+  let room_id: UUID;
 
   beforeAll(async () => {
     const result = await createRuntime({
@@ -319,7 +300,7 @@ describe("Memory - Extended Tests", () => {
       throw new Error("Relationship not found");
     }
 
-    room_id = data?.room_id;
+    room_id = data.room_id;
 
     memoryManager = new MemoryManager({
       tableName: "messages",
@@ -328,17 +309,11 @@ describe("Memory - Extended Tests", () => {
   });
 
   beforeEach(async () => {
-    await memoryManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await memoryManager.removeAllMemoriesByRoomId(room_id);
   });
 
   afterAll(async () => {
-    await memoryManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await memoryManager.removeAllMemoriesByRoomId(room_id);
   });
 
   test("Test cosine similarity value equality", async () => {
@@ -355,8 +330,7 @@ describe("Memory - Extended Tests", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -371,7 +345,7 @@ describe("Memory - Extended Tests", () => {
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
       baseMemory!,
       {
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 1,
       },
     );
@@ -396,8 +370,7 @@ describe("Memory - Extended Tests", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -413,7 +386,7 @@ describe("Memory - Extended Tests", () => {
       baseMemory!,
       {
         match_threshold: 0.01,
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 1,
       },
     );
@@ -436,8 +409,7 @@ describe("Memory - Extended Tests", () => {
     const newMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: memoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -451,8 +423,7 @@ describe("Memory - Extended Tests", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -463,12 +434,9 @@ describe("Memory - Extended Tests", () => {
     }
     await memoryManager.createMemory(similarMemory, true);
 
-    const allCount = await memoryManager.countMemoriesByUserIds(
-      [user?.id as UUID, zeroUuid],
-      false,
-    );
-    const uniqueCount = await memoryManager.countMemoriesByUserIds(
-      [user?.id as UUID, zeroUuid],
+    const allCount = await memoryManager.countMemoriesByRoomId(room_id, false);
+    const uniqueCount = await memoryManager.countMemoriesByRoomId(
+      room_id,
       true,
     );
 
@@ -490,8 +458,7 @@ describe("Memory - Extended Tests", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -507,8 +474,7 @@ describe("Memory - Extended Tests", () => {
     const dissimilarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: dissimilarMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding: getCachedEmbedding(dissimilarMemoryContent),
     });
     if (!embedding) {
@@ -523,7 +489,7 @@ describe("Memory - Extended Tests", () => {
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
       baseMemory!,
       {
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 1,
       },
     );
@@ -555,8 +521,7 @@ describe("Memory - Extended Tests", () => {
     const queryMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: queryMemoryContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -572,8 +537,7 @@ describe("Memory - Extended Tests", () => {
     const highSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: highSimilarityContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -588,8 +552,7 @@ describe("Memory - Extended Tests", () => {
     const lowSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: lowSimilarityContent },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID,
+      room_id,
       embedding,
     });
     if (!embedding) {
@@ -604,7 +567,7 @@ describe("Memory - Extended Tests", () => {
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
       queryMemory.embedding!,
       {
-        userIds: [user?.id as UUID, zeroUuid],
+        room_id,
         count: 10,
       },
     );

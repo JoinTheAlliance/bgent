@@ -3,10 +3,8 @@ import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { composeContext } from "../../context";
 import { BgentRuntime } from "../../runtime";
-
 import { type Message, type State } from "../../types";
 import timeProvider from "../time";
-import { zeroUuid } from "../../constants";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -27,9 +25,7 @@ describe("Time Provider", () => {
 
   test("Time provider should return the current time in the correct format", async () => {
     const message: Message = {
-      senderId: user.id,
-      agentId: zeroUuid,
-      userIds: [user.id, zeroUuid],
+      userId: user.id,
       content: { content: "" },
       room_id: room_id,
     };
@@ -46,9 +42,7 @@ describe("Time Provider", () => {
 
   test("Time provider should be integrated in the state and context correctly", async () => {
     const message: Message = {
-      senderId: user.id,
-      agentId: zeroUuid,
-      userIds: [user.id, zeroUuid],
+      userId: user.id,
       content: { content: "" },
       room_id: room_id,
     };
@@ -73,9 +67,7 @@ describe("Time Provider", () => {
 
   test("Time provider should work independently", async () => {
     const message: Message = {
-      senderId: user.id,
-      agentId: zeroUuid,
-      userIds: [user.id, zeroUuid],
+      userId: user.id,
       content: { content: "" },
       room_id: room_id,
     };

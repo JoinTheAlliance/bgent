@@ -7,12 +7,12 @@ import { type Actor, type Content, type Memory } from "./types";
  */
 export async function getActorDetails({
   runtime,
-  userIds,
+  room_id,
 }: {
   runtime: BgentRuntime;
-  userIds: UUID[];
+  room_id: UUID;
 }) {
-  const actors = await runtime.databaseAdapter.getActorDetails({ userIds });
+  const actors = await runtime.databaseAdapter.getActorDetails({ room_id });
 
   return actors as Actor[];
 }

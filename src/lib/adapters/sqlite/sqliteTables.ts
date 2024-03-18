@@ -12,39 +12,14 @@ CREATE TABLE IF NOT EXISTS "accounts" (
     "details" TEXT DEFAULT '{}'
 );
 
--- Table: credits
-CREATE TABLE IF NOT EXISTS "credits" (
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "sender_id" TEXT,
-    "receiver_id" TEXT,
-    "amount" NUMERIC,
-    "reason" TEXT
-);
-
--- Table: descriptions
-CREATE TABLE IF NOT EXISTS "descriptions" (
+-- Table: memories
+CREATE TABLE IF NOT EXISTS "memories" (
     "id" TEXT PRIMARY KEY,
+    "type" TEXT NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "content" TEXT NOT NULL,
     "embedding" BLOB NOT NULL,
     "user_id" TEXT,
-    "user_ids" TEXT,
-    "room_id" TEXT,
-    "name" TEXT,
-    "unique" INTEGER DEFAULT 1 NOT NULL,
-    FOREIGN KEY ("user_id") REFERENCES "accounts"("id"),
-    FOREIGN KEY ("room_id") REFERENCES "rooms"("id")
-);
-
--- Table: facts
-CREATE TABLE IF NOT EXISTS "facts" (
-    "id" TEXT PRIMARY KEY,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "content" TEXT NOT NULL,
-    "embedding" BLOB NOT NULL,
-    "user_id" TEXT,
-    "user_ids" TEXT,
     "room_id" TEXT,
     "unique" INTEGER DEFAULT 1 NOT NULL,
     FOREIGN KEY ("user_id") REFERENCES "accounts"("id"),
@@ -55,7 +30,6 @@ CREATE TABLE IF NOT EXISTS "facts" (
 CREATE TABLE IF NOT EXISTS "goals" (
     "id" TEXT PRIMARY KEY,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "user_ids" TEXT DEFAULT '[]' NOT NULL,
     "user_id" TEXT,
     "name" TEXT,
     "status" TEXT,
@@ -70,40 +44,7 @@ CREATE TABLE IF NOT EXISTS "logs" (
     "user_id" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "room_id" TEXT NOT NULL,
-    "user_ids" TEXT NOT NULL,
-    "agent_id" TEXT NOT NULL
-);
-
--- Table: lore
-CREATE TABLE IF NOT EXISTS "lore" (
-    "id" TEXT PRIMARY KEY,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "content" TEXT NOT NULL,
-    "embedding" BLOB NOT NULL,
-    "user_id" TEXT,
-    "user_ids" TEXT,
-    "room_id" TEXT,
-    "name" TEXT,
-    "unique" INTEGER DEFAULT 1 NOT NULL,
-    FOREIGN KEY ("user_id") REFERENCES "accounts"("id"),
-    FOREIGN KEY ("room_id") REFERENCES "rooms"("id")
-);
-
--- Table: messages
-CREATE TABLE IF NOT EXISTS "messages" (
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "user_id" TEXT,
-    "content" TEXT,
-    "is_edited" INTEGER DEFAULT 0,
-    "room_id" TEXT,
-    "updated_at" TIMESTAMP,
-    "user_ids" TEXT DEFAULT '[]' NOT NULL,
-    "id" TEXT PRIMARY KEY,
-    "embedding" BLOB,
-    "unique" INTEGER DEFAULT 1 NOT NULL,
-    FOREIGN KEY ("user_id") REFERENCES "accounts"("id"),
-    FOREIGN KEY ("room_id") REFERENCES "rooms"("id")
+    "room_id" TEXT NOT NULL
 );
 
 -- Table: participants
@@ -144,8 +85,8 @@ CREATE TABLE IF NOT EXISTS "rooms" (
 -- Index: relationships_id_key
 CREATE UNIQUE INDEX IF NOT EXISTS "relationships_id_key" ON "relationships" ("id");
 
--- Index: messages_id_key
-CREATE UNIQUE INDEX IF NOT EXISTS "messages_id_key" ON "messages" ("id");
+-- Index: memories_id_key
+CREATE UNIQUE INDEX IF NOT EXISTS "memories_id_key" ON "memories" ("id");
 
 -- Index: participants_id_key
 CREATE UNIQUE INDEX IF NOT EXISTS "participants_id_key" ON "participants" ("id");

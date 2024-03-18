@@ -17,14 +17,14 @@ describe("Messages Library", () => {
     user = setup.session.user;
     actors = await getActorDetails({
       runtime,
-      userIds: [user.id as UUID, "00000000-0000-0000-0000-000000000000"],
+      room_id: "00000000-0000-0000-0000-000000000000",
     });
   });
 
-  test("getActorDetails should return actors based on given userIds", async () => {
+  test("getActorDetails should return actors based on given room_id", async () => {
     const result = await getActorDetails({
       runtime,
-      userIds: [user.id as UUID, "00000000-0000-0000-0000-000000000000"],
+      room_id: "00000000-0000-0000-0000-000000000000",
     });
     expect(result.length).toBeGreaterThan(0);
     result.forEach((actor: Actor) => {
@@ -49,13 +49,11 @@ describe("Messages Library", () => {
       {
         content: { content: "Hello" },
         user_id: user.id as UUID,
-        user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000",
       },
       {
         content: { content: "How are you?" },
         user_id: "00000000-0000-0000-0000-000000000000",
-        user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000",
       },
     ];
@@ -70,13 +68,11 @@ describe("Messages Library", () => {
       {
         content: { content: "Reflecting on the day" },
         user_id: user.id as UUID,
-        user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000",
       },
       {
         content: { content: "Thoughts and musings" },
         user_id: "00000000-0000-0000-0000-000000000000",
-        user_ids: [user.id as UUID],
         room_id: "00000000-0000-0000-0000-000000000000room",
       },
     ];

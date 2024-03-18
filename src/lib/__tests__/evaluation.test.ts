@@ -57,9 +57,7 @@ describe("Evaluation Process", () => {
 
   test("Check if test and examples appear in state", async () => {
     const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
+      userId: user.id as UUID,
       content: { content: "Test message for evaluation" },
       room_id,
     };
@@ -77,9 +75,7 @@ describe("Evaluation Process", () => {
 
   test("Run the TEST_EVALUATOR handler and validate output", async () => {
     const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
+      userId: user.id as UUID,
       content: { content: "Run TEST_EVALUATOR handler" },
       room_id,
     };
@@ -91,9 +87,7 @@ describe("Evaluation Process", () => {
   test("Run the evaluation process", async () => {
     await runAiTest("Run the evaluation process", async () => {
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: {
           content:
             "We are in testing mode. We want to make sure that the test passes by replying with the evaluator TEST_EVALUATOR in the array of evaluators that are returned. Please run the TEST_EVALUATOR",
@@ -116,9 +110,7 @@ describe("Evaluation Process", () => {
     });
 
     const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
+      userId: user.id as UUID,
       content: { content: "Test message for evaluation" },
       room_id,
     };

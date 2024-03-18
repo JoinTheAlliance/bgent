@@ -1,10 +1,9 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { runAiTest } from "../../test/runAiTest";
 import { TEST_ACTION, TEST_ACTION_FAIL } from "../../test/testAction";
-import { zeroUuid } from "../constants";
+import { type User } from "../../test/types";
 import { composeContext } from "../context";
 import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
@@ -20,15 +19,14 @@ async function handleMessage(
   state?: State,
 ) {
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, senderId, userIds, room_id } = message;
+    const { content: senderContent, userId, room_id } = message;
 
     const _senderContent = (
       (senderContent as Content).content ?? senderContent
     )?.trim();
     if (_senderContent) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: senderId!,
+        user_id: userId!,
         content: {
           content: _senderContent,
           action: (message.content as Content)?.action ?? "null",
@@ -55,7 +53,7 @@ async function handleMessage(
   }
 
   let responseContent: Content | null = null;
-  const { senderId, room_id, userIds: user_ids, agentId } = message;
+  const { userId, room_id } = message;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     const response = await runtime.completion({
@@ -65,10 +63,8 @@ async function handleMessage(
 
     runtime.databaseAdapter.log({
       body: { message, context, response },
-      user_id: senderId,
+      user_id: userId,
       room_id,
-      user_ids: user_ids!,
-      agent_id: agentId!,
       type: "actions_test_completion",
     });
 
@@ -101,14 +97,13 @@ async function handleMessage(
     state: State,
     responseContent: Content,
   ) => {
-    const { agentId, userIds, room_id } = message;
+    const { room_id } = message;
 
     responseContent.content = responseContent.content?.trim();
 
     if (responseContent.content) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: agentId!,
+        user_id: runtime.agentId,
         content: responseContent,
         room_id,
         embedding: embeddingZeroVector,
@@ -190,14 +185,8 @@ describe("Actions", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      "00000000-0000-0000-0000-000000000000" as UUID,
-    ]);
-    await runtime.messageManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      "00000000-0000-0000-0000-000000000000" as UUID,
-    ]);
+    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
   }
 
   // Test that actions are being loaded into context properly
@@ -218,9 +207,7 @@ describe("Actions", () => {
     expect(testAction).toBeDefined();
     if (testAction && testAction.validate) {
       const isValid = await testAction.validate(runtime, {
-        agentId: zeroUuid,
-        senderId: user.id as UUID,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "Test message" },
         room_id: room_id,
       });
@@ -234,9 +221,7 @@ describe("Actions", () => {
 
   test("Test that actions are properly validated in state", async () => {
     const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
+      userId: user.id as UUID,
       content: {
         content:
           "Please respond with the message 'ok' and the action TEST_ACTION",
@@ -254,12 +239,7 @@ describe("Actions", () => {
   test("Validate that TEST_ACTION is in the state", async () => {
     await runAiTest("Validate TEST_ACTION is in the state", async () => {
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: "00000000-0000-0000-0000-000000000000" as UUID,
-        userIds: [
-          user.id as UUID,
-          "00000000-0000-0000-0000-000000000000" as UUID,
-        ],
+        userId: user.id as UUID,
         content: {
           content:
             "Please respond with the message 'ok' and the action TEST_ACTION",
@@ -284,12 +264,7 @@ describe("Actions", () => {
       }
 
       const mockMessage: Message = {
-        agentId: "00000000-0000-0000-0000-000000000000" as UUID,
-        senderId: user.id as UUID,
-        userIds: [
-          user.id as UUID,
-          "00000000-0000-0000-0000-000000000000" as UUID,
-        ],
+        userId: user.id as UUID,
         content: {
           content: "Test message for TEST action",
         },

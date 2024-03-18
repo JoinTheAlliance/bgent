@@ -15,10 +15,12 @@ custom_edit_url: null
 - [BgentRuntime](classes/BgentRuntime.md)
 - [DatabaseAdapter](classes/DatabaseAdapter.md)
 - [MemoryManager](classes/MemoryManager.md)
+- [SqliteDatabaseAdapter](classes/SqliteDatabaseAdapter.md)
 - [SupabaseDatabaseAdapter](classes/SupabaseDatabaseAdapter.md)
 
 ## Interfaces
 
+- [Account](interfaces/Account.md)
 - [Action](interfaces/Action.md)
 - [ActionExample](interfaces/ActionExample.md)
 - [Actor](interfaces/Actor.md)

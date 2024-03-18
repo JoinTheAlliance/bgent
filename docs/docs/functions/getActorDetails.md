@@ -15,8 +15,8 @@ Get details for a list of actors.
 | Name | Type |
 | :------ | :------ |
 | `«destructured»` | `Object` |
+| › `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) |
-| › `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 

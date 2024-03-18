@@ -1,7 +1,7 @@
 ---
-id: "SupabaseDatabaseAdapter"
-title: "Class: SupabaseDatabaseAdapter"
-sidebar_label: "SupabaseDatabaseAdapter"
+id: "SqliteDatabaseAdapter"
+title: "Class: SqliteDatabaseAdapter"
+sidebar_label: "SqliteDatabaseAdapter"
 sidebar_position: 0
 custom_edit_url: null
 ---
@@ -10,24 +10,23 @@ custom_edit_url: null
 
 - [`DatabaseAdapter`](DatabaseAdapter.md)
 
-  ↳ **`SupabaseDatabaseAdapter`**
+  ↳ **`SqliteDatabaseAdapter`**
 
 ## Constructors
 
 ### constructor
 
-• **new SupabaseDatabaseAdapter**(`supabaseUrl`, `supabaseKey`): [`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
+• **new SqliteDatabaseAdapter**(`db`): [`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `supabaseUrl` | `string` |
-| `supabaseKey` | `string` |
+| `db` | `Database` |
 
 #### Returns
 
-[`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
+[`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
 
 #### Overrides
 
@@ -37,7 +36,7 @@ custom_edit_url: null
 
 ### countMemoriesByRoomId
 
-▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName`): `Promise`\<`number`\>
+▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
 
 #### Parameters
 
@@ -45,7 +44,7 @@ custom_edit_url: null
 | :------ | :------ | :------ |
 | `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
 | `unique` | `boolean` | `true` |
-| `tableName` | `string` | `undefined` |
+| `tableName` | `string` | `""` |
 
 #### Returns
 
@@ -232,7 +231,7 @@ ___
 
 ### getMemoryByContent
 
-▸ **getMemoryByContent**(`opts`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getMemoryByContent**(`opts`): `Promise`\<[]\>
 
 #### Parameters
 
@@ -248,7 +247,7 @@ ___
 
 #### Returns
 
-`Promise`\<`SimilaritySearch`[]\>
+`Promise`\<[]\>
 
 #### Overrides
 

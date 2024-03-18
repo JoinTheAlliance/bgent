@@ -1,6 +1,7 @@
-import { type User } from "../../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
+import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
+import { createRuntime } from "../../../test/createRuntime";
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
@@ -8,15 +9,14 @@ import {
   jimFacts,
 } from "../../../test/data";
 import { populateMemories } from "../../../test/populateMemories";
-import { getRelationship } from "../../relationships";
-import { type BgentRuntime } from "../../runtime";
-import { createRuntime } from "../../../test/createRuntime";
 import { runAiTest } from "../../../test/runAiTest";
-import evaluator from "../fact";
-import { type Message } from "../../types";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
+import { type User } from "../../../test/types";
 import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
+import { getRelationship } from "../../relationships";
+import { type BgentRuntime } from "../../runtime";
+import { type Message } from "../../types";
+import evaluator from "../fact";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -58,9 +58,7 @@ describe("Facts Evaluator", () => {
       ]);
 
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "" },
         room_id,
       };
@@ -83,9 +81,7 @@ describe("Facts Evaluator", () => {
       await addFacts(runtime, user.id as UUID, room_id, jimFacts);
 
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "" },
         room_id,
       };
@@ -102,9 +98,9 @@ describe("Facts Evaluator", () => {
   }, 120000); // Adjust the timeout as needed for your tests
 });
 
-async function cleanup(runtime: BgentRuntime, userId: UUID) {
-  await runtime.factManager.removeAllMemoriesByUserIds([userId, zeroUuid]);
-  await runtime.messageManager.removeAllMemoriesByUserIds([userId, zeroUuid]);
+async function cleanup(runtime: BgentRuntime, room_id: UUID) {
+  await runtime.factManager.removeAllMemoriesByRoomId(room_id);
+  await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
 }
 
 async function addFacts(
@@ -117,7 +113,6 @@ async function addFacts(
     const existingEmbedding = getCachedEmbedding(fact);
     const bakedMemory = await runtime.factManager.addEmbeddingToMemory({
       user_id: userId,
-      user_ids: [userId, zeroUuid],
       content: { content: fact },
       room_id: room_id,
       embedding: existingEmbedding,

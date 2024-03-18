@@ -50,22 +50,14 @@ describe("Wait Action Behavior", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
-    await runtime.messageManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
   }
 
   test("Test wait action behavior", async () => {
     await runAiTest("Test wait action behavior", async () => {
       const message: Message = {
-        senderId: zeroUuid as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: zeroUuid as UUID,
         content: {
           content: "Please wait a moment, I need to think about this...",
           action: "WAIT",
