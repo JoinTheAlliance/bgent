@@ -1,4 +1,4 @@
-import { User } from "@supabase/supabase-js";
+import { type User } from "../../test/types";
 import { UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";

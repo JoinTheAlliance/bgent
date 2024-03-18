@@ -45,7 +45,11 @@ npx bgent
 Currently bgent is dependent on Supabase for local development. You can install it with the following command:
 
 ```bash
-npm install bgent @supabase/supabase-js
+npm install bgent
+
+# Select your database adapter
+npm install sqlite-vss better-sqlite3 # for sqlite (simple, for local development)
+npm install @supabase/supabase-js # for supabase (more complicated but can be deployed at scale)
 ```
 
 ### Set up environment variables

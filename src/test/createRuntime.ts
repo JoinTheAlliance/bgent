@@ -1,4 +1,5 @@
-import { Session, User, createClient } from "@supabase/supabase-js";
+import { Session, createClient } from "@supabase/supabase-js";
+import { User } from "./types";
 import { BgentRuntime } from "../lib/runtime";
 import { Action, Evaluator, Provider } from "../lib/types";
 import {

@@ -4,7 +4,7 @@ import { type UUID } from "crypto";
 import { getRelationship } from "../relationships";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
 import { BgentRuntime } from "../runtime";
-import { type User } from "@supabase/supabase-js";
+import { type User } from "../../test/types";
 import { type Message } from "../types";
 import { zeroUuid } from "../constants";
 

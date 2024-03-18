@@ -1,4 +1,4 @@
-import { type User } from "@supabase/supabase-js";
+import { type User } from "../../test/types";
 import { type UUID } from "crypto";
 import { createRuntime } from "../../test/createRuntime";
 import { formatActors, formatMessages, getActorDetails } from "../messages";
