@@ -55,9 +55,9 @@ custom_edit_url: null
 
 ___
 
-### countMemoriesByRoomId
+### countMemories
 
-▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
+▸ **countMemories**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
 
 #### Parameters
 
@@ -73,7 +73,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[countMemoriesByRoomId](DatabaseAdapter.md#countmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[countMemories](DatabaseAdapter.md#countmemoriesbyroomid)
 
 ___
 
@@ -246,9 +246,9 @@ ___
 
 ___
 
-### getMemoriesByRoomId
+### getMemories
 
-▸ **getMemoriesByRoomId**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **getMemories**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 #### Parameters
 
@@ -266,7 +266,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[getMemoriesByRoomId](DatabaseAdapter.md#getmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[getMemories](DatabaseAdapter.md#getmemoriesbyroomid)
 
 ___
 
@@ -403,9 +403,9 @@ ___
 
 ___
 
-### removeAllGoalsByRoomId
+### removeAllGoals
 
-▸ **removeAllGoalsByRoomId**(`room_id`): `Promise`\<`void`\>
+▸ **removeAllGoals**(`room_id`): `Promise`\<`void`\>
 
 #### Parameters
 
@@ -419,13 +419,13 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoalsByRoomId](DatabaseAdapter.md#removeallgoalsbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoals](DatabaseAdapter.md#removeallgoalsbyroomid)
 
 ___
 
-### removeAllMemoriesByRoomId
+### removeAllMemories
 
-▸ **removeAllMemoriesByRoomId**(`room_id`, `tableName`): `Promise`\<`void`\>
+▸ **removeAllMemories**(`room_id`, `tableName`): `Promise`\<`void`\>
 
 #### Parameters
 
@@ -440,7 +440,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemoriesByRoomId](DatabaseAdapter.md#removeallmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemories](DatabaseAdapter.md#removeallmemoriesbyroomid)
 
 ___
 

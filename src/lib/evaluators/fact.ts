@@ -130,7 +130,7 @@ export default {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     message: Message,
   ): Promise<boolean> => {
-    const messageCount = (await runtime.messageManager.countMemoriesByRoomId(
+    const messageCount = (await runtime.messageManager.countMemories(
       message.room_id,
     )) as number;
 

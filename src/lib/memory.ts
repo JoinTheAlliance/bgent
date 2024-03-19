@@ -65,7 +65,7 @@ export class MemoryManager {
    * @param opts.unique Whether to retrieve unique memories only.
    * @returns A Promise resolving to an array of Memory objects.
    */
-  async getMemoriesByRoomId({
+  async getMemories({
     room_id,
     count = 10,
     unique = true,
@@ -74,7 +74,7 @@ export class MemoryManager {
     count?: number;
     unique?: boolean;
   }): Promise<Memory[]> {
-    const result = await this.runtime.databaseAdapter.getMemoriesByRoomId({
+    const result = await this.runtime.databaseAdapter.getMemories({
       room_id,
       count,
       unique,
@@ -169,8 +169,8 @@ export class MemoryManager {
    * @param room_id The room ID to remove memories for.
    * @returns A Promise that resolves when the operation completes.
    */
-  async removeAllMemoriesByRoomId(room_id: UUID): Promise<void> {
-    await this.runtime.databaseAdapter.removeAllMemoriesByRoomId(
+  async removeAllMemories(room_id: UUID): Promise<void> {
+    await this.runtime.databaseAdapter.removeAllMemories(
       room_id,
       this.tableName,
     );
@@ -182,8 +182,8 @@ export class MemoryManager {
    * @param unique Whether to count unique memories only.
    * @returns A Promise resolving to the count of memories.
    */
-  async countMemoriesByRoomId(room_id: UUID, unique = true): Promise<number> {
-    return await this.runtime.databaseAdapter.countMemoriesByRoomId(
+  async countMemories(room_id: UUID, unique = true): Promise<number> {
+    return await this.runtime.databaseAdapter.countMemories(
       room_id,
       unique,
       this.tableName,

@@ -92,8 +92,8 @@ describe("User Profile", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
-    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.factManager.removeAllMemories(room_id);
+    await runtime.messageManager.removeAllMemories(room_id);
   }
 
   // test validate function response
@@ -167,14 +167,14 @@ describe("User Profile", () => {
         console.log("room_id", room_id);
 
         const initialMessageCount =
-          await runtime.messageManager.countMemoriesByRoomId(room_id, false);
+          await runtime.messageManager.countMemories(room_id, false);
 
         await action.handler!(runtime, message);
 
         const finalMessageCount =
-          await runtime.messageManager.countMemoriesByRoomId(room_id, false);
+          await runtime.messageManager.countMemories(room_id, false);
 
-        const agentMessages = await runtime.messageManager.getMemoriesByRoomId({
+        const agentMessages = await runtime.messageManager.getMemories({
           room_id,
           count: finalMessageCount - initialMessageCount,
           unique: false,
@@ -214,12 +214,12 @@ describe("User Profile", () => {
       };
 
       const initialMessageCount =
-        await runtime.messageManager.countMemoriesByRoomId(room_id, false);
+        await runtime.messageManager.countMemories(room_id, false);
 
       await action.handler!(runtime, message);
 
       const finalMessageCount =
-        await runtime.messageManager.countMemoriesByRoomId(room_id, false);
+        await runtime.messageManager.countMemories(room_id, false);
 
       return finalMessageCount - initialMessageCount === 2;
     });

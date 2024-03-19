@@ -202,7 +202,7 @@ export interface Relationship {
 export interface Account {
   id: UUID;
   name: string;
-  details?: string;
+  details?: { [key: string]: unknown };
   email?: string;
   avatar_url?: string;
 }

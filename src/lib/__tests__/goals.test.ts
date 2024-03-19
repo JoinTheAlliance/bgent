@@ -17,15 +17,15 @@ describe("Goals", () => {
     });
     runtime = result.runtime;
     user = result.session.user;
-    await runtime.databaseAdapter.removeAllGoalsByRoomId(zeroUuid);
+    await runtime.databaseAdapter.removeAllGoals(zeroUuid);
   });
 
   beforeEach(async () => {
-    await runtime.databaseAdapter.removeAllGoalsByRoomId(zeroUuid);
+    await runtime.databaseAdapter.removeAllGoals(zeroUuid);
   });
 
   afterAll(async () => {
-    await runtime.databaseAdapter.removeAllGoalsByRoomId(zeroUuid);
+    await runtime.databaseAdapter.removeAllGoals(zeroUuid);
   });
 
   test("createGoal - successfully creates a new goal", async () => {

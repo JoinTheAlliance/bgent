@@ -49,7 +49,7 @@ describe("Goals Evaluator", () => {
 
   async function cleanup() {
     // delete all goals for the user
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(room_id, "goals");
+    await runtime.databaseAdapter.removeAllMemories(room_id, "goals");
   }
 
   async function createTestGoal(name: string, objectives: Objective[]) {

@@ -141,7 +141,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async getMemoriesByRoomId(params: {
+  async getMemories(params: {
     room_id: UUID;
     count?: number;
     unique?: boolean;
@@ -235,7 +235,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async removeAllMemoriesByRoomId(
+  async removeAllMemories(
     room_id: UUID,
     tableName: string,
   ): Promise<void> {
@@ -249,7 +249,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async countMemoriesByRoomId(
+  async countMemories(
     room_id: UUID,
     unique = true,
     tableName: string,
@@ -311,7 +311,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async removeAllGoalsByRoomId(room_id: UUID): Promise<void> {
+  async removeAllGoals(room_id: UUID): Promise<void> {
     const { error } = await this.supabase
       .from("goals")
       .delete()

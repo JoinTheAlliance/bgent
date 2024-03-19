@@ -43,9 +43,9 @@ custom_edit_url: null
 
 ___
 
-### countMemoriesByRoomId
+### countMemories
 
-▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
+▸ **countMemories**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
 
 #### Parameters
 
@@ -198,9 +198,9 @@ ___
 
 ___
 
-### getMemoriesByRoomId
+### getMemories
 
-▸ **getMemoriesByRoomId**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **getMemories**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 #### Parameters
 
@@ -327,9 +327,9 @@ ___
 
 ___
 
-### removeAllGoalsByRoomId
+### removeAllGoals
 
-▸ **removeAllGoalsByRoomId**(`room_id`): `Promise`\<`void`\>
+▸ **removeAllGoals**(`room_id`): `Promise`\<`void`\>
 
 #### Parameters
 
@@ -343,9 +343,9 @@ ___
 
 ___
 
-### removeAllMemoriesByRoomId
+### removeAllMemories
 
-▸ **removeAllMemoriesByRoomId**(`room_id`, `tableName`): `Promise`\<`void`\>
+▸ **removeAllMemories**(`room_id`, `tableName`): `Promise`\<`void`\>
 
 #### Parameters
 

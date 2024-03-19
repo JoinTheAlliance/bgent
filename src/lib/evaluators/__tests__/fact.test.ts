@@ -103,8 +103,8 @@ describe("Facts Evaluator", () => {
 });
 
 async function cleanup(runtime: BgentRuntime, room_id: UUID) {
-  await runtime.factManager.removeAllMemoriesByRoomId(room_id);
-  await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
+  await runtime.factManager.removeAllMemories(room_id);
+  await runtime.messageManager.removeAllMemories(room_id);
 }
 
 async function addFacts(

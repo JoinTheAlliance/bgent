@@ -19,7 +19,7 @@ export default {
   description:
     "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly! DO NOT USE WHEN ASKING A QUESTION, ALWAYS USE WAIT WHEN ASKING A QUESTION.",
   validate: async (runtime: BgentRuntime, message: Message) => {
-    const recentMessagesData = await runtime.messageManager.getMemoriesByRoomId(
+    const recentMessagesData = await runtime.messageManager.getMemories(
       {
         room_id: message.room_id,
         count: 10,

@@ -174,8 +174,8 @@ describe("Actions", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
-    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.factManager.removeAllMemories(room_id);
+    await runtime.messageManager.removeAllMemories(room_id);
   }
 
   // Test that actions are being loaded into context properly

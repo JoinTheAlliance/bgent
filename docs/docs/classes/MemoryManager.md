@@ -66,9 +66,9 @@ A Promise resolving to the memory object, potentially updated with an embedding 
 
 ___
 
-### countMemoriesByRoomId
+### countMemories
 
-▸ **countMemoriesByRoomId**(`room_id`, `unique?`): `Promise`\<`number`\>
+▸ **countMemories**(`room_id`, `unique?`): `Promise`\<`number`\>
 
 Counts the number of memories associated with a set of user IDs, with an option for uniqueness.
 
@@ -108,9 +108,9 @@ A Promise that resolves when the operation completes.
 
 ___
 
-### getMemoriesByRoomId
+### getMemories
 
-▸ **getMemoriesByRoomId**(`opts`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **getMemories**(`opts`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 Retrieves a list of memories by user IDs, with optional deduplication.
 
@@ -147,9 +147,9 @@ ___
 
 ___
 
-### removeAllMemoriesByRoomId
+### removeAllMemories
 
-▸ **removeAllMemoriesByRoomId**(`room_id`): `Promise`\<`void`\>
+▸ **removeAllMemories**(`room_id`): `Promise`\<`void`\>
 
 Removes all memories associated with a set of user IDs.
 

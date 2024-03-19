@@ -461,12 +461,12 @@ export class BgentRuntime {
     ]: [Actor[], Memory[], Memory[], Goal[], Memory[], string] =
       await Promise.all([
         getActorDetails({ runtime: this, room_id }),
-        this.messageManager.getMemoriesByRoomId({
+        this.messageManager.getMemories({
           room_id,
           count: recentMessageCount,
           unique: false,
         }),
-        this.factManager.getMemoriesByRoomId({
+        this.factManager.getMemories({
           room_id,
           count: recentFactsCount,
         }),

@@ -167,8 +167,8 @@ describe("Ignore action tests", () => {
   });
 
   async function cleanup() {
-    await runtime.factManager.removeAllMemoriesByRoomId(room_id);
-    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.factManager.removeAllMemories(room_id);
+    await runtime.messageManager.removeAllMemories(room_id);
   }
 
   test("Test ignore action", async () => {

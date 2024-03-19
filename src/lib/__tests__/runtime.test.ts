@@ -17,7 +17,7 @@ describe("Agent Runtime", () => {
 
   // Helper function to clear memories
   async function clearMemories() {
-    await runtime.messageManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.messageManager.removeAllMemories(room_id);
   }
 
   // Helper function to create memories

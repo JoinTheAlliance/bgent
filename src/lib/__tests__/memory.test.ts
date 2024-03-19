@@ -32,8 +32,6 @@ describe("Memory", () => {
       throw new Error("Relationship not found");
     }
 
-    console.log("*** data", data);
-
     room_id = data.room_id;
 
     memoryManager = new MemoryManager({
@@ -43,11 +41,11 @@ describe("Memory", () => {
   });
 
   beforeEach(async () => {
-    await memoryManager.removeAllMemoriesByRoomId(room_id);
+    await memoryManager.removeAllMemories(room_id);
   });
 
   afterAll(async () => {
-    await memoryManager.removeAllMemoriesByRoomId(room_id);
+    await memoryManager.removeAllMemories(room_id);
   });
 
   test("Search memories by embedding similarity", async () => {
@@ -101,9 +99,6 @@ describe("Memory", () => {
         count: 1,
       },
     );
-
-    console.log("*** room_id", room_id);
-    console.log("*** searchedMemories", searchedMemories);
 
     // Check that the similar memory is included in the search results and the dissimilar one is not or ranks lower
     expect(
@@ -228,16 +223,16 @@ describe("Memory - Basic tests", () => {
 
   // Cleanup after all tests
   afterAll(async () => {
-    await memoryManager.removeAllMemoriesByRoomId(room_id);
+    await memoryManager.removeAllMemories(room_id);
   });
 
   test("Memory lifecycle: create, search, count, and remove", async () => {
     const embedding = getCachedEmbeddings("Test content for memory lifecycle");
     // Create a test memory
     const testMemory: Memory = await memoryManager.addEmbeddingToMemory({
-      user_id: user?.id as UUID,
+      user_id: user.id as UUID,
       content: { content: "Test content for memory lifecycle" },
-      room_id,
+      room_id: room_id,
       embedding,
     });
     if (!embedding) {
@@ -248,13 +243,13 @@ describe("Memory - Basic tests", () => {
     }
     await memoryManager.createMemory(testMemory);
 
-    const createdMemories = await memoryManager.getMemoriesByRoomId({
+    const createdMemories = await memoryManager.getMemories({
       room_id,
       count: 100,
     });
 
     // Verify creation by counting memories
-    const initialCount = await memoryManager.countMemoriesByRoomId(
+    const initialCount = await memoryManager.countMemories(
       room_id,
       false,
     );
@@ -273,12 +268,12 @@ describe("Memory - Basic tests", () => {
     // Remove a specific memory
     await memoryManager.removeMemory(createdMemories[0].id!);
     const afterRemovalCount =
-      await memoryManager.countMemoriesByRoomId(room_id);
+      await memoryManager.countMemories(room_id);
     expect(afterRemovalCount).toBeLessThan(initialCount);
 
     // Remove all memories for the test user
-    await memoryManager.removeAllMemoriesByRoomId(room_id);
-    const finalCount = await memoryManager.countMemoriesByRoomId(room_id);
+    await memoryManager.removeAllMemories(room_id);
+    const finalCount = await memoryManager.countMemories(room_id);
     expect(finalCount).toEqual(0);
   });
 });
@@ -316,11 +311,11 @@ describe("Memory - Extended Tests", () => {
   });
 
   beforeEach(async () => {
-    await memoryManager.removeAllMemoriesByRoomId(room_id);
+    await memoryManager.removeAllMemories(room_id);
   });
 
   afterAll(async () => {
-    await memoryManager.removeAllMemoriesByRoomId(room_id);
+    await memoryManager.removeAllMemories(room_id);
   });
 
   test("Test cosine similarity value equality", async () => {
@@ -441,8 +436,8 @@ describe("Memory - Extended Tests", () => {
     }
     await memoryManager.createMemory(similarMemory, true);
 
-    const allCount = await memoryManager.countMemoriesByRoomId(room_id, false);
-    const uniqueCount = await memoryManager.countMemoriesByRoomId(
+    const allCount = await memoryManager.countMemories(room_id, false);
+    const uniqueCount = await memoryManager.countMemories(
       room_id,
       true,
     );

@@ -5,14 +5,15 @@ import {
   GoalStatus,
   type Goal,
   type Memory,
-  type Relationship
+  type Relationship,
 } from "./types";
 
 export abstract class DatabaseAdapter {
   abstract getAccountById(userId: UUID): Promise<Account | null>;
+
   abstract createAccount(account: Account): Promise<void>;
 
-  abstract getMemoriesByRoomId(params: {
+  abstract getMemories(params: {
     room_id: UUID;
     count?: number;
     unique?: boolean;
@@ -57,6 +58,7 @@ export abstract class DatabaseAdapter {
     match_count: number;
     unique: boolean;
   }): Promise<Memory[]>;
+
   abstract updateGoalStatus(params: {
     goalId: UUID;
     status: GoalStatus;
@@ -81,12 +83,9 @@ export abstract class DatabaseAdapter {
 
   abstract removeMemory(memoryId: UUID, tableName: string): Promise<void>;
 
-  abstract removeAllMemoriesByRoomId(
-    room_id: UUID,
-    tableName: string,
-  ): Promise<void>;
+  abstract removeAllMemories(room_id: UUID, tableName: string): Promise<void>;
 
-  abstract countMemoriesByRoomId(
+  abstract countMemories(
     room_id: UUID,
     unique?: boolean,
     tableName?: string,
@@ -105,7 +104,7 @@ export abstract class DatabaseAdapter {
 
   abstract removeGoal(goalId: UUID): Promise<void>;
 
-  abstract removeAllGoalsByRoomId(room_id: UUID): Promise<void>;
+  abstract removeAllGoals(room_id: UUID): Promise<void>;
 
   abstract createRoom(name: string): Promise<UUID>;
 

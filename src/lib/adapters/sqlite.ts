@@ -28,7 +28,13 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
   async getAccountById(userId: UUID): Promise<Account | null> {
     const sql = "SELECT * FROM accounts WHERE id = ?";
-    return (this.db.prepare(sql).get(userId) as Account) || null;
+    const account = (this.db.prepare(sql).get(userId) as Account[])[0];
+    if (account) {
+      if (typeof account.details === "string") {
+        account.details = JSON.parse(account.details as unknown as string);
+      }
+    }
+    return account || null;
   }
 
   async createAccount(account: Account): Promise<void> {
@@ -139,7 +145,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       );
   }
 
-  async getMemoriesByRoomId(params: {
+  async getMemories(params: {
     room_id: UUID;
     count?: number;
     unique?: boolean;
@@ -155,9 +161,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
     const queryParams = [params.tableName, params.room_id];
 
-    if (params.unique) {
-      sql += " AND `unique` = 1";
-    }
+    // if (params.unique) {
+    //   sql += " AND `unique` = 1";
+    // }
 
     if (params.count) {
       sql += " LIMIT ?";
@@ -165,6 +171,12 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     }
 
     const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
+
+    console.log("params", params);
+    console.log("sql", sql);
+    console.log("queryParams", queryParams);
+    console.log("memories", memories);
+
     return memories.map((memory) => ({
       ...memory,
       content: JSON.parse(memory.content as unknown as string),
@@ -188,19 +200,19 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       ORDER BY vss_search(embedding, ?) DESC
     `;
     const queryParams = [
-      JSON.stringify(params.tableName),
+      params.tableName,
       JSON.stringify(embedding),
       JSON.stringify(embedding),
     ];
 
     if (params.room_id) {
       sql += " AND room_id = ?";
-      queryParams.push(JSON.stringify(params.room_id));
+      queryParams.push(params.room_id);
     }
 
-    if (params.unique) {
-      sql += " AND `unique` = 1";
-    }
+    // if (params.unique) {
+    //   sql += " AND `unique` = 1";
+    // }
 
     if (params.count) {
       sql += " LIMIT ?";
@@ -221,7 +233,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   ): Promise<void> {
     const sql = `INSERT INTO memories (id, type, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     this.db.prepare(sql).run(
-      memory.id ?? crypto.randomUUID(),
+      crypto.randomUUID(),
       tableName,
       JSON.stringify(memory.content), // stringify the content field
       JSON.stringify(memory.embedding),
@@ -236,15 +248,15 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     this.db.prepare(sql).run(tableName, memoryId);
   }
 
-  async removeAllMemoriesByRoomId(
+  async removeAllMemories(
     room_id: UUID,
     tableName: string,
   ): Promise<void> {
     const sql = `DELETE FROM memories WHERE type = ? AND room_id = ?`;
-    this.db.prepare(sql).run(tableName, JSON.stringify(room_id));
+    this.db.prepare(sql).run(tableName, room_id);
   }
 
-  async countMemoriesByRoomId(
+  async countMemories(
     room_id: UUID,
     unique = true,
     tableName = "",
@@ -253,11 +265,12 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       throw new Error("tableName is required");
     }
 
-    let sql = `SELECT COUNT(*) as count FROM memories WHERE type = ? AND room_id = ?`;
-    const queryParams = [tableName, JSON.stringify(room_id)] as string[];
+    const sql = `SELECT COUNT(*) as count FROM memories WHERE type = ? AND room_id = ?`;
+    const queryParams = [tableName, room_id] as string[];
 
     if (unique) {
-      sql += " AND `unique` = 1";
+      // TODO
+      // sql += " AND `unique` = 1";
     }
 
     return (this.db.prepare(sql).get(...queryParams) as { count: number })
@@ -271,7 +284,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     count?: number;
   }): Promise<Goal[]> {
     let sql = "SELECT * FROM goals WHERE room_id = ?";
-    const queryParams = [JSON.stringify(params.room_id)];
+    const queryParams = [params.room_id];
 
     if (params.userId) {
       sql += " AND user_id = ?";
@@ -284,10 +297,18 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
     if (params.count) {
       sql += " LIMIT ?";
+      // @ts-expect-error - queryParams is an array of strings
       queryParams.push(params.count.toString());
     }
 
-    return this.db.prepare(sql).all(...queryParams) as Goal[];
+    const goals = this.db.prepare(sql).all(...queryParams) as Goal[];
+    return goals.map((goal) => ({
+      ...goal,
+      objectives:
+        typeof goal.objectives === "string"
+          ? JSON.parse(goal.objectives)
+          : goal.objectives,
+    }));
   }
 
   async updateGoal(goal: Goal): Promise<void> {
@@ -305,7 +326,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       .prepare(sql)
       .run(
         goal.id,
-        JSON.stringify(goal.room_id),
+        goal.room_id,
         goal.user_id,
         goal.name,
         goal.status,
@@ -318,9 +339,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     this.db.prepare(sql).run(goalId);
   }
 
-  async removeAllGoalsByRoomId(room_id: UUID): Promise<void> {
+  async removeAllGoals(room_id: UUID): Promise<void> {
     const sql = "DELETE FROM goals WHERE room_id = ?";
-    this.db.prepare(sql).run(JSON.stringify(room_id));
+    this.db.prepare(sql).run(room_id);
   }
 
   async createRoom(name: string): Promise<UUID> {

@@ -35,11 +35,11 @@ describe("Lore", () => {
   });
 
   beforeEach(async () => {
-    await runtime.loreManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.loreManager.removeAllMemories(room_id);
   });
 
   afterAll(async () => {
-    await runtime.loreManager.removeAllMemoriesByRoomId(room_id);
+    await runtime.loreManager.removeAllMemories(room_id);
   });
 
   test("Add and get lore", async () => {
