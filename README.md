@@ -64,6 +64,23 @@ SUPABASE_SERVICE_API_KEY="your-supabase-service-api-key"
 OPENAI_API_KEY="your-openai-api-key"
 ```
 
+### SQLite Local Setup (Easiest)
+
+You can use SQLite for local development. This is the easiest way to get started with bgent.
+
+```typescript
+import { BgentRuntime, SqliteDatabaseAdapter } from "bgent";
+import { Database } from "sqlite3";
+const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(new Database(":memory:"));
+
+const runtime = new BgentRuntime({
+  serverUrl: "https://api.openai.com/v1",
+  token: process.env.OPENAI_API_KEY, // Can be an API key or JWT token for your AI services
+  databaseAdapter: sqliteDatabaseAdapter,
+  // ... other options
+});
+```
+
 ### Supabase Local Setup
 
 First, you will need to install the Supabase CLI. You can install it using the instructions [here](https://supabase.com/docs/guides/cli/getting-started).
@@ -119,17 +136,20 @@ npm run shell # start the shell in another terminal to talk to the default agent
 ## Usage
 
 ```typescript
-import { BgentRuntime, SupabaseDatabaseAdapter } from "bgent";
+import { BgentRuntime, SupabaseDatabaseAdapter, SqliteDatabaseAdapter } from "bgent";
 
-const databaseAdapter = new SupabaseDatabaseAdapter(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_API_KEY)
-  ;
+const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(new Database(":memory:"));
+
+// You can also use Supabase like this
+// const supabaseDatabaseAdapter = new SupabaseDatabaseAdapter(
+//   process.env.SUPABASE_URL,
+//   process.env.SUPABASE_SERVICE_API_KEY)
+//   ;
 
 const runtime = new BgentRuntime({
   serverUrl: "https://api.openai.com/v1",
   token: process.env.OPENAI_API_KEY, // Can be an API key or JWT token for your AI services
-  databaseAdapter,
+  databaseAdapter: sqliteDatabaseAdapter,
   actions: [
     /* your custom actions */
   ],
