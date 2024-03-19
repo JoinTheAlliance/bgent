@@ -61,33 +61,35 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     let sql = `
       SELECT *
       FROM memories
-      WHERE type = ? AND room_id = ? AND vss_search(embedding, ?)
-      ORDER BY vss_search(embedding, ?) DESC
+      WHERE type = ? AND room_id = ?
       LIMIT ?
     `;
-    const queryParams = [
-      JSON.stringify(params.tableName),
-      JSON.stringify(params.room_id),
-      JSON.stringify(params.embedding),
-      JSON.stringify(params.embedding),
-      params.match_count,
-    ];
+    const queryParams = [params.tableName, params.room_id, params.match_count];
 
     if (params.unique) {
       sql += " AND `unique` = 1";
     }
 
-    return this.db.prepare(sql).all(...queryParams) as Memory[];
+    const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
+    return memories.map((memory) => ({
+      ...memory,
+      content: JSON.parse(memory.content as unknown as string),
+    }));
   }
 
-  async getMemoryByContent(opts: {
+  async getCachedEmbeddings(opts: {
     query_table_name: string;
     query_threshold: number;
     query_input: string;
     query_field_name: string;
     query_field_sub_name: string;
     query_match_count: number;
-  }): Promise<[]> {
+  }): Promise<
+    {
+      embedding: number[];
+      levenshtein_score: number;
+    }[]
+  > {
     const sql = `
       SELECT *
       FROM memories
@@ -96,14 +98,19 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       ORDER BY vss_search(${opts.query_field_name}, ?) DESC
       LIMIT ?
     `;
-    return this.db
+    const memories = this.db
       .prepare(sql)
       .all(
-        JSON.stringify(opts.query_table_name),
-        JSON.stringify(opts.query_input),
-        JSON.stringify(opts.query_input),
+        opts.query_table_name,
+        opts.query_input,
+        opts.query_input,
         opts.query_match_count,
-      ) as [];
+      ) as Memory[];
+
+    return memories.map((memory) => ({
+      embedding: JSON.parse(memory.embedding as unknown as string),
+      levenshtein_score: 0,
+    }));
   }
 
   async updateGoalStatus(params: {
@@ -200,7 +207,11 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       queryParams.push(params.count.toString());
     }
 
-    return this.db.prepare(sql).all(...queryParams) as Memory[];
+    const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
+    return memories.map((memory) => ({
+      ...memory,
+      content: JSON.parse(memory.content as unknown as string),
+    }));
   }
 
   async createMemory(
@@ -208,11 +219,10 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     tableName: string,
     unique = false,
   ): Promise<void> {
-    const sql = `INSERT INTO memories (id, type, created_at, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO memories (id, type, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     this.db.prepare(sql).run(
-      memory.id,
+      memory.id ?? crypto.randomUUID(),
       tableName,
-      memory.created_at,
       JSON.stringify(memory.content), // stringify the content field
       JSON.stringify(memory.embedding),
       memory.user_id,

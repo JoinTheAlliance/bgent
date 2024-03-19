@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
+import { getCachedEmbeddings, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
 import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
 import { type User } from "../../test/types";
@@ -60,7 +60,7 @@ describe("Memory", () => {
     // Create and add embedding to the base memory
     const baseMemory = await memoryManager.runtime.embed(baseMemoryContent);
 
-    let embedding = getCachedEmbedding(similarMemoryContent);
+    let embedding = getCachedEmbeddings(similarMemoryContent);
 
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
@@ -77,7 +77,7 @@ describe("Memory", () => {
     }
     await memoryManager.createMemory(similarMemory);
 
-    embedding = getCachedEmbedding(dissimilarMemoryContent);
+    embedding = getCachedEmbeddings(dissimilarMemoryContent);
 
     const dissimilarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
@@ -126,7 +126,7 @@ describe("Memory", () => {
     const highSimilarityContent = "High similarity content to the query memory";
     const lowSimilarityContent = "Low similarity content compared to the query";
 
-    let embedding = getCachedEmbedding(queryMemoryContent);
+    let embedding = getCachedEmbeddings(queryMemoryContent);
 
     // Create and add embedding to the query memory
     const queryMemory = await memoryManager.addEmbeddingToMemory({
@@ -143,7 +143,7 @@ describe("Memory", () => {
     }
     await memoryManager.createMemory(queryMemory);
 
-    embedding = getCachedEmbedding(highSimilarityContent);
+    embedding = getCachedEmbeddings(highSimilarityContent);
     // Create and add embedding to the high and low similarity memories
     const highSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
@@ -159,7 +159,7 @@ describe("Memory", () => {
     }
     await memoryManager.createMemory(highSimilarityMemory);
 
-    embedding = getCachedEmbedding(lowSimilarityContent);
+    embedding = getCachedEmbeddings(lowSimilarityContent);
     const lowSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: lowSimilarityContent },
@@ -232,7 +232,7 @@ describe("Memory - Basic tests", () => {
   });
 
   test("Memory lifecycle: create, search, count, and remove", async () => {
-    const embedding = getCachedEmbedding("Test content for memory lifecycle");
+    const embedding = getCachedEmbeddings("Test content for memory lifecycle");
     // Create a test memory
     const testMemory: Memory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
@@ -331,7 +331,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the base memory
     const baseMemory = await memoryManager.runtime.embed(baseMemoryContent);
 
-    const embedding = getCachedEmbedding(similarMemoryContent);
+    const embedding = getCachedEmbeddings(similarMemoryContent);
 
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
@@ -371,7 +371,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the base memory
     const baseMemory = await memoryManager.runtime.embed(baseMemoryContent);
 
-    const embedding = getCachedEmbedding(similarMemoryContent);
+    const embedding = getCachedEmbeddings(similarMemoryContent);
 
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
@@ -410,7 +410,7 @@ describe("Memory - Extended Tests", () => {
     const memoryContent = "Cognitive security in the information age";
     const similarMemoryContent = "Cognitive security in the information age";
 
-    let embedding = getCachedEmbedding(memoryContent);
+    let embedding = getCachedEmbeddings(memoryContent);
 
     // Create and add embedding to the similar and dissimilar memories
     const newMemory = await memoryManager.addEmbeddingToMemory({
@@ -424,7 +424,7 @@ describe("Memory - Extended Tests", () => {
     }
     await memoryManager.createMemory(newMemory, true);
 
-    embedding = getCachedEmbedding(similarMemoryContent);
+    embedding = getCachedEmbeddings(similarMemoryContent);
 
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
@@ -459,7 +459,7 @@ describe("Memory - Extended Tests", () => {
     // Create and add embedding to the base memory
     const baseMemory = await memoryManager.runtime.embed(baseMemoryContent);
 
-    let embedding = getCachedEmbedding(similarMemoryContent);
+    let embedding = getCachedEmbeddings(similarMemoryContent);
 
     // Create and add embedding to the similar and dissimilar memories
     const similarMemory = await memoryManager.addEmbeddingToMemory({
@@ -476,13 +476,13 @@ describe("Memory - Extended Tests", () => {
     }
     await memoryManager.createMemory(similarMemory);
 
-    embedding = getCachedEmbedding(dissimilarMemoryContent);
+    embedding = getCachedEmbeddings(dissimilarMemoryContent);
 
     const dissimilarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: dissimilarMemoryContent },
       room_id,
-      embedding: getCachedEmbedding(dissimilarMemoryContent),
+      embedding: getCachedEmbeddings(dissimilarMemoryContent),
     });
     if (!embedding) {
       writeCachedEmbedding(
@@ -522,7 +522,7 @@ describe("Memory - Extended Tests", () => {
     const highSimilarityContent = "High similarity content to the query memory";
     const lowSimilarityContent = "Low similarity, not related";
 
-    let embedding = getCachedEmbedding(queryMemoryContent);
+    let embedding = getCachedEmbeddings(queryMemoryContent);
 
     // Create and add embedding to the query memory
     const queryMemory = await memoryManager.addEmbeddingToMemory({
@@ -539,7 +539,7 @@ describe("Memory - Extended Tests", () => {
     }
     await memoryManager.createMemory(queryMemory);
 
-    embedding = getCachedEmbedding(highSimilarityContent);
+    embedding = getCachedEmbeddings(highSimilarityContent);
     // Create and add embedding to the high and low similarity memories
     const highSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
@@ -555,7 +555,7 @@ describe("Memory - Extended Tests", () => {
     }
     await memoryManager.createMemory(highSimilarityMemory);
 
-    embedding = getCachedEmbedding(lowSimilarityContent);
+    embedding = getCachedEmbeddings(lowSimilarityContent);
     const lowSimilarityMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: lowSimilarityContent },

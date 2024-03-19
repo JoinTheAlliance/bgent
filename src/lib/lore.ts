@@ -36,12 +36,17 @@ export async function addLore({
     ? await runtime.embed(embedContent.content)
     : await runtime.embed(content.content);
 
-  await loreManager.createMemory({
-    user_id,
-    content: { content: content.content, source },
-    room_id,
-    embedding: embedding,
-  });
+  try {
+    await loreManager.createMemory({
+      user_id,
+      content: { content: content.content, source },
+      room_id,
+      embedding: embedding,
+    });
+  } catch (e) {
+    console.error("Error adding lore", e);
+    throw e;
+  }
 }
 
 /**

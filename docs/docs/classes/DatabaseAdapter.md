@@ -218,9 +218,9 @@ ___
 
 ___
 
-### getMemoryByContent
+### getCachedEmbeddings
 
-▸ **getMemoryByContent**(`«destructured»`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getCachedEmbeddings**(`«destructured»`): `Promise`\<`SimilaritySearch`[]\>
 
 #### Parameters
 

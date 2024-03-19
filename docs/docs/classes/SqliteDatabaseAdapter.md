@@ -270,9 +270,9 @@ ___
 
 ___
 
-### getMemoryByContent
+### getCachedEmbeddings
 
-▸ **getMemoryByContent**(`opts`): `Promise`\<[]\>
+▸ **getCachedEmbeddings**(`opts`): `Promise`\<[]\>
 
 #### Parameters
 
@@ -292,7 +292,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[getMemoryByContent](DatabaseAdapter.md#getmemorybycontent)
+[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getmemorybycontent)
 
 ___
 

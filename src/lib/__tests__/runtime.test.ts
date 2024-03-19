@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
+import { getCachedEmbeddings, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
 import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
 import { type User } from "../../test/types";
@@ -32,7 +32,7 @@ describe("Agent Runtime", () => {
 
     for (const { userId, content } of memories) {
       try {
-        const embedding = getCachedEmbedding(content.content);
+        const embedding = getCachedEmbeddings(content.content);
         const memory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: userId,
           content,

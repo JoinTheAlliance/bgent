@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
+import { getCachedEmbeddings, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
 import {
   GetTellMeAboutYourselfConversation1,
@@ -114,7 +114,7 @@ async function addFacts(
   facts: string[],
 ) {
   for (const fact of facts) {
-    const existingEmbedding = getCachedEmbedding(fact);
+    const existingEmbedding = getCachedEmbeddings(fact);
     const bakedMemory = await runtime.factManager.addEmbeddingToMemory({
       user_id: userId,
       content: { content: fact },

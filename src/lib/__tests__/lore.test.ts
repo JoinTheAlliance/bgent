@@ -8,7 +8,7 @@ import { composeContext } from "../context";
 import { addLore, getLore } from "../lore";
 import { BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
-import { type Content } from "../types";
+import { Memory, type Content } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Lore", () => {
@@ -44,19 +44,23 @@ describe("Lore", () => {
 
   test("Add and get lore", async () => {
     const content: Content = { content: "Test", source: "/Test.md" };
-    await addLore({
-      runtime,
-      source: "/Test.md",
-      content: { content: "Test" },
-      user_id: zeroUuid,
-      room_id: zeroUuid,
-    });
+    let lore: Memory[] = [];
+    try {
+      await addLore({
+        runtime,
+        source: "/Test.md",
+        content: { content: "Test" },
+        user_id: zeroUuid,
+        room_id: zeroUuid,
+      });
 
-    const lore = await getLore({
-      runtime,
-      message: "Test",
-    });
-
+      lore = await getLore({
+        runtime,
+        message: "Test",
+      });
+    } catch (error) {
+      console.error(error);
+    }
     expect(lore[0].content).toEqual(content);
   }, 60000);
 

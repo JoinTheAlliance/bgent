@@ -338,7 +338,7 @@ export class BgentRuntime {
 
   async retrieveCachedEmbedding(input: string) {
     const similaritySearchResult =
-      await this.messageManager.getMemoryByContent(input);
+      await this.messageManager.getCachedEmbeddings(input);
     if (similaritySearchResult.length > 0) {
       return similaritySearchResult[0].embedding;
     }

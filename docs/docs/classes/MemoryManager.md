@@ -131,9 +131,9 @@ A Promise resolving to an array of Memory objects.
 
 ___
 
-### getMemoryByContent
+### getCachedEmbeddings
 
-▸ **getMemoryByContent**(`content`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getCachedEmbeddings**(`content`): `Promise`\<`SimilaritySearch`[]\>
 
 #### Parameters
 

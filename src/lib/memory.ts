@@ -1,6 +1,6 @@
 import { type UUID } from "crypto";
 import { type BgentRuntime } from "./runtime";
-import { type Memory, type SimilaritySearch } from "./types";
+import { type Memory } from "./types";
 
 export const embeddingDimension = 1536;
 export const embeddingZeroVector = Array(embeddingDimension).fill(0);
@@ -83,8 +83,13 @@ export class MemoryManager {
     return result;
   }
 
-  async getMemoryByContent(content: string): Promise<SimilaritySearch[]> {
-    const result = await this.runtime.databaseAdapter.getMemoryByContent({
+  async getCachedEmbeddings(content: string): Promise<
+    {
+      embedding: number[];
+      levenshtein_score: number;
+    }[]
+  > {
+    const result = await this.runtime.databaseAdapter.getCachedEmbeddings({
       query_table_name: this.tableName,
       query_threshold: 2,
       query_input: content,
@@ -121,14 +126,21 @@ export class MemoryManager {
       unique,
     } = opts;
 
-    const result = await this.runtime.databaseAdapter.searchMemories({
+    const searchOpts = {
       tableName: this.tableName,
       room_id,
       embedding: embedding,
       match_threshold: match_threshold,
       match_count: count,
       unique: !!unique,
-    });
+    };
+
+    console.log("searchOpts", searchOpts);
+
+    const result =
+      await this.runtime.databaseAdapter.searchMemories(searchOpts);
+
+    console.log("*** searchMemoriesByEmbedding", result);
 
     return result;
   }

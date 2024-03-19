@@ -271,9 +271,9 @@ ___
 
 ___
 
-### getMemoryByContent
+### getCachedEmbeddings
 
-▸ **getMemoryByContent**(`opts`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getCachedEmbeddings**(`opts`): `Promise`\<`SimilaritySearch`[]\>
 
 #### Parameters
 
@@ -293,7 +293,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[getMemoryByContent](DatabaseAdapter.md#getmemorybycontent)
+[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getmemorybycontent)
 
 ___
 

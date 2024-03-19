@@ -1,8 +1,8 @@
 import fs from "fs";
 
-// getCachedEmbedding
+// getCachedEmbeddings
 // check cache.json for embedding where the key is a stringified version of the memory and the value is a number array
-export const getCachedEmbedding = (text: string) => {
+export const getCachedEmbeddings = (text: string) => {
   if (!fs.existsSync("./embedding-cache.json")) {
     fs.writeFileSync("./embedding-cache.json", "{}");
   }

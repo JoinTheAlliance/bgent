@@ -8,7 +8,6 @@ import {
   Actor,
   GoalStatus,
   Account,
-  SimilaritySearch,
 } from "../types";
 import { DatabaseAdapter } from "../database";
 
@@ -93,14 +92,19 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     return result.data;
   }
 
-  async getMemoryByContent(opts: {
+  async getCachedEmbeddings(opts: {
     query_table_name: string;
     query_threshold: number;
     query_input: string;
     query_field_name: string;
     query_field_sub_name: string;
     query_match_count: number;
-  }): Promise<SimilaritySearch[]> {
+  }): Promise<
+    {
+      embedding: number[];
+      levenshtein_score: number;
+    }[]
+  > {
     const result = await this.supabase.rpc("get_embedding_list", opts);
     if (result.error) {
       throw new Error(JSON.stringify(result.error));

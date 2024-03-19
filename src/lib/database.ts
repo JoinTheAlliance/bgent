@@ -1,12 +1,11 @@
 import { type UUID } from "crypto";
 import {
-  type Memory,
-  type Goal,
-  type Relationship,
+  Account,
   Actor,
   GoalStatus,
-  Account,
-  SimilaritySearch,
+  type Goal,
+  type Memory,
+  type Relationship
 } from "./types";
 
 export abstract class DatabaseAdapter {
@@ -20,7 +19,7 @@ export abstract class DatabaseAdapter {
     tableName: string;
   }): Promise<Memory[]>;
 
-  abstract getMemoryByContent({
+  abstract getCachedEmbeddings({
     query_table_name,
     query_threshold,
     query_input,
@@ -34,7 +33,12 @@ export abstract class DatabaseAdapter {
     query_field_name: string;
     query_field_sub_name: string;
     query_match_count: number;
-  }): Promise<SimilaritySearch[]>;
+  }): Promise<
+    {
+      embedding: number[];
+      levenshtein_score: number;
+    }[]
+  >;
 
   abstract log(params: {
     body: { [key: string]: unknown };
