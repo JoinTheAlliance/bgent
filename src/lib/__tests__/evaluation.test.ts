@@ -38,7 +38,6 @@ describe("Evaluation Process", () => {
     }
 
     room_id = data!.room_id;
-    console.log("Room ID", room_id);
   });
 
   test("Validate the format of the examples from the evaluator", () => {

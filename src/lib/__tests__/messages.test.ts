@@ -44,8 +44,6 @@ describe("Messages Library", () => {
       userB,
     });
 
-    console.log("relationship", relationship);
-
     if (!relationship?.room_id) {
       throw new Error("Room not found");
     }

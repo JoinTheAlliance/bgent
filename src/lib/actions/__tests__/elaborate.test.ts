@@ -65,8 +65,6 @@ describe("User Profile", () => {
       userB: zeroUuid,
     });
 
-    console.log("data", data);
-
     if (!data) {
       throw new Error("Relationship not found");
     }
@@ -75,8 +73,6 @@ describe("User Profile", () => {
       user.id as UUID,
       zeroUuid,
     ]);
-
-    console.log("rooms", rooms)
 
     if (!rooms || rooms.length === 0) {
       throw new Error("Room not found");
@@ -164,15 +160,17 @@ describe("User Profile", () => {
           room_id: room_id,
         };
 
-        console.log("room_id", room_id);
-
-        const initialMessageCount =
-          await runtime.messageManager.countMemories(room_id, false);
+        const initialMessageCount = await runtime.messageManager.countMemories(
+          room_id,
+          false,
+        );
 
         await action.handler!(runtime, message);
 
-        const finalMessageCount =
-          await runtime.messageManager.countMemories(room_id, false);
+        const finalMessageCount = await runtime.messageManager.countMemories(
+          room_id,
+          false,
+        );
 
         const agentMessages = await runtime.messageManager.getMemories({
           room_id,
@@ -213,13 +211,17 @@ describe("User Profile", () => {
         room_id: room_id as UUID,
       };
 
-      const initialMessageCount =
-        await runtime.messageManager.countMemories(room_id, false);
+      const initialMessageCount = await runtime.messageManager.countMemories(
+        room_id,
+        false,
+      );
 
       await action.handler!(runtime, message);
 
-      const finalMessageCount =
-        await runtime.messageManager.countMemories(room_id, false);
+      const finalMessageCount = await runtime.messageManager.countMemories(
+        room_id,
+        false,
+      );
 
       return finalMessageCount - initialMessageCount === 2;
     });

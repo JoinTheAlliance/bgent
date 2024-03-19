@@ -33,8 +33,6 @@ export async function getOrCreateRelationship({
     }
 
     if (!relationship) {
-      console.log("**** roomId", roomId);
-
       // Create the relationship
       await runtime.databaseAdapter.createRelationship({
         userA,

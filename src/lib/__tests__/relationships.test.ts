@@ -25,20 +25,15 @@ describe("Relationships Module", () => {
   });
 
   test("createRelationship creates a new relationship", async () => {
-    console.log("user: ", user);
     const userA = user.id as UUID;
     const userB = zeroUuid;
     if (userA === undefined) throw new Error("userA is undefined");
-    try {
-      const relationship = await createRelationship({
-        runtime,
-        userA,
-        userB,
-      });
-      expect(relationship).toBe(true);
-    } catch (error) {
-      console.log("*** error: ", error);
-    }
+    const relationship = await createRelationship({
+      runtime,
+      userA,
+      userB,
+    });
+    expect(relationship).toBe(true);
   });
 
   test("getRelationship retrieves an existing relationship", async () => {

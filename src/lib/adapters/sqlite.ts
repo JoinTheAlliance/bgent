@@ -172,11 +172,6 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
     const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
 
-    console.log("params", params);
-    console.log("sql", sql);
-    console.log("queryParams", queryParams);
-    console.log("memories", memories);
-
     return memories.map((memory) => ({
       ...memory,
       content: JSON.parse(memory.content as unknown as string),
@@ -248,10 +243,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     this.db.prepare(sql).run(tableName, memoryId);
   }
 
-  async removeAllMemories(
-    room_id: UUID,
-    tableName: string,
-  ): Promise<void> {
+  async removeAllMemories(room_id: UUID, tableName: string): Promise<void> {
     const sql = `DELETE FROM memories WHERE type = ? AND room_id = ?`;
     this.db.prepare(sql).run(tableName, room_id);
   }
