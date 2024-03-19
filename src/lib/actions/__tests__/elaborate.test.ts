@@ -192,7 +192,6 @@ describe("User Profile", () => {
 
         // Check if the agent used the ELABORATE action for each part
         const usedElaborateAction = elaborateMessages.length === 3;
-        console.log("**** agentMessages are ", agentMessages);
         // Check if the agent's responses are not empty
         const responsesNotEmpty = agentMessages.every(
           (m) => (m.content as Content).content !== "",

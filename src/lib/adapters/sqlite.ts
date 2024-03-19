@@ -77,9 +77,6 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       sql += " AND `unique` = 1";
     }
 
-    console.log("***** sql", sql);
-    console.log("***** queryParams", queryParams);
-
     return this.db.prepare(sql).all(...queryParams) as Memory[];
   }
 
@@ -141,8 +138,6 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     unique?: boolean;
     tableName: string;
   }): Promise<Memory[]> {
-    console.log("***** params", params);
-
     if (!params.tableName) {
       throw new Error("tableName is required");
     }
@@ -162,10 +157,11 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       queryParams.push(params.count.toString());
     }
 
-    console.log("***** sql", sql);
-    console.log("***** queryParams", queryParams);
-
-    return this.db.prepare(sql).all(...queryParams) as Memory[];
+    const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
+    return memories.map((memory) => ({
+      ...memory,
+      content: JSON.parse(memory.content as unknown as string),
+    }));
   }
 
   async searchMemoriesByEmbedding(
@@ -204,9 +200,6 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       queryParams.push(params.count.toString());
     }
 
-    console.log("***** sql", sql);
-    console.log("***** queryParams", queryParams);
-
     return this.db.prepare(sql).all(...queryParams) as Memory[];
   }
 
@@ -216,18 +209,16 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     unique = false,
   ): Promise<void> {
     const sql = `INSERT INTO memories (id, type, created_at, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    this.db
-      .prepare(sql)
-      .run(
-        memory.id,
-        tableName,
-        memory.created_at,
-        JSON.stringify(memory.content),
-        JSON.stringify(memory.embedding),
-        memory.user_id,
-        memory.room_id,
-        unique ? 1 : 0,
-      );
+    this.db.prepare(sql).run(
+      memory.id,
+      tableName,
+      memory.created_at,
+      JSON.stringify(memory.content), // stringify the content field
+      JSON.stringify(memory.embedding),
+      memory.user_id,
+      memory.room_id,
+      unique ? 1 : 0,
+    );
   }
 
   async removeMemory(memoryId: UUID, tableName: string): Promise<void> {
@@ -393,8 +384,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   }
 
   async getRelationships(params: { userId: UUID }): Promise<Relationship[]> {
-    const sql =
-      "SELECT * FROM relationships WHERE (user_a = ? OR user_b = ?) AND status = 'FRIENDS'";
+    const sql = "SELECT * FROM relationships WHERE (user_a = ? OR user_b = ?)";
     return this.db
       .prepare(sql)
       .all(params.userId, params.userId) as Relationship[];
