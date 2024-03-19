@@ -28,7 +28,8 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
   async getAccountById(userId: UUID): Promise<Account | null> {
     const sql = "SELECT * FROM accounts WHERE id = ?";
-    const account = (this.db.prepare(sql).get(userId) as Account[])[0];
+    const accounts = this.db.prepare(sql).get(userId) as Account[];
+    const account = accounts && accounts[0];
     if (account) {
       if (typeof account.details === "string") {
         account.details = JSON.parse(account.details as unknown as string);
