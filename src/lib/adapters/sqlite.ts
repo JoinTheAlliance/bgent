@@ -56,6 +56,23 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     return this.db.prepare(sql).all(params.room_id) as Actor[];
   }
 
+  async createMemory(
+    memory: Memory,
+    tableName: string,
+    unique = false,
+  ): Promise<void> {
+    const sql = `INSERT INTO memories (id, type, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    this.db.prepare(sql).run(
+      crypto.randomUUID(),
+      tableName,
+      JSON.stringify(memory.content), // stringify the content field
+      JSON.stringify(memory.embedding),
+      memory.user_id,
+      memory.room_id,
+      unique ? 1 : 0,
+    );
+  }
+
   async searchMemories(params: {
     tableName: string;
     room_id: UUID;
@@ -64,19 +81,75 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     match_count: number;
     unique: boolean;
   }): Promise<Memory[]> {
-    let sql = `
-      SELECT *
+    const sql = `
+      SELECT *, (1 - vss_distance_l2(embedding, ?)) AS similarity
       FROM memories
       WHERE type = ? AND room_id = ?
+      AND vss_search(embedding, ?)
+      ORDER BY similarity DESC
       LIMIT ?
     `;
-    const queryParams = [params.tableName, params.room_id, params.match_count];
+    const queryParams = [
+      JSON.stringify(params.embedding),
+      params.tableName,
+      params.room_id,
+      JSON.stringify(params.embedding),
+      params.match_count,
+    ];
 
     if (params.unique) {
-      sql += " AND `unique` = 1";
+      // sql += " AND `unique` = 1";
     }
 
-    const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
+    const memories = this.db.prepare(sql).all(...queryParams) as (Memory & {
+      similarity: number;
+    })[];
+    return memories.map((memory) => ({
+      ...memory,
+      content: JSON.parse(memory.content as unknown as string),
+    }));
+  }
+
+  async searchMemoriesByEmbedding(
+    embedding: number[],
+    params: {
+      match_threshold?: number;
+      count?: number;
+      room_id?: UUID;
+      unique?: boolean;
+      tableName: string;
+    },
+  ): Promise<Memory[]> {
+    let sql = `
+      SELECT *, (1 - vss_distance_l2(embedding, ?)) AS similarity
+      FROM memories
+      WHERE type = ?
+      AND vss_search(embedding, ?)
+      ORDER BY similarity DESC
+    `;
+    const queryParams = [
+      JSON.stringify(embedding),
+      params.tableName,
+      JSON.stringify(embedding),
+    ];
+
+    if (params.room_id) {
+      // sql += " AND room_id = ?";
+      // queryParams.push(params.room_id);
+    }
+
+    if (params.unique) {
+      // sql += " AND `unique` = 1";
+    }
+
+    if (params.count) {
+      sql += " LIMIT ?";
+      queryParams.push(params.count.toString());
+    }
+
+    const memories = this.db.prepare(sql).all(...queryParams) as (Memory & {
+      similarity: number;
+    })[];
     return memories.map((memory) => ({
       ...memory,
       content: JSON.parse(memory.content as unknown as string),
@@ -176,66 +249,6 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       ...memory,
       content: JSON.parse(memory.content as unknown as string),
     }));
-  }
-
-  async searchMemoriesByEmbedding(
-    embedding: number[],
-    params: {
-      match_threshold?: number;
-      count?: number;
-      room_id?: UUID;
-      unique?: boolean;
-      tableName: string;
-    },
-  ): Promise<Memory[]> {
-    let sql = `
-      SELECT *
-      FROM memories
-      WHERE type = ? AND vss_search(embedding, ?)
-      ORDER BY vss_search(embedding, ?) DESC
-    `;
-    const queryParams = [
-      params.tableName,
-      JSON.stringify(embedding),
-      JSON.stringify(embedding),
-    ];
-
-    if (params.room_id) {
-      sql += " AND room_id = ?";
-      queryParams.push(params.room_id);
-    }
-
-    // if (params.unique) {
-    //   sql += " AND `unique` = 1";
-    // }
-
-    if (params.count) {
-      sql += " LIMIT ?";
-      queryParams.push(params.count.toString());
-    }
-
-    const memories = this.db.prepare(sql).all(...queryParams) as Memory[];
-    return memories.map((memory) => ({
-      ...memory,
-      content: JSON.parse(memory.content as unknown as string),
-    }));
-  }
-
-  async createMemory(
-    memory: Memory,
-    tableName: string,
-    unique = false,
-  ): Promise<void> {
-    const sql = `INSERT INTO memories (id, type, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    this.db.prepare(sql).run(
-      crypto.randomUUID(),
-      tableName,
-      JSON.stringify(memory.content), // stringify the content field
-      JSON.stringify(memory.embedding),
-      memory.user_id,
-      memory.room_id,
-      unique ? 1 : 0,
-    );
   }
 
   async removeMemory(memoryId: UUID, tableName: string): Promise<void> {

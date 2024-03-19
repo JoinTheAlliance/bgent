@@ -100,6 +100,17 @@ describe("Memory", () => {
       },
     );
 
+    console.log(
+      "searchedMemories",
+      searchedMemories.map((m) => {
+        return;
+        {
+          m.content;
+          m.room_id;
+        }
+      }),
+    );
+
     // Check that the similar memory is included in the search results and the dissimilar one is not or ranks lower
     expect(
       searchedMemories.some(
@@ -249,10 +260,7 @@ describe("Memory - Basic tests", () => {
     });
 
     // Verify creation by counting memories
-    const initialCount = await memoryManager.countMemories(
-      room_id,
-      false,
-    );
+    const initialCount = await memoryManager.countMemories(room_id, false);
     expect(initialCount).toBeGreaterThan(0);
 
     // Search memories by embedding
@@ -267,8 +275,7 @@ describe("Memory - Basic tests", () => {
 
     // Remove a specific memory
     await memoryManager.removeMemory(createdMemories[0].id!);
-    const afterRemovalCount =
-      await memoryManager.countMemories(room_id);
+    const afterRemovalCount = await memoryManager.countMemories(room_id);
     expect(afterRemovalCount).toBeLessThan(initialCount);
 
     // Remove all memories for the test user
@@ -437,10 +444,7 @@ describe("Memory - Extended Tests", () => {
     await memoryManager.createMemory(similarMemory, true);
 
     const allCount = await memoryManager.countMemories(room_id, false);
-    const uniqueCount = await memoryManager.countMemories(
-      room_id,
-      true,
-    );
+    const uniqueCount = await memoryManager.countMemories(room_id, true);
 
     expect(allCount > uniqueCount).toBe(true);
   });

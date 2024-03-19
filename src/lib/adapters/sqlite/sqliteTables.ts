@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "accounts" (
     "name" TEXT,
     "email" TEXT NOT NULL UNIQUE,
     "avatar_url" TEXT,
-    "details" TEXT DEFAULT '{}'
+    "details" TEXT DEFAULT '{}' CHECK(json_valid("details")) -- Ensuring details is a valid JSON field
 );
 
 -- Table: memories
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "memories" (
     "type" TEXT NOT NULL,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "content" TEXT NOT NULL,
-    "embedding" BLOB NOT NULL,
+    "embedding" BLOB NOT NULL, -- TODO: EMBEDDING ARRAY, CONVERT TO BEST FORMAT FOR SQLITE-VSS (JSON?)
     "user_id" TEXT,
     "room_id" TEXT,
     "unique" INTEGER DEFAULT 1 NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "goals" (
     "status" TEXT,
     "description" TEXT,
     "room_id" TEXT,
-    "objectives" TEXT DEFAULT '[]' NOT NULL
+    "objectives" TEXT DEFAULT '[]' NOT NULL CHECK(json_valid("objectives")) -- Ensuring objectives is a valid JSON array
 );
 
 -- Table: logs
