@@ -27,17 +27,18 @@ describe("Evaluation Process", () => {
     runtime = setup.runtime;
     user = setup.session.user;
 
-    const relationship = await getOrCreateRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,
     });
 
-    if (!relationship) {
+    if (!data) {
       throw new Error("Relationship not found");
     }
 
-    room_id = relationship?.room_id;
+    room_id = data!.room_id;
+    console.log("Room ID", room_id);
   });
 
   test("Validate the format of the examples from the evaluator", () => {

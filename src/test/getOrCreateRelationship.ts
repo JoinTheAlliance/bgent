@@ -13,27 +13,27 @@ export async function getOrCreateRelationship({
   // Check if a relationship already exists between userA and userB
   try {
     let relationship = await getRelationship({ runtime, userA, userB });
+    // Check if a room already exists for the participants
+    const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+      userA,
+      userB,
+    ]);
+
+    let roomId: UUID;
+    if (!rooms || rooms.length === 0) {
+      // If no room exists, create a new room for the relationship
+      roomId = await runtime.databaseAdapter.createRoom("Direct Message");
+
+      // Add participants to the newly created room
+      await runtime.databaseAdapter.addParticipantToRoom(userA, roomId);
+      await runtime.databaseAdapter.addParticipantToRoom(userB, roomId);
+    } else {
+      // If a room already exists, use the existing room
+      roomId = rooms[0];
+    }
 
     if (!relationship) {
-      // Check if a room already exists for the participants
-      const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
-        userA,
-        userB,
-      ]);
-
-      let roomId: UUID;
-
-      if (!rooms || rooms.length === 0) {
-        // If no room exists, create a new room for the relationship
-        roomId = await runtime.databaseAdapter.createRoom("Direct Message");
-
-        // Add participants to the newly created room
-        await runtime.databaseAdapter.addParticipantToRoom(userA, roomId);
-        await runtime.databaseAdapter.addParticipantToRoom(userB, roomId);
-      } else {
-        // If a room already exists, use the existing room
-        roomId = rooms[0];
-      }
+      console.log("**** roomId", roomId);
 
       // Create the relationship
       await runtime.databaseAdapter.createRelationship({
@@ -47,7 +47,7 @@ export async function getOrCreateRelationship({
         throw new Error("Failed to fetch the created relationship");
       }
     }
-    return relationship;
+    return { ...relationship, room_id: roomId };
   } catch (error) {
     throw new Error(`Error creating relationship: ${JSON.stringify(error)}`);
   }

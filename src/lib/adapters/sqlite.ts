@@ -199,7 +199,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     }
 
     if (params.unique) {
-      sql += " AND unique = 1";
+      sql += " AND `unique` = 1";
     }
 
     if (params.count) {
@@ -257,7 +257,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     const queryParams = [tableName, JSON.stringify(room_id)] as string[];
 
     if (unique) {
-      sql += " AND unique = 1";
+      sql += " AND `unique` = 1";
     }
 
     return (this.db.prepare(sql).get(...queryParams) as { count: number })
@@ -325,8 +325,12 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
 
   async createRoom(name: string): Promise<UUID> {
     const roomId = crypto.randomUUID();
-    const sql = "INSERT INTO rooms (id, name) VALUES (?, ?)";
-    this.db.prepare(sql).run(roomId, name);
+    try {
+      const sql = "INSERT INTO rooms (id, name) VALUES (?, ?)";
+      this.db.prepare(sql).run(roomId, name);
+    } catch (error) {
+      console.log("Error creating room", error);
+    }
     return roomId as UUID;
   }
 

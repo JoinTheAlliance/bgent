@@ -135,12 +135,8 @@ export class MemoryManager {
       unique: !!unique,
     };
 
-    console.log("searchOpts", searchOpts);
-
     const result =
       await this.runtime.databaseAdapter.searchMemories(searchOpts);
-
-    console.log("*** searchMemoriesByEmbedding", result);
 
     return result;
   }
