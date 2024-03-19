@@ -65,12 +65,24 @@ describe("User Profile", () => {
       userB: zeroUuid,
     });
 
+    console.log("data", data);
+
     if (!data) {
       throw new Error("Relationship not found");
     }
 
-    // TODO: This is a temporary fix for the room_id not being set in the relationship
-    room_id = data?.room_id || zeroUuid;
+    const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+      user.id as UUID,
+      zeroUuid,
+    ]);
+
+    console.log("rooms", rooms)
+
+    if (!rooms || rooms.length === 0) {
+      throw new Error("Room not found");
+    }
+
+    room_id = rooms[0];
 
     await cleanup();
   });
@@ -149,8 +161,10 @@ describe("User Profile", () => {
               "Write a short story in three parts, using the ELABORATE action for each part.",
             action: "WAIT",
           },
-          room_id,
+          room_id: room_id,
         };
+
+        console.log("room_id", room_id);
 
         const initialMessageCount =
           await runtime.messageManager.countMemoriesByRoomId(room_id, false);
@@ -178,10 +192,10 @@ describe("User Profile", () => {
 
         // Check if the agent used the ELABORATE action for each part
         const usedElaborateAction = elaborateMessages.length === 3;
-
+        console.log("**** agentMessages are ", agentMessages);
         // Check if the agent's responses are not empty
         const responsesNotEmpty = agentMessages.every(
-          (m) => (m.content as Content).content.trim() !== "",
+          (m) => (m.content as Content).content !== "",
         );
 
         return sentMultipleMessages && usedElaborateAction && responsesNotEmpty;

@@ -454,7 +454,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
         user_a: params.userA,
         user_b: params.userB,
         user_id: params.userA,
-        room_id,
         status: "FRIENDS",
       })
       .eq("user_a", params.userA)

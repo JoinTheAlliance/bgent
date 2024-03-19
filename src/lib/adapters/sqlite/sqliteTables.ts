@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS "goals" (
     "name" TEXT,
     "status" TEXT,
     "description" TEXT,
+    "room_id" TEXT,
     "objectives" TEXT DEFAULT '[]' NOT NULL
 );
 
@@ -61,15 +62,13 @@ CREATE TABLE IF NOT EXISTS "participants" (
 -- Table: relationships
 CREATE TABLE IF NOT EXISTS "relationships" (
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "user_a" TEXT,
-    "user_b" TEXT,
-    "status" TEXT,
+    "user_a" TEXT NOT NULL,
+    "user_b" TEXT NOT NULL,
+    "status" "text",
     "id" TEXT PRIMARY KEY,
-    "room_id" TEXT,
     "user_id" TEXT NOT NULL,
     FOREIGN KEY ("user_a") REFERENCES "accounts"("id"),
     FOREIGN KEY ("user_b") REFERENCES "accounts"("id"),
-    FOREIGN KEY ("room_id") REFERENCES "rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY ("user_id") REFERENCES "accounts"("id")
 );
 

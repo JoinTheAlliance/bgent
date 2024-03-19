@@ -370,7 +370,6 @@ CREATE TABLE IF NOT EXISTS "public"."relationships" (
     "user_b" "uuid",
     "status" "text",
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "room_id" "uuid",
     "user_id" "uuid" NOT NULL
 );
 

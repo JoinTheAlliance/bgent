@@ -23,6 +23,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     load(this.db);
     // sqliteTables is a string of SQL commands
     this.db.exec(sqliteTables);
+    this.db.exec("PRAGMA foreign_keys = OFF;");
   }
 
   async getAccountById(userId: UUID): Promise<Account | null> {
@@ -60,11 +61,12 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     let sql = `
       SELECT *
       FROM memories
-      WHERE type = ${params.tableName} AND room_id = ? AND vss_search(embedding, ?)
+      WHERE type = ? AND room_id = ? AND vss_search(embedding, ?)
       ORDER BY vss_search(embedding, ?) DESC
       LIMIT ?
     `;
     const queryParams = [
+      JSON.stringify(params.tableName),
       JSON.stringify(params.room_id),
       JSON.stringify(params.embedding),
       JSON.stringify(params.embedding),
@@ -72,8 +74,11 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     ];
 
     if (params.unique) {
-      sql += " AND unique = 1";
+      sql += " AND `unique` = 1";
     }
+
+    console.log("***** sql", sql);
+    console.log("***** queryParams", queryParams);
 
     return this.db.prepare(sql).all(...queryParams) as Memory[];
   }
@@ -136,23 +141,31 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     unique?: boolean;
     tableName: string;
   }): Promise<Memory[]> {
+    console.log("***** params", params);
+
     if (!params.tableName) {
       throw new Error("tableName is required");
     }
     if (!params.room_id) {
       throw new Error("room_id is required");
     }
-    let sql = `SELECT * FROM memories WHERE type = ${params.tableName} AND room_id = ${params.room_id}`;
+    let sql = `SELECT * FROM memories WHERE type = ? AND room_id = ?`;
+
+    const queryParams = [params.tableName, params.room_id];
 
     if (params.unique) {
-      sql += " AND unique = 1";
+      sql += " AND `unique` = 1";
     }
 
     if (params.count) {
-      sql += ` LIMIT ${params.count}`;
+      sql += " LIMIT ?";
+      queryParams.push(params.count.toString());
     }
 
-    return this.db.prepare(sql).all() as Memory[];
+    console.log("***** sql", sql);
+    console.log("***** queryParams", queryParams);
+
+    return this.db.prepare(sql).all(...queryParams) as Memory[];
   }
 
   async searchMemoriesByEmbedding(
@@ -168,10 +181,14 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     let sql = `
       SELECT *
       FROM memories
-      WHERE type = ${params.tableName} AND vss_search(embedding, ?)
+      WHERE type = ? AND vss_search(embedding, ?)
       ORDER BY vss_search(embedding, ?) DESC
     `;
-    const queryParams = [JSON.stringify(embedding), JSON.stringify(embedding)];
+    const queryParams = [
+      JSON.stringify(params.tableName),
+      JSON.stringify(embedding),
+      JSON.stringify(embedding),
+    ];
 
     if (params.room_id) {
       sql += " AND room_id = ?";
@@ -186,6 +203,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       sql += " LIMIT ?";
       queryParams.push(params.count.toString());
     }
+
+    console.log("***** sql", sql);
+    console.log("***** queryParams", queryParams);
 
     return this.db.prepare(sql).all(...queryParams) as Memory[];
   }
@@ -321,9 +341,13 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   }
 
   async getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]> {
-    const sql =
-      "SELECT DISTINCT room_id FROM participants WHERE user_id IN (?)";
-    const rows = this.db.prepare(sql).all(userIds) as { room_id: string }[];
+    // Assuming userIds is an array of UUID strings, prepare a list of placeholders
+    const placeholders = userIds.map(() => "?").join(", ");
+    // Construct the SQL query with the correct number of placeholders
+    const sql = `SELECT DISTINCT room_id FROM participants WHERE user_id IN (${placeholders})`;
+    // Execute the query with the userIds array spread into arguments
+    const rows = this.db.prepare(sql).all(...userIds) as { room_id: string }[];
+    // Map and return the room_id values as UUIDs
     return rows.map((row) => row.room_id as UUID);
   }
 
@@ -341,6 +365,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     userA: UUID;
     userB: UUID;
   }): Promise<boolean> {
+    if (!params.userA || !params.userB) {
+      throw new Error("userA and userB are required");
+    }
     const sql =
       "INSERT INTO relationships (user_a, user_b, user_id) VALUES (?, ?, ?)";
     this.db.prepare(sql).run(params.userA, params.userB, params.userA);
