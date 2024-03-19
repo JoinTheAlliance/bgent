@@ -1,13 +1,13 @@
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
 import { runAiTest } from "../../test/runAiTest";
 import { TEST_ACTION, TEST_ACTION_FAIL } from "../../test/testAction";
 import { type User } from "../../test/types";
 import { composeContext } from "../context";
 import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
-import { createRelationship, getRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
 import { Content, State, type Message } from "../types";
@@ -154,25 +154,14 @@ describe("Actions", () => {
     }
 
     // get all relationships for user
-    let data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: "00000000-0000-0000-0000-000000000000" as UUID,
     });
 
-    // if relationship does not exist, create it
     if (!data) {
-      await createRelationship({
-        runtime,
-        userA: user.id as UUID,
-        userB: "00000000-0000-0000-0000-000000000000" as UUID,
-      });
-
-      data = await getRelationship({
-        runtime,
-        userA: user.id as UUID,
-        userB: "00000000-0000-0000-0000-000000000000" as UUID,
-      });
+      throw new Error("Relationship not found");
     }
 
     room_id = data!.room_id;

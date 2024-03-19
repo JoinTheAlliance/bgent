@@ -292,6 +292,51 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       );
   }
 
+  async removeGoal(goalId: UUID): Promise<void> {
+    const sql = "DELETE FROM goals WHERE id = ?";
+    this.db.prepare(sql).run(goalId);
+  }
+
+  async removeAllGoalsByRoomId(room_id: UUID): Promise<void> {
+    const sql = "DELETE FROM goals WHERE room_id = ?";
+    this.db.prepare(sql).run(JSON.stringify(room_id));
+  }
+
+  async createRoom(name: string): Promise<UUID> {
+    const roomId = crypto.randomUUID();
+    const sql = "INSERT INTO rooms (id, name) VALUES (?, ?)";
+    this.db.prepare(sql).run(roomId, name);
+    return roomId as UUID;
+  }
+
+  async removeRoom(roomId: UUID): Promise<void> {
+    const sql = "DELETE FROM rooms WHERE id = ?";
+    this.db.prepare(sql).run(roomId);
+  }
+
+  async getRoomsByParticipant(userId: UUID): Promise<UUID[]> {
+    const sql = "SELECT room_id FROM participants WHERE user_id = ?";
+    const rows = this.db.prepare(sql).all(userId) as { room_id: string }[];
+    return rows.map((row) => row.room_id as UUID);
+  }
+
+  async getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]> {
+    const sql =
+      "SELECT DISTINCT room_id FROM participants WHERE user_id IN (?)";
+    const rows = this.db.prepare(sql).all(userIds) as { room_id: string }[];
+    return rows.map((row) => row.room_id as UUID);
+  }
+
+  async addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void> {
+    const sql = "INSERT INTO participants (user_id, room_id) VALUES (?, ?)";
+    this.db.prepare(sql).run(userId, roomId);
+  }
+
+  async removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void> {
+    const sql = "DELETE FROM participants WHERE user_id = ? AND room_id = ?";
+    this.db.prepare(sql).run(userId, roomId);
+  }
+
   async createRelationship(params: {
     userA: UUID;
     userB: UUID;

@@ -57,14 +57,17 @@ BEGIN
   SELECT value INTO newuser_url FROM secrets WHERE key = 'newuser_url';
   SELECT value INTO token FROM secrets WHERE key = 'token';
 
-  -- Make the HTTP POST request to the endpoint
-  SELECT * INTO response FROM http_post(
-    newuser_url,
-    jsonb_build_object(
-      'token', token,
-      'user_id', NEW.id::text
-    )
-  );
+  -- Ensure newuser_url and token are both defined and not empty
+  IF newuser_url IS NOT NULL AND newuser_url <> '' AND token IS NOT NULL AND token <> '' THEN
+    -- Make the HTTP POST request to the endpoint
+    SELECT * INTO response FROM http_post(
+      newuser_url,
+      jsonb_build_object(
+        'token', token,
+        'user_id', NEW.id::text
+      )
+    );
+  END IF;
 
   RETURN NEW;
 END;

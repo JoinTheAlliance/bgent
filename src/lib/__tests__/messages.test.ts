@@ -1,13 +1,14 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
+import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { type User } from "../../test/types";
+import { zeroUuid } from "../constants";
+import { formatFacts } from "../evaluators/fact";
 import { formatActors, formatMessages, getActorDetails } from "../messages";
+import { createRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
 import { type Actor, type Content, type Memory } from "../types";
-import { formatFacts } from "../evaluators/fact";
-import { createRelationship, getRelationship } from "../relationships";
-import { zeroUuid } from "../constants";
-import dotenv from "dotenv";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -37,11 +38,13 @@ describe("Messages Library", () => {
       userB,
     });
 
-    const relationship = await getRelationship({
+    const relationship = await getOrCreateRelationship({
       runtime,
       userA,
       userB,
     });
+
+    console.log("relationship", relationship);
 
     if (!relationship?.room_id) {
       throw new Error("Room not found");

@@ -35,6 +35,27 @@ custom_edit_url: null
 
 ## Methods
 
+### addParticipantToRoom
+
+▸ **addParticipantToRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[addParticipantToRoom](DatabaseAdapter.md#addparticipanttoroom)
+
+___
+
 ### countMemoriesByRoomId
 
 ▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName`): `Promise`\<`number`\>
@@ -138,6 +159,26 @@ ___
 #### Overrides
 
 [DatabaseAdapter](DatabaseAdapter.md).[createRelationship](DatabaseAdapter.md#createrelationship)
+
+___
+
+### createRoom
+
+▸ **createRoom**(`name`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `name` | `string` |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[createRoom](DatabaseAdapter.md#createroom)
 
 ___
 
@@ -299,6 +340,46 @@ ___
 
 ___
 
+### getRoomsByParticipant
+
+▸ **getRoomsByParticipant**(`userId`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getRoomsByParticipant](DatabaseAdapter.md#getroomsbyparticipant)
+
+___
+
+### getRoomsByParticipants
+
+▸ **getRoomsByParticipants**(`userIds`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getRoomsByParticipants](DatabaseAdapter.md#getroomsbyparticipants)
+
+___
+
 ### log
 
 ▸ **log**(`params`): `Promise`\<`void`\>
@@ -323,6 +404,26 @@ ___
 
 ___
 
+### removeAllGoalsByRoomId
+
+▸ **removeAllGoalsByRoomId**(`room_id`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoalsByRoomId](DatabaseAdapter.md#removeallgoalsbyroomid)
+
+___
+
 ### removeAllMemoriesByRoomId
 
 ▸ **removeAllMemoriesByRoomId**(`room_id`, `tableName`): `Promise`\<`void`\>
@@ -344,16 +445,35 @@ ___
 
 ___
 
+### removeGoal
+
+▸ **removeGoal**(`goalId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `goalId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeGoal](DatabaseAdapter.md#removegoal)
+
+___
+
 ### removeMemory
 
-▸ **removeMemory**(`memoryId`, `tableName`): `Promise`\<`void`\>
+▸ **removeMemory**(`memoryId`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `memoryId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `tableName` | `string` |
 
 #### Returns
 
@@ -362,6 +482,47 @@ ___
 #### Overrides
 
 [DatabaseAdapter](DatabaseAdapter.md).[removeMemory](DatabaseAdapter.md#removememory)
+
+___
+
+### removeParticipantFromRoom
+
+▸ **removeParticipantFromRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeParticipantFromRoom](DatabaseAdapter.md#removeparticipantfromroom)
+
+___
+
+### removeRoom
+
+▸ **removeRoom**(`roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeRoom](DatabaseAdapter.md#removeroom)
 
 ___
 

@@ -1,17 +1,17 @@
-import { type User } from "../../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { Goodbye1 } from "../../../test/data";
+import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
 import { populateMemories } from "../../../test/populateMemories";
-import { getRelationship } from "../../relationships";
+import { runAiTest } from "../../../test/runAiTest";
+import { type User } from "../../../test/types";
+import { zeroUuid } from "../../constants";
 import { type BgentRuntime } from "../../runtime";
 import { Content, type Message } from "../../types";
 import action from "../elaborate";
 import ignore from "../ignore";
-import { zeroUuid } from "../../constants";
 import wait from "../wait";
-import { runAiTest } from "../../../test/runAiTest";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -59,7 +59,7 @@ describe("User Profile", () => {
     user = setup.session.user;
     runtime = setup.runtime;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,

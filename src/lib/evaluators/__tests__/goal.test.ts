@@ -1,16 +1,16 @@
-import { type User } from "../../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
+import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
 import { populateMemories } from "../../../test/populateMemories";
-import { createGoal, getGoals } from "../../goals";
-import { getRelationship } from "../../relationships";
-import { type BgentRuntime } from "../../runtime";
-import { Goal, GoalStatus, Objective, type Message, State } from "../../types";
-import evaluator from "../goal";
+import { runAiTest } from "../../../test/runAiTest";
+import { type User } from "../../../test/types";
 import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
-import { runAiTest } from "../../../test/runAiTest";
+import { createGoal, getGoals } from "../../goals";
+import { type BgentRuntime } from "../../runtime";
+import { Goal, GoalStatus, Objective, State, type Message } from "../../types";
+import evaluator from "../goal";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -28,7 +28,7 @@ describe("Goals Evaluator", () => {
     user = setup.session.user;
     runtime = setup.runtime;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,

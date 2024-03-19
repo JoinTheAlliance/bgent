@@ -17,15 +17,15 @@ describe("Goals", () => {
     });
     runtime = result.runtime;
     user = result.session.user;
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(zeroUuid, "goals");
+    await runtime.databaseAdapter.removeAllGoalsByRoomId(zeroUuid);
   });
 
   beforeEach(async () => {
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(zeroUuid, "goals");
+    await runtime.databaseAdapter.removeAllGoalsByRoomId(zeroUuid);
   });
 
   afterAll(async () => {
-    await runtime.databaseAdapter.removeAllMemoriesByRoomId(zeroUuid, "goals");
+    await runtime.databaseAdapter.removeAllGoalsByRoomId(zeroUuid);
   });
 
   test("createGoal - successfully creates a new goal", async () => {
@@ -109,5 +109,10 @@ describe("Goals", () => {
     );
 
     expect(updatedGoalInDb?.status).toEqual(GoalStatus.DONE);
+
+    // Clean up the created goal
+    if (existingGoal?.id) {
+      await runtime.databaseAdapter.removeGoal(existingGoal.id);
+    }
   });
 });

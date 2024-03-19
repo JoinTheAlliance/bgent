@@ -66,8 +66,6 @@ export default {
         stop: [],
       });
 
-      console.log("response", response);
-
       runtime.databaseAdapter.log({
         body: { message, context, response },
         user_id: userId,

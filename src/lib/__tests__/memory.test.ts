@@ -1,19 +1,19 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
-import { createRuntime } from "../../test/createRuntime";
-import { MemoryManager } from "../memory";
-import { getRelationship } from "../relationships";
-import { type Content, type Memory } from "../types";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
+import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { type User } from "../../test/types";
 import { zeroUuid } from "../constants";
+import { MemoryManager } from "../memory";
+import { type Content, type Memory } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Memory", () => {
   let memoryManager: MemoryManager;
   let runtime = null;
   let user: User;
-  let room_id: UUID;
+  let room_id: UUID = zeroUuid;
 
   beforeAll(async () => {
     const result = await createRuntime({
@@ -22,7 +22,7 @@ describe("Memory", () => {
     runtime = result.runtime;
     user = result.session.user;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
@@ -32,7 +32,9 @@ describe("Memory", () => {
       throw new Error("Relationship not found");
     }
 
-    room_id = data?.room_id;
+    console.log("*** data", data);
+
+    room_id = data.room_id;
 
     memoryManager = new MemoryManager({
       tableName: "messages",
@@ -64,7 +66,7 @@ describe("Memory", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      room_id,
+      room_id: room_id,
       embedding,
     });
     if (!embedding) {
@@ -99,6 +101,9 @@ describe("Memory", () => {
         count: 1,
       },
     );
+
+    console.log("*** room_id", room_id);
+    console.log("*** searchedMemories", searchedMemories);
 
     // Check that the similar memory is included in the search results and the dissimilar one is not or ranks lower
     expect(
@@ -203,7 +208,7 @@ describe("Memory - Basic tests", () => {
     runtime = result.runtime;
     user = result.session.user;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
@@ -290,7 +295,7 @@ describe("Memory - Extended Tests", () => {
     runtime = result.runtime;
     user = result.session.user;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,
@@ -301,6 +306,8 @@ describe("Memory - Extended Tests", () => {
     }
 
     room_id = data.room_id;
+
+    if (!room_id) throw new Error("Room not found");
 
     memoryManager = new MemoryManager({
       tableName: "messages",
@@ -370,7 +377,7 @@ describe("Memory - Extended Tests", () => {
     const similarMemory = await memoryManager.addEmbeddingToMemory({
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
-      room_id,
+      room_id: room_id,
       embedding,
     });
     if (!embedding) {

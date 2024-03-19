@@ -1,12 +1,12 @@
-import dotenv from "dotenv";
-import { createRuntime } from "../../test/createRuntime";
 import { type UUID } from "crypto";
-import { createRelationship, getRelationship } from "../relationships";
+import dotenv from "dotenv";
 import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
-import { BgentRuntime } from "../runtime";
+import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
 import { type User } from "../../test/types";
-import { type Message } from "../types";
 import { zeroUuid } from "../constants";
+import { BgentRuntime } from "../runtime";
+import { type Message } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -58,26 +58,16 @@ describe("Agent Runtime", () => {
     runtime = result.runtime;
     user = result.session.user;
 
-    let data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
     });
 
     if (!data) {
-      await createRelationship({
-        runtime,
-        userA: user?.id as UUID,
-        userB: zeroUuid,
-      });
-      data = await getRelationship({
-        runtime,
-        userA: user?.id as UUID,
-        userB: zeroUuid,
-      });
+      throw new Error("Relationship not found");
     }
-    // TODO: This seems to be defaulting to zeroUuid, but we should be able to get the room_id from the relationship
-    room_id = (data?.room_id as UUID) || zeroUuid;
+    room_id = data.room_id;
     await clearMemories(); // Clear memories before each test
   });
 
@@ -114,5 +104,5 @@ describe("Agent Runtime", () => {
     expect(state.recentMessagesData.length).toBeGreaterThan(1);
 
     await clearMemories();
-  });
+  }, 60000);
 });

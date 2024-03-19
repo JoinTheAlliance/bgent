@@ -8,12 +8,12 @@ import {
   GetTellMeAboutYourselfConversation3,
   jimFacts,
 } from "../../../test/data";
+import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
 import { populateMemories } from "../../../test/populateMemories";
 import { runAiTest } from "../../../test/runAiTest";
 import { type User } from "../../../test/types";
 import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
-import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import evaluator from "../fact";
@@ -23,7 +23,7 @@ dotenv.config({ path: ".dev.vars" });
 describe("Facts Evaluator", () => {
   let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID;
+  let room_id = zeroUuid;
 
   beforeAll(async () => {
     const setup = await createRuntime({
@@ -34,7 +34,11 @@ describe("Facts Evaluator", () => {
     user = setup.session.user;
     runtime = setup.runtime;
 
-    const data = await getRelationship({
+    if (!user.id) {
+      throw new Error("User ID is undefined");
+    }
+
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,

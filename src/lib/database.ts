@@ -99,6 +99,22 @@ export abstract class DatabaseAdapter {
 
   abstract createGoal(goal: Goal): Promise<void>;
 
+  abstract removeGoal(goalId: UUID): Promise<void>;
+
+  abstract removeAllGoalsByRoomId(room_id: UUID): Promise<void>;
+
+  abstract createRoom(name: string): Promise<UUID>;
+
+  abstract removeRoom(roomId: UUID): Promise<void>;
+
+  abstract getRoomsByParticipant(userId: UUID): Promise<UUID[]>;
+
+  abstract getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]>;
+
+  abstract addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void>;
+
+  abstract removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void>;
+
   abstract createRelationship(params: {
     userA: UUID;
     userB: UUID;

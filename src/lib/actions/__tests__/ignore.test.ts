@@ -6,6 +6,7 @@ import {
   GetTellMeAboutYourselfConversationTroll2,
   Goodbye1,
 } from "../../../test/data";
+import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
 import { populateMemories } from "../../../test/populateMemories";
 import { runAiTest } from "../../../test/runAiTest";
 import { type User } from "../../../test/types";
@@ -13,7 +14,6 @@ import { zeroUuid } from "../../constants";
 import { composeContext } from "../../context";
 import logger from "../../logger";
 import { embeddingZeroVector } from "../../memory";
-import { getRelationship } from "../../relationships";
 import { type BgentRuntime } from "../../runtime";
 import { messageHandlerTemplate } from "../../templates";
 import { Content, State, type Message } from "../../types";
@@ -147,7 +147,7 @@ describe("Ignore action tests", () => {
     user = setup.session.user;
     runtime = setup.runtime;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,

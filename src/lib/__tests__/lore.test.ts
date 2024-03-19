@@ -1,14 +1,14 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { type User } from "../../test/types";
+import { zeroUuid } from "../constants";
 import { composeContext } from "../context";
 import { addLore, getLore } from "../lore";
 import { BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
 import { type Content } from "../types";
-import { zeroUuid } from "../constants";
-import { getRelationship } from "../relationships";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Lore", () => {
@@ -21,7 +21,7 @@ describe("Lore", () => {
     });
     runtime = result.runtime;
     const user = result?.session?.user as User;
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,

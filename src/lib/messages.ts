@@ -24,7 +24,7 @@ export async function getActorDetails({
  */
 export function formatActors({ actors }: { actors: Actor[] }) {
   const actorStrings = actors.map((actor: Actor) => {
-    const header = `${actor.name}${actor.details.tagline ? ": " + actor.details.tagline : ""}${actor.details?.summary ? "\n" + actor.details?.summary : ""}`;
+    const header = `${actor.name}${actor.details?.tagline ? ": " + actor.details?.tagline : ""}${actor.details?.summary ? "\n" + actor.details?.summary : ""}`;
     return header;
   });
   const finalActorStrings = actorStrings.join("\n");

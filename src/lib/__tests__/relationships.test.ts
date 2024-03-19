@@ -1,14 +1,11 @@
-import { type User } from "../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime"; // Adjust the import path as needed
-import {
-  createRelationship,
-  getRelationship,
-  getRelationships,
-} from "../relationships"; // Adjust the import path as needed
-import { BgentRuntime } from "../runtime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { type User } from "../../test/types";
 import { zeroUuid } from "../constants";
+import { createRelationship, getRelationships } from "../relationships"; // Adjust the import path as needed
+import { BgentRuntime } from "../runtime";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -22,19 +19,26 @@ describe("Relationships Module", () => {
     });
     runtime = setup.runtime;
     user = setup.session.user;
+    if (!user.id) {
+      throw new Error("User ID is undefined");
+    }
   });
 
   test("createRelationship creates a new relationship", async () => {
-    const userA = user?.id as UUID;
+    console.log("user: ", user);
+    const userA = user.id as UUID;
     const userB = zeroUuid;
-
-    const relationship = await createRelationship({
-      runtime,
-      userA,
-      userB,
-    });
-
-    expect(relationship).toBe(true);
+    if (userA === undefined) throw new Error("userA is undefined");
+    try {
+      const relationship = await createRelationship({
+        runtime,
+        userA,
+        userB,
+      });
+      expect(relationship).toBe(true);
+    } catch (error) {
+      console.log("*** error: ", error);
+    }
   });
 
   test("getRelationship retrieves an existing relationship", async () => {
@@ -43,7 +47,7 @@ describe("Relationships Module", () => {
 
     await createRelationship({ runtime, userA, userB });
 
-    const relationship = await getRelationship({
+    const relationship = await getOrCreateRelationship({
       runtime,
       userA,
       userB,

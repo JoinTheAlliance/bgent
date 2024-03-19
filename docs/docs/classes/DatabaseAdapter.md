@@ -26,6 +26,23 @@ custom_edit_url: null
 
 ## Methods
 
+### addParticipantToRoom
+
+▸ **addParticipantToRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
 ### countMemoriesByRoomId
 
 ▸ **countMemoriesByRoomId**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
@@ -109,6 +126,22 @@ ___
 #### Returns
 
 `Promise`\<`boolean`\>
+
+___
+
+### createRoom
+
+▸ **createRoom**(`name`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `name` | `string` |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
 
 ___
 
@@ -242,6 +275,38 @@ ___
 
 ___
 
+### getRoomsByParticipant
+
+▸ **getRoomsByParticipant**(`userId`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+___
+
+### getRoomsByParticipants
+
+▸ **getRoomsByParticipants**(`userIds`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+___
+
 ### log
 
 ▸ **log**(`params`): `Promise`\<`void`\>
@@ -255,6 +320,22 @@ ___
 | `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.type` | `string` |
 | `params.user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### removeAllGoalsByRoomId
+
+▸ **removeAllGoalsByRoomId**(`room_id`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -279,6 +360,22 @@ ___
 
 ___
 
+### removeGoal
+
+▸ **removeGoal**(`goalId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `goalId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
 ### removeMemory
 
 ▸ **removeMemory**(`memoryId`, `tableName`): `Promise`\<`void`\>
@@ -289,6 +386,39 @@ ___
 | :------ | :------ |
 | `memoryId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `tableName` | `string` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### removeParticipantFromRoom
+
+▸ **removeParticipantFromRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### removeRoom
+
+▸ **removeRoom**(`roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 

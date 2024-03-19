@@ -1,15 +1,15 @@
-import { type User } from "../../../test/types";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
+import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
 import { populateMemories } from "../../../test/populateMemories";
-import { getRelationship } from "../../relationships";
+import { runAiTest } from "../../../test/runAiTest";
+import { type User } from "../../../test/types";
+import { zeroUuid } from "../../constants";
 import { type BgentRuntime } from "../../runtime";
 import { type Message } from "../../types";
 import action from "../wait"; // Import the wait action
-import { zeroUuid } from "../../constants";
-import { runAiTest } from "../../../test/runAiTest";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -34,7 +34,7 @@ describe("Wait Action Behavior", () => {
     user = setup.session.user;
     runtime = setup.runtime;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,

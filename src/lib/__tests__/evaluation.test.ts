@@ -1,16 +1,16 @@
-import { type User } from "../../test/types";
 import { UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { runAiTest } from "../../test/runAiTest";
 import { TEST_EVALUATOR, TEST_EVALUATOR_FAIL } from "../../test/testEvaluator";
+import { type User } from "../../test/types";
+import { zeroUuid } from "../constants";
 import { composeContext } from "../context";
 import { evaluationTemplate } from "../evaluators";
 import fact from "../evaluators/fact";
-import { getRelationship } from "../relationships";
 import { BgentRuntime } from "../runtime";
 import { Message } from "../types";
-import { runAiTest } from "../../test/runAiTest";
-import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -27,7 +27,7 @@ describe("Evaluation Process", () => {
     runtime = setup.runtime;
     user = setup.session.user;
 
-    const relationship = await getRelationship({
+    const relationship = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,

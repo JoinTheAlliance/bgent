@@ -32,7 +32,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   }
 
   async createAccount(account: Account): Promise<void> {
-    const { error } = await this.supabase.from("accounts").insert([account]);
+    const { error } = await this.supabase.from("accounts").upsert([account]);
     if (error) {
       throw new Error(error.message);
     }
@@ -297,18 +297,146 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     await this.supabase.from("goals").upsert(goal);
   }
 
+  async removeGoal(goalId: UUID): Promise<void> {
+    const { error } = await this.supabase
+      .from("goals")
+      .delete()
+      .eq("id", goalId);
+    if (error) {
+      throw new Error(`Error removing goal: ${error.message}`);
+    }
+  }
+
+  async removeAllGoalsByRoomId(room_id: UUID): Promise<void> {
+    const { error } = await this.supabase
+      .from("goals")
+      .delete()
+      .eq("room_id", room_id);
+    if (error) {
+      throw new Error(`Error removing goals: ${error.message}`);
+    }
+  }
+
+  async getRoomsByParticipant(userId: UUID): Promise<UUID[]> {
+    const { data, error } = await this.supabase
+      .from("participants")
+      .select("room_id")
+      .eq("user_id", userId);
+
+    if (error) {
+      throw new Error(`Error getting rooms by participant: ${error.message}`);
+    }
+
+    return data.map((row) => row.room_id as UUID);
+  }
+
+  async getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]> {
+    const { data, error } = await this.supabase
+      .from("participants")
+      .select("room_id")
+      .in("user_id", userIds);
+
+    if (error) {
+      throw new Error(`Error getting rooms by participants: ${error.message}`);
+    }
+
+    return [...new Set(data.map((row) => row.room_id as UUID))];
+  }
+
+  async createRoom(name: string): Promise<UUID> {
+    const { data, error } = (await this.supabase
+      .from("rooms")
+      .upsert({ name })
+      .single()) as { data: { id: UUID } | null; error: Error | null };
+
+    if (error) {
+      throw new Error(`Error creating room: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error("No data returned from room creation");
+    }
+
+    return data.id;
+  }
+
+  async removeRoom(roomId: UUID): Promise<void> {
+    const { error } = await this.supabase
+      .from("rooms")
+      .delete()
+      .eq("id", roomId);
+
+    if (error) {
+      throw new Error(`Error removing room: ${error.message}`);
+    }
+  }
+
+  async addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void> {
+    const { error } = await this.supabase
+      .from("participants")
+      .insert({ user_id: userId, room_id: roomId });
+
+    if (error) {
+      throw new Error(`Error adding participant: ${error.message}`);
+    }
+  }
+
+  async removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void> {
+    const { error } = await this.supabase
+      .from("participants")
+      .delete()
+      .eq("user_id", userId)
+      .eq("room_id", roomId);
+
+    if (error) {
+      throw new Error(`Error removing participant: ${error.message}`);
+    }
+  }
+
   async createRelationship(params: {
     userA: UUID;
     userB: UUID;
   }): Promise<boolean> {
-    const { data, error: roomsError } = (await this.supabase
+    // check for room with values name: `Room for ${params.userA} and ${params.userB}`, created_by: params.userA,
+    const { data: allRoomData, error: allRoomsError } = await this.supabase
       .from("rooms")
-      .insert({ name: "test relationship" })
-      .single()) as { data: { id: UUID } | null; error: Error | null };
-    if (roomsError) {
-      throw new Error(roomsError.message);
+      .select("id")
+      .eq("name", `Room for ${params.userA} and ${params.userB}`)
+      .eq("created_by", params.userA);
+
+    if (allRoomsError) {
+      throw new Error("All rooms error: " + allRoomsError.message);
     }
-    const room_id = data?.id;
+
+    if (!allRoomData || allRoomData.length === 0) {
+      const { error: roomsError } = await this.supabase
+        .from("rooms")
+        .insert({
+          name: `Room for ${params.userA} and ${params.userB}`,
+          created_by: params.userA,
+        })
+        .eq("name", `Room for ${params.userA} and ${params.userB}`);
+
+      if (roomsError) {
+        throw new Error("Room error: " + roomsError.message);
+      }
+    }
+
+    // get the room_id from the room creation
+    const { data, error: roomError } = await this.supabase
+      .from("rooms")
+      .select("id")
+      .eq("name", `Room for ${params.userA} and ${params.userB}`)
+      .single();
+
+    if (roomError) {
+      throw new Error("Room error: " + roomError.message);
+    }
+
+    const room_id = data.id as UUID;
+    if (!room_id) {
+      throw new Error("Room not found");
+    }
     const { error: participantsError } = await this.supabase
       .from("participants")
       .insert([
@@ -320,15 +448,20 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
     // then create a relationship between the two users with the room_id as the relationship's room_id
 
-    const { error } = await this.supabase.from("relationships").upsert({
-      user_a: params.userA,
-      user_b: params.userB,
-      user_id: params.userA,
-      room_id,
-    });
+    const { error } = await this.supabase
+      .from("relationships")
+      .upsert({
+        user_a: params.userA,
+        user_b: params.userB,
+        user_id: params.userA,
+        room_id,
+        status: "FRIENDS",
+      })
+      .eq("user_a", params.userA)
+      .eq("user_b", params.userB);
 
     if (error) {
-      throw new Error(error.message);
+      throw new Error("Relationship error: " + error.message);
     }
 
     return true;
