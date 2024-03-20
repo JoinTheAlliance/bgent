@@ -14,6 +14,8 @@ import { Database } from "better-sqlite3";
 import { load } from "./sqlite/sqlite_vss";
 import { sqliteTables } from "./sqlite/sqliteTables";
 
+import crypto from "crypto";
+
 export class SqliteDatabaseAdapter extends DatabaseAdapter {
   private db: Database;
 
