@@ -80,6 +80,7 @@ async function handleMessage(
     ) as unknown as Content;
 
     if (
+      parsedResponse &&
       (parsedResponse.user as string)?.includes(
         (state as State).agentName as string,
       )
