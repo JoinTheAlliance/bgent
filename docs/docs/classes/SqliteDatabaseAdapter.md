@@ -32,6 +32,12 @@ custom_edit_url: null
 
 [DatabaseAdapter](DatabaseAdapter.md).[constructor](DatabaseAdapter.md#constructor)
 
+## Properties
+
+### db
+
+• **db**: `Database`
+
 ## Methods
 
 ### addParticipantToRoom
@@ -73,7 +79,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[countMemories](DatabaseAdapter.md#countmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[countMemories](DatabaseAdapter.md#countmemories)
 
 ___
 
@@ -119,15 +125,14 @@ ___
 
 ### createMemory
 
-▸ **createMemory**(`memory`, `tableName`, `unique?`): `Promise`\<`void`\>
+▸ **createMemory**(`memory`, `tableName`): `Promise`\<`void`\>
 
 #### Parameters
 
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `memory` | [`Memory`](../interfaces/Memory.md) | `undefined` |
-| `tableName` | `string` | `undefined` |
-| `unique` | `boolean` | `false` |
+| Name | Type |
+| :------ | :------ |
+| `memory` | [`Memory`](../interfaces/Memory.md) |
+| `tableName` | `string` |
 
 #### Returns
 
@@ -222,6 +227,32 @@ ___
 
 ___
 
+### getCachedEmbeddings
+
+▸ **getCachedEmbeddings**(`opts`): `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `opts` | `Object` |
+| `opts.query_field_name` | `string` |
+| `opts.query_field_sub_name` | `string` |
+| `opts.query_input` | `string` |
+| `opts.query_match_count` | `number` |
+| `opts.query_table_name` | `string` |
+| `opts.query_threshold` | `number` |
+
+#### Returns
+
+`Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getcachedembeddings)
+
+___
+
 ### getGoals
 
 ▸ **getGoals**(`params`): `Promise`\<[`Goal`](../interfaces/Goal.md)[]\>
@@ -266,33 +297,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[getMemories](DatabaseAdapter.md#getmemoriesbyroomid)
-
-___
-
-### getCachedEmbeddings
-
-▸ **getCachedEmbeddings**(`opts`): `Promise`\<[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `opts` | `Object` |
-| `opts.query_field_name` | `string` |
-| `opts.query_field_sub_name` | `string` |
-| `opts.query_input` | `string` |
-| `opts.query_match_count` | `number` |
-| `opts.query_table_name` | `string` |
-| `opts.query_threshold` | `number` |
-
-#### Returns
-
-`Promise`\<[]\>
-
-#### Overrides
-
-[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getmemorybycontent)
+[DatabaseAdapter](DatabaseAdapter.md).[getMemories](DatabaseAdapter.md#getmemories)
 
 ___
 
@@ -419,7 +424,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoals](DatabaseAdapter.md#removeallgoalsbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoals](DatabaseAdapter.md#removeallgoals)
 
 ___
 
@@ -440,7 +445,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemories](DatabaseAdapter.md#removeallmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemories](DatabaseAdapter.md#removeallmemories)
 
 ___
 

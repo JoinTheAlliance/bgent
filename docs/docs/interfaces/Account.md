@@ -18,7 +18,11 @@ ___
 
 ### details
 
-• `Optional` **details**: `string`
+• `Optional` **details**: `Object`
+
+#### Index signature
+
+▪ [key: `string`]: `unknown`
 
 ___
 

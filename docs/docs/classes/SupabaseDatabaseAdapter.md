@@ -74,7 +74,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[countMemories](DatabaseAdapter.md#countmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[countMemories](DatabaseAdapter.md#countmemories)
 
 ___
 
@@ -223,6 +223,32 @@ ___
 
 ___
 
+### getCachedEmbeddings
+
+▸ **getCachedEmbeddings**(`opts`): `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `opts` | `Object` |
+| `opts.query_field_name` | `string` |
+| `opts.query_field_sub_name` | `string` |
+| `opts.query_input` | `string` |
+| `opts.query_match_count` | `number` |
+| `opts.query_table_name` | `string` |
+| `opts.query_threshold` | `number` |
+
+#### Returns
+
+`Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getcachedembeddings)
+
+___
+
 ### getGoals
 
 ▸ **getGoals**(`params`): `Promise`\<[`Goal`](../interfaces/Goal.md)[]\>
@@ -267,33 +293,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[getMemories](DatabaseAdapter.md#getmemoriesbyroomid)
-
-___
-
-### getCachedEmbeddings
-
-▸ **getCachedEmbeddings**(`opts`): `Promise`\<`SimilaritySearch`[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `opts` | `Object` |
-| `opts.query_field_name` | `string` |
-| `opts.query_field_sub_name` | `string` |
-| `opts.query_input` | `string` |
-| `opts.query_match_count` | `number` |
-| `opts.query_table_name` | `string` |
-| `opts.query_threshold` | `number` |
-
-#### Returns
-
-`Promise`\<`SimilaritySearch`[]\>
-
-#### Overrides
-
-[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getmemorybycontent)
+[DatabaseAdapter](DatabaseAdapter.md).[getMemories](DatabaseAdapter.md#getmemories)
 
 ___
 
@@ -420,7 +420,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoals](DatabaseAdapter.md#removeallgoalsbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoals](DatabaseAdapter.md#removeallgoals)
 
 ___
 
@@ -441,7 +441,7 @@ ___
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemories](DatabaseAdapter.md#removeallmemoriesbyroomid)
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemories](DatabaseAdapter.md#removeallmemories)
 
 ___
 

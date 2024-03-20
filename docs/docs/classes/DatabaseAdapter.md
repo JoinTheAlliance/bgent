@@ -178,6 +178,28 @@ ___
 
 ___
 
+### getCachedEmbeddings
+
+▸ **getCachedEmbeddings**(`«destructured»`): `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `query_field_name` | `string` |
+| › `query_field_sub_name` | `string` |
+| › `query_input` | `string` |
+| › `query_match_count` | `number` |
+| › `query_table_name` | `string` |
+| › `query_threshold` | `number` |
+
+#### Returns
+
+`Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+___
+
 ### getGoals
 
 ▸ **getGoals**(`params`): `Promise`\<[`Goal`](../interfaces/Goal.md)[]\>
@@ -215,28 +237,6 @@ ___
 #### Returns
 
 `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
-
-___
-
-### getCachedEmbeddings
-
-▸ **getCachedEmbeddings**(`«destructured»`): `Promise`\<`SimilaritySearch`[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `query_field_name` | `string` |
-| › `query_field_sub_name` | `string` |
-| › `query_input` | `string` |
-| › `query_match_count` | `number` |
-| › `query_table_name` | `string` |
-| › `query_threshold` | `number` |
-
-#### Returns
-
-`Promise`\<`SimilaritySearch`[]\>
 
 ___
 

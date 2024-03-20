@@ -108,6 +108,22 @@ A Promise that resolves when the operation completes.
 
 ___
 
+### getCachedEmbeddings
+
+▸ **getCachedEmbeddings**(`content`): `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `content` | `string` |
+
+#### Returns
+
+`Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+___
+
 ### getMemories
 
 ▸ **getMemories**(`opts`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
@@ -128,22 +144,6 @@ Retrieves a list of memories by user IDs, with optional deduplication.
 `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 A Promise resolving to an array of Memory objects.
-
-___
-
-### getCachedEmbeddings
-
-▸ **getCachedEmbeddings**(`content`): `Promise`\<`SimilaritySearch`[]\>
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `content` | `string` |
-
-#### Returns
-
-`Promise`\<`SimilaritySearch`[]\>
 
 ___
 
