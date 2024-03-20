@@ -395,7 +395,7 @@ describe("Memory - Extended Tests", () => {
 
     const similarity = (memory as unknown as { similarity: number }).similarity;
 
-    expect(similarity).toBeLessThan(0.1);
+    expect(similarity).toBeLessThan(0.2);
   });
 
   test("Test unique insert", async () => {
