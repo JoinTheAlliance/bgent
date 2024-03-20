@@ -16,6 +16,7 @@ export { addHeader, composeContext } from "./lib/context";
 
 export { DatabaseAdapter } from "./lib/database";
 export { SupabaseDatabaseAdapter } from "./lib/adapters/supabase";
+export { SqliteDatabaseAdapter } from "./lib/adapters/sqlite";
 
 import wait from "./lib/actions/wait";
 export { wait };
