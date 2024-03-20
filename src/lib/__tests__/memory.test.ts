@@ -100,8 +100,6 @@ describe("Memory", () => {
       },
     );
 
-    console.log("searchedMemories", searchedMemories);
-
     // Check that the similar memory is included in the search results and the dissimilar one is not or ranks lower
     expect(
       searchedMemories.some(
