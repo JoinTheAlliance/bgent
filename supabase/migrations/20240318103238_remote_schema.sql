@@ -26,6 +26,18 @@ BEGIN
     END IF;
 END $$;
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_extension
+        WHERE extname = 'fuzzystrmatch'
+    ) THEN
+        CREATE EXTENSION fuzzystrmatch
+        SCHEMA extensions;
+    END IF;
+END $$;
+
 CREATE TABLE IF NOT EXISTS "public"."secrets" (
     "key" "text" PRIMARY KEY,
     "value" "text" NOT NULL
@@ -172,8 +184,8 @@ BEGIN
   RETURNING id INTO new_room_id;
 
   -- Create a new friendship between the new user and the host agent
-  INSERT INTO relationships (user_a, user_b, user_id, status, room_id)
-  VALUES (NEW.id, host_agent_id, host_agent_id, 'FRIENDS', new_room_id);
+  INSERT INTO relationships (user_a, user_b, user_id, status)
+  VALUES (NEW.id, host_agent_id, host_agent_id, 'FRIENDS');
 
   -- Add both users as participants of the new room
   INSERT INTO participants (user_id, room_id)
@@ -292,7 +304,7 @@ CREATE TABLE IF NOT EXISTS "public"."goals" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "user_id" "uuid",
-    "room_id": "uuid",
+    "room_id" "uuid",
     "status" "text",
     "objectives" "jsonb"[] DEFAULT '{}'::"jsonb"[] NOT NULL
 );
@@ -546,9 +558,6 @@ ALTER TABLE ONLY "public"."memories"
 
 ALTER TABLE ONLY "public"."memories"
     ADD CONSTRAINT "reflections_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
-
-ALTER TABLE ONLY "public"."relationships"
-    ADD CONSTRAINT "relationships_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY "public"."relationships"
     ADD CONSTRAINT "relationships_user_a_fkey" FOREIGN KEY ("user_a") REFERENCES "public"."accounts"("id");
