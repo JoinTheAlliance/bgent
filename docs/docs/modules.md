@@ -15,6 +15,7 @@ custom_edit_url: null
 - [BgentRuntime](classes/BgentRuntime.md)
 - [DatabaseAdapter](classes/DatabaseAdapter.md)
 - [MemoryManager](classes/MemoryManager.md)
+- [SqlJsDatabaseAdapter](classes/SqlJsDatabaseAdapter.md)
 - [SqliteDatabaseAdapter](classes/SqliteDatabaseAdapter.md)
 - [SupabaseDatabaseAdapter](classes/SupabaseDatabaseAdapter.md)
 

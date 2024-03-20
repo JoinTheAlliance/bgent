@@ -1,30 +1,42 @@
 ---
-id: "DatabaseAdapter"
-title: "Class: DatabaseAdapter"
-sidebar_label: "DatabaseAdapter"
+id: "SqlJsDatabaseAdapter"
+title: "Class: SqlJsDatabaseAdapter"
+sidebar_label: "SqlJsDatabaseAdapter"
 sidebar_position: 0
 custom_edit_url: null
 ---
 
 ## Hierarchy
 
-- **`DatabaseAdapter`**
+- [`DatabaseAdapter`](DatabaseAdapter.md)
 
-  ↳ [`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
-
-  ↳ [`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
-
-  ↳ [`SqlJsDatabaseAdapter`](SqlJsDatabaseAdapter.md)
+  ↳ **`SqlJsDatabaseAdapter`**
 
 ## Constructors
 
 ### constructor
 
-• **new DatabaseAdapter**(): [`DatabaseAdapter`](DatabaseAdapter.md)
+• **new SqlJsDatabaseAdapter**(`db`): [`SqlJsDatabaseAdapter`](SqlJsDatabaseAdapter.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `db` | `Database` |
 
 #### Returns
 
-[`DatabaseAdapter`](DatabaseAdapter.md)
+[`SqlJsDatabaseAdapter`](SqlJsDatabaseAdapter.md)
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[constructor](DatabaseAdapter.md#constructor)
+
+## Properties
+
+### db
+
+• **db**: `Database`
 
 ## Methods
 
@@ -43,6 +55,10 @@ custom_edit_url: null
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[addParticipantToRoom](DatabaseAdapter.md#addparticipanttoroom)
+
 ___
 
 ### countMemories
@@ -51,15 +67,19 @@ ___
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `unique?` | `boolean` |
-| `tableName?` | `string` |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
+| `unique` | `boolean` | `true` |
+| `tableName` | `string` | `""` |
 
 #### Returns
 
 `Promise`\<`number`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[countMemories](DatabaseAdapter.md#countmemories)
 
 ___
 
@@ -77,6 +97,10 @@ ___
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[createAccount](DatabaseAdapter.md#createaccount)
+
 ___
 
 ### createGoal
@@ -93,11 +117,15 @@ ___
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[createGoal](DatabaseAdapter.md#creategoal)
+
 ___
 
 ### createMemory
 
-▸ **createMemory**(`memory`, `tableName`, `unique?`): `Promise`\<`void`\>
+▸ **createMemory**(`memory`, `tableName`): `Promise`\<`void`\>
 
 #### Parameters
 
@@ -105,11 +133,14 @@ ___
 | :------ | :------ |
 | `memory` | [`Memory`](../interfaces/Memory.md) |
 | `tableName` | `string` |
-| `unique?` | `boolean` |
 
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[createMemory](DatabaseAdapter.md#creatememory)
 
 ___
 
@@ -129,6 +160,10 @@ ___
 
 `Promise`\<`boolean`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[createRelationship](DatabaseAdapter.md#createrelationship)
+
 ___
 
 ### createRoom
@@ -145,6 +180,10 @@ ___
 
 `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[createRoom](DatabaseAdapter.md#createroom)
+
 ___
 
 ### getAccountById
@@ -160,6 +199,10 @@ ___
 #### Returns
 
 `Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getAccountById](DatabaseAdapter.md#getaccountbyid)
 
 ___
 
@@ -178,27 +221,35 @@ ___
 
 `Promise`\<[`Actor`](../interfaces/Actor.md)[]\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getActorDetails](DatabaseAdapter.md#getactordetails)
+
 ___
 
 ### getCachedEmbeddings
 
-▸ **getCachedEmbeddings**(`«destructured»`): `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+▸ **getCachedEmbeddings**(`opts`): `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | `Object` |
-| › `query_field_name` | `string` |
-| › `query_field_sub_name` | `string` |
-| › `query_input` | `string` |
-| › `query_match_count` | `number` |
-| › `query_table_name` | `string` |
-| › `query_threshold` | `number` |
+| `opts` | `Object` |
+| `opts.query_field_name` | `string` |
+| `opts.query_field_sub_name` | `string` |
+| `opts.query_input` | `string` |
+| `opts.query_match_count` | `number` |
+| `opts.query_table_name` | `string` |
+| `opts.query_threshold` | `number` |
 
 #### Returns
 
 `Promise`\<\{ `embedding`: `number`[] ; `levenshtein_score`: `number`  }[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getCachedEmbeddings](DatabaseAdapter.md#getcachedembeddings)
 
 ___
 
@@ -220,6 +271,10 @@ ___
 
 `Promise`\<[`Goal`](../interfaces/Goal.md)[]\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getGoals](DatabaseAdapter.md#getgoals)
+
 ___
 
 ### getMemories
@@ -240,6 +295,10 @@ ___
 
 `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getMemories](DatabaseAdapter.md#getmemories)
+
 ___
 
 ### getRelationship
@@ -258,6 +317,10 @@ ___
 
 `Promise`\<``null`` \| [`Relationship`](../interfaces/Relationship.md)\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getRelationship](DatabaseAdapter.md#getrelationship)
+
 ___
 
 ### getRelationships
@@ -275,6 +338,10 @@ ___
 
 `Promise`\<[`Relationship`](../interfaces/Relationship.md)[]\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getRelationships](DatabaseAdapter.md#getrelationships)
+
 ___
 
 ### getRoomsByParticipant
@@ -291,6 +358,10 @@ ___
 
 `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getRoomsByParticipant](DatabaseAdapter.md#getroomsbyparticipant)
+
 ___
 
 ### getRoomsByParticipants
@@ -306,6 +377,10 @@ ___
 #### Returns
 
 `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[getRoomsByParticipants](DatabaseAdapter.md#getroomsbyparticipants)
 
 ___
 
@@ -327,6 +402,10 @@ ___
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[log](DatabaseAdapter.md#log)
+
 ___
 
 ### removeAllGoals
@@ -342,6 +421,10 @@ ___
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllGoals](DatabaseAdapter.md#removeallgoals)
 
 ___
 
@@ -360,6 +443,10 @@ ___
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeAllMemories](DatabaseAdapter.md#removeallmemories)
+
 ___
 
 ### removeGoal
@@ -375,6 +462,10 @@ ___
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeGoal](DatabaseAdapter.md#removegoal)
 
 ___
 
@@ -393,6 +484,10 @@ ___
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeMemory](DatabaseAdapter.md#removememory)
+
 ___
 
 ### removeParticipantFromRoom
@@ -410,6 +505,10 @@ ___
 
 `Promise`\<`void`\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeParticipantFromRoom](DatabaseAdapter.md#removeparticipantfromroom)
+
 ___
 
 ### removeRoom
@@ -425,6 +524,10 @@ ___
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[removeRoom](DatabaseAdapter.md#removeroom)
 
 ___
 
@@ -448,17 +551,21 @@ ___
 
 `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[searchMemories](DatabaseAdapter.md#searchmemories)
+
 ___
 
 ### searchMemoriesByEmbedding
 
-▸ **searchMemoriesByEmbedding**(`embedding`, `params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **searchMemoriesByEmbedding**(`_embedding`, `params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `embedding` | `number`[] |
+| `_embedding` | `number`[] |
 | `params` | `Object` |
 | `params.count?` | `number` |
 | `params.match_threshold?` | `number` |
@@ -469,6 +576,10 @@ ___
 #### Returns
 
 `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[searchMemoriesByEmbedding](DatabaseAdapter.md#searchmemoriesbyembedding)
 
 ___
 
@@ -485,6 +596,10 @@ ___
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[updateGoal](DatabaseAdapter.md#updategoal)
 
 ___
 
@@ -503,3 +618,7 @@ ___
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Overrides
+
+[DatabaseAdapter](DatabaseAdapter.md).[updateGoalStatus](DatabaseAdapter.md#updategoalstatus)
