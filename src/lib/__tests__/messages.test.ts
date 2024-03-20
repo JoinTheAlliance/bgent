@@ -38,20 +38,17 @@ describe("Messages Library", () => {
       userB,
     });
 
-    const relationship = await getOrCreateRelationship({
+    const { room_id } = await getOrCreateRelationship({
       runtime,
       userA,
       userB,
     });
 
-    if (!relationship?.room_id) {
-      throw new Error("Room not found");
-    }
-
     const result = await getActorDetails({
       runtime,
-      room_id: relationship?.room_id as UUID,
+      room_id,
     });
+    console.log("result", result);
     expect(result.length).toBeGreaterThan(0);
     result.forEach((actor: Actor) => {
       expect(actor).toHaveProperty("name");
@@ -61,7 +58,6 @@ describe("Messages Library", () => {
   });
 
   test("formatActors should format actors into a readable string", () => {
-    console.log("ACTORS:", actors)
     const formattedActors = formatActors({ actors });
     actors.forEach((actor) => {
       expect(formattedActors).toContain(actor.name);

@@ -44,7 +44,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     this.db
       .prepare(sql)
       .run(
-        account.id,
+        account.id ?? crypto.randomUUID(),
         account.name,
         account.email,
         account.avatar_url,
@@ -53,25 +53,60 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   }
 
   async getActorDetails(params: { room_id: UUID }): Promise<Actor[]> {
-    const sql = "SELECT * FROM accounts WHERE id IN (?)";
-    return this.db.prepare(sql).all(params.room_id) as Actor[];
+    const sql = `
+      SELECT a.id, a.name, a.details
+      FROM participants p
+      LEFT JOIN accounts a ON p.user_id = a.id
+      WHERE p.room_id = ?
+    `;
+    const rows = this.db.prepare(sql).all(params.room_id) as (Actor | null)[];
+
+    return rows
+      .map((row) => {
+        if (row === null) {
+          return null;
+        }
+        return {
+          ...row,
+          details:
+            typeof row.details === "string"
+              ? JSON.parse(row.details)
+              : row.details,
+        };
+      })
+      .filter((row): row is Actor => row !== null);
   }
 
-  async createMemory(
-    memory: Memory,
-    tableName: string,
-    unique = false,
-  ): Promise<void> {
+  async createMemory(memory: Memory, tableName: string): Promise<void> {
+    let isUnique = true;
+    if (memory.embedding) {
+      // Check if a similar memory already exists
+      const similarMemories = await this.searchMemoriesByEmbedding(
+        memory.embedding,
+        {
+          tableName,
+          room_id: memory.room_id,
+          match_threshold: 0.95, // 5% similarity threshold
+          count: 1,
+        },
+      );
+
+      isUnique = similarMemories.length === 0;
+    }
+
+    // Insert the memory with the appropriate 'unique' value
     const sql = `INSERT INTO memories (id, type, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    this.db.prepare(sql).run(
-      crypto.randomUUID(),
-      tableName,
-      JSON.stringify(memory.content), // stringify the content field
-      JSON.stringify(memory.embedding),
-      memory.user_id,
-      memory.room_id,
-      unique ? 1 : 0,
-    );
+    this.db
+      .prepare(sql)
+      .run(
+        crypto.randomUUID(),
+        tableName,
+        JSON.stringify(memory.content),
+        JSON.stringify(memory.embedding),
+        memory.user_id,
+        memory.room_id,
+        isUnique ? 1 : 0,
+      );
   }
 
   async searchMemories(params: {
@@ -82,25 +117,23 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     match_count: number;
     unique: boolean;
   }): Promise<Memory[]> {
-    const sql = `
-      SELECT *, (1 - vss_distance_l2(embedding, ?)) AS similarity
-      FROM memories
-      WHERE type = ? AND room_id = ?
-      AND vss_search(embedding, ?)
-      ORDER BY similarity DESC
-      LIMIT ?
-    `;
+    let sql = `
+SELECT *, (1 - vss_distance_l2(embedding, ?)) AS similarity
+FROM memories
+WHERE type = ?
+AND room_id = ?`;
+
+    if (params.unique) {
+      sql += " AND `unique` = 1";
+    }
+
+    sql += ` ORDER BY similarity DESC LIMIT ?`;
     const queryParams = [
       JSON.stringify(params.embedding),
       params.tableName,
       params.room_id,
-      JSON.stringify(params.embedding),
       params.match_count,
     ];
-
-    if (params.unique) {
-      // sql += " AND `unique` = 1";
-    }
 
     const memories = this.db.prepare(sql).all(...queryParams) as (Memory & {
       similarity: number;
@@ -121,27 +154,25 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       tableName: string;
     },
   ): Promise<Memory[]> {
-    let sql = `
-      SELECT *, (1 - vss_distance_l2(embedding, ?)) AS similarity
-      FROM memories
-      WHERE type = ?
-      AND vss_search(embedding, ?)
-      ORDER BY similarity DESC
-    `;
     const queryParams = [
       JSON.stringify(embedding),
       params.tableName,
-      JSON.stringify(embedding),
+      // JSON.stringify(embedding),
     ];
 
-    if (params.room_id) {
-      // sql += " AND room_id = ?";
-      // queryParams.push(params.room_id);
-    }
+    let sql = `
+      SELECT *, (1 - vss_distance_l2(embedding, ?)) AS similarity
+      FROM memories
+      WHERE type = ?`; // AND vss_search(embedding, ?)
 
     if (params.unique) {
-      // sql += " AND `unique` = 1";
+      sql += " AND `unique` = 1";
     }
+    if (params.room_id) {
+      sql += " AND room_id = ?";
+      queryParams.push(params.room_id);
+    }
+    sql += ` ORDER BY similarity DESC`;
 
     if (params.count) {
       sql += " LIMIT ?";
@@ -271,12 +302,11 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       throw new Error("tableName is required");
     }
 
-    const sql = `SELECT COUNT(*) as count FROM memories WHERE type = ? AND room_id = ?`;
+    let sql = `SELECT COUNT(*) as count FROM memories WHERE type = ? AND room_id = ?`;
     const queryParams = [tableName, room_id] as string[];
 
     if (unique) {
-      // TODO
-      // sql += " AND `unique` = 1";
+      sql += " AND `unique` = 1";
     }
 
     return (this.db.prepare(sql).get(...queryParams) as { count: number })
@@ -331,7 +361,7 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
     this.db
       .prepare(sql)
       .run(
-        goal.id,
+        goal.id ?? crypto.randomUUID(),
         goal.room_id,
         goal.user_id,
         goal.name,
@@ -384,8 +414,9 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
   }
 
   async addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void> {
-    const sql = "INSERT INTO participants (user_id, room_id) VALUES (?, ?)";
-    this.db.prepare(sql).run(userId, roomId);
+    const sql =
+      "INSERT INTO participants (id, user_id, room_id) VALUES (?, ?, ?)";
+    this.db.prepare(sql).run(crypto.randomUUID(), userId, roomId);
   }
 
   async removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void> {
@@ -401,8 +432,10 @@ export class SqliteDatabaseAdapter extends DatabaseAdapter {
       throw new Error("userA and userB are required");
     }
     const sql =
-      "INSERT INTO relationships (user_a, user_b, user_id) VALUES (?, ?, ?)";
-    this.db.prepare(sql).run(params.userA, params.userB, params.userA);
+      "INSERT INTO relationships (id, user_a, user_b, user_id) VALUES (?, ?, ?, ?)";
+    this.db
+      .prepare(sql)
+      .run(crypto.randomUUID(), params.userA, params.userB, params.userA);
     return true;
   }
 

@@ -1,5 +1,9 @@
 import { Session, createClient } from "@supabase/supabase-js";
-import { User } from "./types";
+import Database from "better-sqlite3";
+import { SqliteDatabaseAdapter } from "../lib/adapters/sqlite";
+import { SupabaseDatabaseAdapter } from "../lib/adapters/supabase";
+import { zeroUuid } from "../lib/constants";
+import { DatabaseAdapter } from "../lib/database";
 import { BgentRuntime } from "../lib/runtime";
 import { Action, Evaluator, Provider } from "../lib/types";
 import {
@@ -8,11 +12,7 @@ import {
   TEST_EMAIL,
   TEST_PASSWORD,
 } from "./constants";
-import { DatabaseAdapter } from "../lib/database";
-import { SupabaseDatabaseAdapter } from "../lib/adapters/supabase";
-import { SqliteDatabaseAdapter } from "../lib/adapters/sqlite";
-import Database from "better-sqlite3";
-import { UUID } from "crypto";
+import { User } from "./types";
 
 export async function createRuntime({
   env,
@@ -39,7 +39,7 @@ export async function createRuntime({
 
         // Create a test user and session
         user = {
-          id: "test-user-id" as UUID,
+          id: zeroUuid,
           email: "test@example.com",
         } as User;
         session = {
