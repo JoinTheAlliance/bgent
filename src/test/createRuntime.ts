@@ -14,6 +14,8 @@ import {
 } from "./constants";
 import { User } from "./types";
 import { load } from "../lib/adapters/sqlite/sqlite_vss";
+import { SqlJsDatabaseAdapter } from "../lib/adapters/sqljs";
+import initSqlJs from "sql.js";
 
 export async function createRuntime({
   env,
@@ -40,6 +42,28 @@ export async function createRuntime({
 
         // Load sqlite-vss
         load((adapter as SqliteDatabaseAdapter).db);
+        // Create a test user and session
+        user = {
+          id: zeroUuid,
+          email: "test@example.com",
+        } as User;
+        session = {
+          access_token: "test-access-token",
+          refresh_token: "test-refresh-token",
+          user: user,
+        } as Session;
+      }
+      break;
+    case "sqljs":
+      {
+        // SQLite adapter
+        const SQL = await initSqlJs({});
+        const db = new SQL.Database();
+
+        adapter = new SqlJsDatabaseAdapter(db);
+
+        // Load sqlite-vss
+        // load((adapter as SqliteDatabaseAdapter).db);
         // Create a test user and session
         user = {
           id: zeroUuid,

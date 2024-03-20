@@ -1,12 +1,12 @@
 {
   "name": "bgent",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
-  "jsnext:main": "dist/index.esm.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "jsnext:main": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf ./dist && rollup -c && tsc && npm run build:docs",
@@ -19,8 +19,7 @@
     "shell:cloud": "node --no-warnings scripts/shell.mjs",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --runInBand",
     "test:sqlite": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" TEST_DATABASE_CLIENT=sqlite jest --runInBand",
-    "test:failed": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest -f --runInBand",
-    "test:failed:sqlite": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" TEST_DATABASE_CLIENT=sqlite jest -f --runInBand",
+    "test:sqljs": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" TEST_DATABASE_CLIENT=sqljs jest --runInBand",
     "test:coverage": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --coverage",
     "reset-profile": "rimraf ~/.cjrc",
     "deploy": "wrangler deploy",
@@ -30,8 +29,8 @@
     "bgent": "./scripts/shell.mjs"
   },
   "exports": {
-    "import": "./dist/index.esm.js",
-    "require": "./dist/index.cjs.js"
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs"
   },
   "license": "MIT",
   "devDependencies": {
@@ -44,6 +43,7 @@
     "@types/better-sqlite3": "^7.6.9",
     "@types/jest": "^27.5.2",
     "@types/node": "20.9.4",
+    "@types/sql.js": "^1.4.9",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
     "dotenv": "^16.4.4",
@@ -72,6 +72,7 @@
     "better-sqlite3": "^9.4.3",
     "figlet": "^1.7.0",
     "inquirer": "^9.2.14",
+    "sql.js": "^1.10.2",
     "sqlite-vss": "^0.1.2",
     "unique-names-generator": "^4.7.1"
   }
