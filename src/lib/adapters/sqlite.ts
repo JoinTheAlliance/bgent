@@ -10,10 +10,10 @@ import {
   Account,
 } from "../types";
 
-import { Database } from "better-sqlite3";
 import { sqliteTables } from "./sqlite/sqliteTables";
 
 import crypto from "crypto";
+import { Database } from "better-sqlite3";
 
 export class SqliteDatabaseAdapter extends DatabaseAdapter {
   db: Database;

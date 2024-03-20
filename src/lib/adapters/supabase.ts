@@ -31,6 +31,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   }
 
   async createAccount(account: Account): Promise<void> {
+    // TODO: change to insert and run tests
     const { error } = await this.supabase.from("accounts").upsert([account]);
     if (error) {
       throw new Error(error.message);
