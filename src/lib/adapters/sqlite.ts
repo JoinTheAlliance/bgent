@@ -11,21 +11,28 @@ import {
 } from "../types";
 
 import { Database } from "better-sqlite3";
-import { load } from "./sqlite/sqlite_vss";
 import { sqliteTables } from "./sqlite/sqliteTables";
 
 import crypto from "crypto";
 
 export class SqliteDatabaseAdapter extends DatabaseAdapter {
-  private db: Database;
+  db: Database;
 
   constructor(db: Database) {
     super();
     this.db = db;
-    load(this.db);
-    // sqliteTables is a string of SQL commands
-    this.db.exec(sqliteTables);
-    this.db.exec("PRAGMA foreign_keys = OFF;");
+
+    // Check if the 'accounts' table exists as a representative table
+    const tableExists = this.db
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='accounts'",
+      )
+      .get();
+
+    if (!tableExists) {
+      // If the 'accounts' table doesn't exist, create all the tables
+      this.db.exec(sqliteTables);
+    }
   }
 
   async getAccountById(userId: UUID): Promise<Account | null> {

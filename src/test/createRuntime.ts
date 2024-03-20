@@ -13,6 +13,7 @@ import {
   TEST_PASSWORD,
 } from "./constants";
 import { User } from "./types";
+import { load } from "../lib/adapters/sqlite/sqlite_vss";
 
 export async function createRuntime({
   env,
@@ -37,6 +38,8 @@ export async function createRuntime({
         // SQLite adapter
         adapter = new SqliteDatabaseAdapter(new Database(":memory:"));
 
+        // Load sqlite-vss
+        load((adapter as SqliteDatabaseAdapter).db);
         // Create a test user and session
         user = {
           id: zeroUuid,
