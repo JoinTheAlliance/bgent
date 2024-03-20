@@ -1,7 +1,8 @@
-import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { type User } from "../../test/types";
+import { zeroUuid } from "../constants";
 import { createGoal, getGoals, updateGoal } from "../goals";
 import { BgentRuntime } from "../runtime";
 import { GoalStatus, type Goal } from "../types";
@@ -10,39 +11,28 @@ dotenv.config({ path: ".dev.vars" });
 describe("Goals", () => {
   let runtime: BgentRuntime;
   let user: User;
-
   beforeAll(async () => {
     const result = await createRuntime({
       env: process.env as Record<string, string>,
     });
     runtime = result.runtime;
     user = result.session.user;
-    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
-      [user.id as UUID],
-      "goals",
-    );
+    await runtime.databaseAdapter.removeAllGoals(zeroUuid);
   });
 
   beforeEach(async () => {
-    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
-      [user.id as UUID],
-      "goals",
-    );
+    await runtime.databaseAdapter.removeAllGoals(zeroUuid);
   });
 
   afterAll(async () => {
-    await runtime.databaseAdapter.removeAllMemoriesByUserIds(
-      [user.id as UUID],
-      "goals",
-    );
+    await runtime.databaseAdapter.removeAllGoals(zeroUuid);
   });
 
-  // TODO: Write goal tests here
   test("createGoal - successfully creates a new goal", async () => {
     const newGoal: Goal = {
       name: "Test Create Goal",
       status: GoalStatus.IN_PROGRESS,
-      user_ids: [user?.id as UUID],
+      room_id: zeroUuid,
       user_id: user?.id as UUID,
       objectives: [
         {
@@ -60,9 +50,11 @@ describe("Goals", () => {
     // Verify the goal is created in the database
     const goals = await getGoals({
       runtime,
-      userIds: [user?.id as UUID],
+      userId: user?.id as UUID,
+      room_id: zeroUuid,
       onlyInProgress: false,
     });
+
     const createdGoal = goals.find((goal: Goal) => goal.name === newGoal.name);
 
     expect(createdGoal).toBeDefined();
@@ -75,7 +67,7 @@ describe("Goals", () => {
     const newGoal: Goal = {
       name: "Test Create Goal",
       status: GoalStatus.IN_PROGRESS,
-      user_ids: [user?.id as UUID],
+      room_id: zeroUuid,
       user_id: user?.id as UUID,
       objectives: [
         {
@@ -93,7 +85,7 @@ describe("Goals", () => {
     // retrieve the goal from the database
     let goals = await getGoals({
       runtime,
-      userIds: [user?.id as UUID],
+      room_id: zeroUuid,
       onlyInProgress: false,
     });
     const existingGoal = goals.find(
@@ -108,7 +100,7 @@ describe("Goals", () => {
     // Verify the goal's status is updated in the database
     goals = await getGoals({
       runtime,
-      userIds: [user?.id as UUID],
+      room_id: zeroUuid,
       onlyInProgress: false,
     });
 
@@ -117,5 +109,10 @@ describe("Goals", () => {
     );
 
     expect(updatedGoalInDb?.status).toEqual(GoalStatus.DONE);
+
+    // Clean up the created goal
+    if (existingGoal?.id) {
+      await runtime.databaseAdapter.removeGoal(existingGoal.id);
+    }
   });
 });

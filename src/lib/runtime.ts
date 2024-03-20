@@ -34,6 +34,8 @@ import { formatActors, formatMessages, getActorDetails } from "./messages";
 import { defaultProviders, getProviders } from "./providers";
 import { type Actor, /*type Goal,*/ type Memory } from "./types";
 import { DatabaseAdapter } from "./database";
+import { UUID } from "crypto";
+import { zeroUuid } from "./constants";
 
 /**
  * Represents the runtime environment for an agent, handling message processing,
@@ -45,6 +47,10 @@ export class BgentRuntime {
    * @private
    */
   readonly #recentMessageCount = 32 as number;
+  /**
+   * The ID of the agent
+   */
+  agentId: UUID = zeroUuid;
   /**
    * The base URL of the server where the agent's requests are processed.
    */
@@ -134,10 +140,12 @@ export class BgentRuntime {
    * @param opts.providers - Optional context providers.
    * @param opts.model - The model to use for completion.
    * @param opts.embeddingModel - The model to use for embedding.
+   * @param opts.agentId - Optional ID of the agent.
    * @param opts.databaseAdapter - The database adapter used for interacting with the database.
    */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
+    agentId?: UUID; // ID of the agent
     token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
     debugMode?: boolean; // If true, will log debug messages
     serverUrl?: string; // The URL of the worker
@@ -152,6 +160,7 @@ export class BgentRuntime {
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
     this.databaseAdapter = opts.databaseAdapter;
+    this.agentId = opts.agentId ?? zeroUuid;
 
     if (!opts.databaseAdapter) {
       throw new Error("No database adapter provided");
@@ -285,7 +294,7 @@ export class BgentRuntime {
     const embeddingModel = this.embeddingModel;
 
     // Check if we already have the embedding in the lore
-    const cachedEmbedding = await this.retriveCachedEmbedding(input);
+    const cachedEmbedding = await this.retrieveCachedEmbedding(input);
     if (cachedEmbedding) {
       return cachedEmbedding;
     }
@@ -320,8 +329,6 @@ export class BgentRuntime {
 
       const data: OpenAIEmbeddingResponse = await response.json();
 
-      console.log("*** EMBEDDING LENGTH IS", data?.data?.[0].embedding.length);
-
       return data?.data?.[0].embedding;
     } catch (e) {
       console.error(e);
@@ -329,9 +336,9 @@ export class BgentRuntime {
     }
   }
 
-  async retriveCachedEmbedding(input: string) {
+  async retrieveCachedEmbedding(input: string) {
     const similaritySearchResult =
-      await this.messageManager.getMemoryByContent(input);
+      await this.messageManager.getCachedEmbeddings(input);
     if (similaritySearchResult.length > 0) {
       return similaritySearchResult[0].embedding;
     }
@@ -438,7 +445,7 @@ export class BgentRuntime {
    * @returns The state of the agent.
    */
   async composeState(message: Message) {
-    const { senderId, agentId, userIds, room_id } = message;
+    const { userId, room_id } = message;
 
     const recentMessageCount = this.getRecentMessageCount();
     const recentFactsCount = Math.ceil(this.getRecentMessageCount() / 2);
@@ -453,21 +460,21 @@ export class BgentRuntime {
       providers,
     ]: [Actor[], Memory[], Memory[], Goal[], Memory[], string] =
       await Promise.all([
-        getActorDetails({ runtime: this, userIds: userIds! }),
-        this.messageManager.getMemoriesByIds({
-          userIds,
+        getActorDetails({ runtime: this, room_id }),
+        this.messageManager.getMemories({
+          room_id,
           count: recentMessageCount,
           unique: false,
         }),
-        this.factManager.getMemoriesByIds({
-          userIds,
+        this.factManager.getMemories({
+          room_id,
           count: recentFactsCount,
         }),
         getGoals({
           runtime: this,
           count: 10,
           onlyInProgress: false,
-          userIds,
+          room_id,
         }),
         getLore({
           runtime: this,
@@ -487,7 +494,7 @@ export class BgentRuntime {
         await this.factManager.searchMemoriesByEmbedding(
           recentFactsData[0].embedding!,
           {
-            userIds: userIds!,
+            room_id,
             count: relevantFactsCount,
           },
         )
@@ -515,15 +522,14 @@ export class BgentRuntime {
     const lore = formatLore(loreData);
 
     const senderName = actorsData?.find(
-      (actor: Actor) => actor.id === senderId,
+      (actor: Actor) => actor.id === userId,
     )?.name;
     const agentName = actorsData?.find(
-      (actor: Actor) => actor.id === agentId,
+      (actor: Actor) => actor.id === this.agentId,
     )?.name;
 
     const initialState = {
-      userIds,
-      agentId,
+      agentId: this.agentId,
       agentName,
       senderName,
       actors: addHeader("# Actors", actors),

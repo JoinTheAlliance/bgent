@@ -43,9 +43,3 @@ ___
 ### user\_id
 
 • **user\_id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
-
-___
-
-### user\_ids
-
-• **user\_ids**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]

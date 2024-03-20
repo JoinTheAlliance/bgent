@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 const instructions = 'The above code was taken from my codebase at https://github.com/jointhealliance/bgent.'
 
 // Patterns to ignore
-const ignorePatterns = ['evaluator', 'templates', 'test', 'data', 'types', 'relationships', 'lore', 'logger', 'goals', 'context', 'constants', 'adapters', 'database', 'template', 'database']
+const ignorePatterns = ["evaluator", "action", "utils", "template", "util", "test", "types", "constants", "agents", "relationships", "context", "provider", "logger"]
 
 // __dirname is not defined in ES module scope, so we need to create it
 const __filename = fileURLToPath(import.meta.url)

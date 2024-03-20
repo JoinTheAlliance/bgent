@@ -7,12 +7,12 @@ import { type Actor, type Content, type Memory } from "./types";
  */
 export async function getActorDetails({
   runtime,
-  userIds,
+  room_id,
 }: {
   runtime: BgentRuntime;
-  userIds: UUID[];
+  room_id: UUID;
 }) {
-  const actors = await runtime.databaseAdapter.getActorDetails({ userIds });
+  const actors = await runtime.databaseAdapter.getActorDetails({ room_id });
 
   return actors as Actor[];
 }
@@ -24,7 +24,7 @@ export async function getActorDetails({
  */
 export function formatActors({ actors }: { actors: Actor[] }) {
   const actorStrings = actors.map((actor: Actor) => {
-    const header = `${actor.name}${actor.details.tagline ? ": " + actor.details.tagline : ""}${actor.details?.summary ? "\n" + actor.details?.summary : ""}`;
+    const header = `${actor.name}${actor.details?.tagline ? ": " + actor.details?.tagline : ""}${actor.details?.summary ? "\n" + actor.details?.summary : ""}`;
     return header;
   });
   const finalActorStrings = actorStrings.join("\n");

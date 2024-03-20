@@ -12,6 +12,8 @@ custom_edit_url: null
 
   ↳ [`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
 
+  ↳ [`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
+
 ## Constructors
 
 ### constructor
@@ -24,15 +26,32 @@ custom_edit_url: null
 
 ## Methods
 
-### countMemoriesByUserIds
+### addParticipantToRoom
 
-▸ **countMemoriesByUserIds**(`userIds`, `unique?`, `tableName?`): `Promise`\<`number`\>
+▸ **addParticipantToRoom**(`userId`, `roomId`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### countMemories
+
+▸ **countMemories**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `unique?` | `boolean` |
 | `tableName?` | `string` |
 
@@ -50,7 +69,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `account` | `Account` |
+| `account` | [`Account`](../interfaces/Account.md) |
 
 #### Returns
 
@@ -110,9 +129,25 @@ ___
 
 ___
 
+### createRoom
+
+▸ **createRoom**(`name`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `name` | `string` |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+___
+
 ### getAccountById
 
-▸ **getAccountById**(`userId`): `Promise`\<``null`` \| `Account`\>
+▸ **getAccountById**(`userId`): `Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
 
 #### Parameters
 
@@ -122,7 +157,7 @@ ___
 
 #### Returns
 
-`Promise`\<``null`` \| `Account`\>
+`Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
 
 ___
 
@@ -135,7 +170,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `params` | `Object` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -154,8 +189,8 @@ ___
 | `params` | `Object` |
 | `params.count?` | `number` |
 | `params.onlyInProgress?` | `boolean` |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.userId?` | ``null`` \| \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -163,9 +198,9 @@ ___
 
 ___
 
-### getMemoriesByIds
+### getMemories
 
-▸ **getMemoriesByIds**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **getMemories**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 #### Parameters
 
@@ -173,9 +208,9 @@ ___
 | :------ | :------ |
 | `params` | `Object` |
 | `params.count?` | `number` |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.tableName` | `string` |
 | `params.unique?` | `boolean` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -183,9 +218,9 @@ ___
 
 ___
 
-### getMemoryByContent
+### getCachedEmbeddings
 
-▸ **getMemoryByContent**(`«destructured»`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getCachedEmbeddings**(`«destructured»`): `Promise`\<`SimilaritySearch`[]\>
 
 #### Parameters
 
@@ -240,6 +275,38 @@ ___
 
 ___
 
+### getRoomsByParticipant
+
+▸ **getRoomsByParticipant**(`userId`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+___
+
+### getRoomsByParticipants
+
+▸ **getRoomsByParticipants**(`userIds`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+
+___
+
 ### log
 
 ▸ **log**(`params`): `Promise`\<`void`\>
@@ -249,12 +316,10 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `params` | `Object` |
-| `params.agent_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.body` | `Object` |
 | `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.type` | `string` |
 | `params.user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `params.user_ids` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -262,16 +327,48 @@ ___
 
 ___
 
-### removeAllMemoriesByUserIds
+### removeAllGoals
 
-▸ **removeAllMemoriesByUserIds**(`userIds`, `tableName`): `Promise`\<`void`\>
+▸ **removeAllGoals**(`room_id`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### removeAllMemories
+
+▸ **removeAllMemories**(`room_id`, `tableName`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `tableName` | `string` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### removeGoal
+
+▸ **removeGoal**(`goalId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `goalId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -296,6 +393,39 @@ ___
 
 ___
 
+### removeParticipantFromRoom
+
+▸ **removeParticipantFromRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
+### removeRoom
+
+▸ **removeRoom**(`roomId`): `Promise`\<`void`\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+___
+
 ### searchMemories
 
 ▸ **searchMemories**(`params`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
@@ -308,9 +438,9 @@ ___
 | `params.embedding` | `number`[] |
 | `params.match_count` | `number` |
 | `params.match_threshold` | `number` |
+| `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.tableName` | `string` |
 | `params.unique` | `boolean` |
-| `params.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 
@@ -330,9 +460,9 @@ ___
 | `params` | `Object` |
 | `params.count?` | `number` |
 | `params.match_threshold?` | `number` |
+| `params.room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 | `params.tableName` | `string` |
 | `params.unique?` | `boolean` |
-| `params.userIds?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] |
 
 #### Returns
 

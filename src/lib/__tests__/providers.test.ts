@@ -24,14 +24,12 @@ describe("TestProvider", () => {
       providers: [TestProvider],
     });
     runtime = setup.runtime;
-    room_id = "some-room-id" as UUID;
+    room_id = zeroUuid;
   });
 
   test("TestProvider should return 'Hello Test'", async () => {
     const message: Message = {
-      senderId: zeroUuid,
-      agentId: zeroUuid,
-      userIds: [zeroUuid, zeroUuid],
+      userId: zeroUuid,
       content: { content: "" },
       room_id: room_id,
     };

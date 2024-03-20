@@ -1,33 +1,33 @@
 // Export from ./src/actions
 export {
-  defaultActions,
   composeActionExamples,
-  getFormattedActions,
+  defaultActions,
+  formatActionConditions,
   formatActionNames,
   formatActions,
-  formatActionConditions,
+  getFormattedActions,
 } from "./actions";
 
 // Export from ./src/context
-export { composeContext, addHeader } from "./context";
+export { addHeader, composeContext } from "./context";
 
 // Export from ./src/evaluators
 export {
   defaultEvaluators,
   evaluationTemplate,
-  formatEvaluatorNames,
-  formatEvaluators,
   formatEvaluatorConditions,
-  formatEvaluatorExamples,
   formatEvaluatorExampleConditions,
   formatEvaluatorExampleDescriptions,
+  formatEvaluatorExamples,
+  formatEvaluatorNames,
+  formatEvaluators,
 } from "./evaluators";
 
 // Export from ./src/goals
-export { getGoals, formatGoalsAsString, updateGoal, createGoal } from "./goals";
+export { createGoal, formatGoalsAsString, getGoals, updateGoal } from "./goals";
 
 // Export from ./src/lore
-export { addLore, getLore, formatLore } from "./lore";
+export { addLore, formatLore, getLore } from "./lore";
 
 // Export from ./src/memory
 export {
@@ -37,7 +37,7 @@ export {
 } from "./memory";
 
 // Export from ./src/messages
-export { getActorDetails, formatActors, formatMessages } from "./messages";
+export { formatActors, formatMessages, getActorDetails } from "./messages";
 
 // Export from ./src/providers
 export { defaultProviders, getProviders } from "./providers";
@@ -45,13 +45,14 @@ export { defaultProviders, getProviders } from "./providers";
 // Export from ./src/relationships
 export {
   createRelationship,
+  formatRelationships,
   getRelationship,
   getRelationships,
-  formatRelationships,
 } from "./relationships";
 
-export { DatabaseAdapter } from "./database";
 export { SupabaseDatabaseAdapter } from "./adapters/supabase";
+export { SqliteDatabaseAdapter } from "./adapters/sqlite";
+export { DatabaseAdapter } from "./database";
 
 // Export from ./src/runtime
 export { BgentRuntime } from "./runtime";
@@ -62,24 +63,25 @@ export { messageHandlerTemplate } from "./templates";
 // Export from ./src/types
 export { GoalStatus } from "./types";
 export type {
-  Content,
-  ActionExample,
-  ConversationExample,
-  Actor,
-  Memory,
-  Objective,
-  Goal,
-  State,
-  Message,
-  MessageExample,
-  Handler,
-  Validator,
+  Account,
   Action,
+  ActionExample,
+  Actor,
+  Content,
+  ConversationExample,
   EvaluationExample,
   Evaluator,
+  Goal,
+  Handler,
+  Memory,
+  Message,
+  MessageExample,
+  Objective,
   Provider,
   Relationship,
+  State,
+  Validator,
 } from "./types";
 
 // Export from ./src/utils
-export { parseJsonArrayFromText, parseJSONObjectFromText } from "./utils";
+export { parseJSONObjectFromText, parseJsonArrayFromText } from "./utils";

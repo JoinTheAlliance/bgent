@@ -66,9 +66,9 @@ A Promise resolving to the memory object, potentially updated with an embedding 
 
 ___
 
-### countMemoriesByUserIds
+### countMemories
 
-▸ **countMemoriesByUserIds**(`userIds`, `unique?`): `Promise`\<`number`\>
+▸ **countMemories**(`room_id`, `unique?`): `Promise`\<`number`\>
 
 Counts the number of memories associated with a set of user IDs, with an option for uniqueness.
 
@@ -76,7 +76,7 @@ Counts the number of memories associated with a set of user IDs, with an option 
 
 | Name | Type | Default value | Description |
 | :------ | :------ | :------ | :------ |
-| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | `undefined` | An array of user IDs to count memories for. |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` | The room ID to count memories for. |
 | `unique` | `boolean` | `true` | Whether to count unique memories only. |
 
 #### Returns
@@ -108,9 +108,9 @@ A Promise that resolves when the operation completes.
 
 ___
 
-### getMemoriesByIds
+### getMemories
 
-▸ **getMemoriesByIds**(`opts`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
+▸ **getMemories**(`opts`): `Promise`\<[`Memory`](../interfaces/Memory.md)[]\>
 
 Retrieves a list of memories by user IDs, with optional deduplication.
 
@@ -120,8 +120,8 @@ Retrieves a list of memories by user IDs, with optional deduplication.
 | :------ | :------ | :------ | :------ |
 | `opts` | `Object` | `undefined` | Options including user IDs, count, and uniqueness. |
 | `opts.count?` | `number` | `10` | The number of memories to retrieve. |
+| `opts.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` | The room ID to retrieve memories for. |
 | `opts.unique?` | `boolean` | `true` | Whether to retrieve unique memories only. |
-| `opts.userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | `undefined` | An array of user IDs to retrieve memories for. |
 
 #### Returns
 
@@ -131,9 +131,9 @@ A Promise resolving to an array of Memory objects.
 
 ___
 
-### getMemoryByContent
+### getCachedEmbeddings
 
-▸ **getMemoryByContent**(`content`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getCachedEmbeddings**(`content`): `Promise`\<`SimilaritySearch`[]\>
 
 #### Parameters
 
@@ -147,9 +147,9 @@ ___
 
 ___
 
-### removeAllMemoriesByUserIds
+### removeAllMemories
 
-▸ **removeAllMemoriesByUserIds**(`userIds`): `Promise`\<`void`\>
+▸ **removeAllMemories**(`room_id`): `Promise`\<`void`\>
 
 Removes all memories associated with a set of user IDs.
 
@@ -157,7 +157,7 @@ Removes all memories associated with a set of user IDs.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `userIds` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | An array of user IDs to remove memories for. |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | The room ID to remove memories for. |
 
 #### Returns
 
@@ -201,8 +201,8 @@ Searches for memories similar to a given embedding vector.
 | `opts` | `Object` | Options including match threshold, count, user IDs, and uniqueness. |
 | `opts.count?` | `number` | The maximum number of memories to retrieve. |
 | `opts.match_threshold?` | `number` | The similarity threshold for matching memories. |
+| `opts.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | The room ID to retrieve memories for. |
 | `opts.unique?` | `boolean` | Whether to retrieve unique memories only. |
-| `opts.userIds?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[] | An array of user IDs to retrieve memories for. |
 
 #### Returns
 

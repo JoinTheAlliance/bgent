@@ -1,56 +1,66 @@
-import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { type User } from "../../test/types";
+import { zeroUuid } from "../constants";
 import { composeContext } from "../context";
 import { addLore, getLore } from "../lore";
 import { BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
-import { type Content } from "../types";
-import { zeroUuid } from "../constants";
+import { Memory, type Content } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Lore", () => {
   let runtime: BgentRuntime;
-  let user: User;
+  let room_id: UUID;
 
   beforeAll(async () => {
     const result = await createRuntime({
       env: process.env as Record<string, string>,
     });
     runtime = result.runtime;
-    user = result?.session?.user as User;
+    const user = result?.session?.user as User;
+    const data = await getOrCreateRelationship({
+      runtime,
+      userA: user?.id as UUID,
+      userB: zeroUuid,
+    });
+
+    if (!data) {
+      throw new Error("Relationship not found");
+    }
+
+    room_id = data?.room_id;
   });
 
   beforeEach(async () => {
-    await runtime.loreManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.loreManager.removeAllMemories(room_id);
   });
 
   afterAll(async () => {
-    await runtime.loreManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.loreManager.removeAllMemories(room_id);
   });
 
   test("Add and get lore", async () => {
     const content: Content = { content: "Test", source: "/Test.md" };
-    await addLore({
-      runtime,
-      source: "/Test.md",
-      content: { content: "Test" },
-      user_id: zeroUuid,
-      room_id: zeroUuid,
-    });
+    let lore: Memory[] = [];
+    try {
+      await addLore({
+        runtime,
+        source: "/Test.md",
+        content: { content: "Test" },
+        user_id: zeroUuid,
+        room_id: zeroUuid,
+      });
 
-    const lore = await getLore({
-      runtime,
-      message: "Test",
-    });
-
+      lore = await getLore({
+        runtime,
+        message: "Test",
+      });
+    } catch (error) {
+      console.error(error);
+    }
     expect(lore[0].content).toEqual(content);
   }, 60000);
 
@@ -66,9 +76,7 @@ describe("Lore", () => {
     });
 
     const message = {
-      senderId: zeroUuid as UUID,
-      agentId: zeroUuid,
-      userIds: [zeroUuid],
+      userId: zeroUuid as UUID,
       content: { content: "Test Lore Content" },
       room_id: zeroUuid,
     };

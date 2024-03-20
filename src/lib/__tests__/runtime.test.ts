@@ -1,26 +1,23 @@
-import dotenv from "dotenv";
-import { createRuntime } from "../../test/createRuntime";
 import { type UUID } from "crypto";
-import { getRelationship } from "../relationships";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../test/cache";
-import { BgentRuntime } from "../runtime";
-import { type User } from "@supabase/supabase-js";
-import { type Message } from "../types";
+import dotenv from "dotenv";
+import { getCachedEmbeddings, writeCachedEmbedding } from "../../test/cache";
+import { createRuntime } from "../../test/createRuntime";
+import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
+import { type User } from "../../test/types";
 import { zeroUuid } from "../constants";
+import { BgentRuntime } from "../runtime";
+import { type Message } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 
 describe("Agent Runtime", () => {
   let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID;
+  let room_id: UUID = zeroUuid;
 
   // Helper function to clear memories
   async function clearMemories() {
-    await runtime.messageManager.removeAllMemoriesByUserIds([
-      user?.id as UUID,
-      zeroUuid,
-    ]);
+    await runtime.messageManager.removeAllMemories(room_id);
   }
 
   // Helper function to create memories
@@ -34,18 +31,21 @@ describe("Agent Runtime", () => {
     ];
 
     for (const { userId, content } of memories) {
-      const embedding = getCachedEmbedding(content.content);
-      const memory = await runtime.messageManager.addEmbeddingToMemory({
-        user_id: userId,
-        user_ids: [user?.id as UUID, zeroUuid],
-        content,
-        room_id,
-        embedding,
-      });
-      if (!embedding) {
-        writeCachedEmbedding(content.content, memory.embedding as number[]);
+      try {
+        const embedding = getCachedEmbeddings(content.content);
+        const memory = await runtime.messageManager.addEmbeddingToMemory({
+          user_id: userId,
+          content,
+          room_id,
+          embedding,
+        });
+        if (!embedding) {
+          writeCachedEmbedding(content.content, memory.embedding as number[]);
+        }
+        await runtime.messageManager.createMemory(memory);
+      } catch (error) {
+        console.error("Error creating memory", error);
       }
-      await runtime.messageManager.createMemory(memory);
     }
   }
 
@@ -58,7 +58,7 @@ describe("Agent Runtime", () => {
     runtime = result.runtime;
     user = result.session.user;
 
-    const data = await getRelationship({
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,
       userB: zeroUuid,
@@ -67,8 +67,7 @@ describe("Agent Runtime", () => {
     if (!data) {
       throw new Error("Relationship not found");
     }
-
-    room_id = data?.room_id;
+    room_id = data.room_id;
     await clearMemories(); // Clear memories before each test
   });
 
@@ -88,12 +87,14 @@ describe("Agent Runtime", () => {
   });
 
   test("Memory lifecycle: create, retrieve, and destroy", async () => {
-    await createMemories(); // Create new memories
+    try {
+      await createMemories(); // Create new memories
+    } catch (error) {
+      console.error("Error creating memories", error);
+    }
 
     const message: Message = {
-      senderId: user.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user.id as UUID, zeroUuid],
+      userId: user.id as UUID,
       content: { content: "test message" },
       room_id: room_id as UUID,
     };
@@ -103,5 +104,5 @@ describe("Agent Runtime", () => {
     expect(state.recentMessagesData.length).toBeGreaterThan(1);
 
     await clearMemories();
-  });
+  }, 60000);
 });

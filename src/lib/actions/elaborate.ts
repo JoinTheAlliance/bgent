@@ -17,15 +17,17 @@ const maxContinuesInARow = 2;
 export default {
   name: "ELABORATE",
   description:
-    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly!",
+    "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly! DO NOT USE WHEN ASKING A QUESTION, ALWAYS USE WAIT WHEN ASKING A QUESTION.",
   validate: async (runtime: BgentRuntime, message: Message) => {
-    const recentMessagesData = await runtime.messageManager.getMemoriesByIds({
-      userIds: message.userIds!,
-      count: 10,
-      unique: false,
-    });
+    const recentMessagesData = await runtime.messageManager.getMemories(
+      {
+        room_id: message.room_id,
+        count: 10,
+        unique: false,
+      },
+    );
     const agentMessages = recentMessagesData.filter(
-      (m) => m.user_id === message.agentId,
+      (m) => m.user_id === runtime.agentId,
     );
 
     // check if the last messages were all continues=
@@ -56,7 +58,7 @@ export default {
     }
 
     let responseContent;
-    const { senderId, room_id, userIds: user_ids, agentId } = message;
+    const { userId, room_id } = message;
 
     for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
       const response = await runtime.completion({
@@ -66,10 +68,8 @@ export default {
 
       runtime.databaseAdapter.log({
         body: { message, context, response },
-        user_id: senderId,
+        user_id: userId,
         room_id,
-        user_ids: user_ids!,
-        agent_id: agentId!,
         type: "elaborate",
       });
 
@@ -88,12 +88,16 @@ export default {
       if (runtime.debugMode) {
         logger.error("No response content");
       }
-      return;
+      // TODO: Verify that this is the correct response handling
+      return {
+        content: "No response.",
+        action: "IGNORE",
+      };
     }
 
     // prevent repetition
     const messageExists = state.recentMessagesData
-      .filter((m) => m.user_id === message.agentId)
+      .filter((m) => m.user_id === runtime.agentId)
       .slice(0, maxContinuesInARow + 1)
       .some((m) => m.content === message.content);
 
@@ -107,8 +111,7 @@ export default {
       }
 
       await runtime.messageManager.createMemory({
-        user_ids: user_ids!,
-        user_id: agentId!,
+        user_id: runtime.agentId,
         content: responseContent,
         room_id,
         embedding: embeddingZeroVector,
@@ -122,14 +125,13 @@ export default {
       state: State,
       responseContent: Content,
     ) => {
-      const { agentId, userIds, room_id } = message;
+      const { room_id } = message;
 
       responseContent.content = responseContent.content?.trim();
 
       if (responseContent.content) {
         await runtime.messageManager.createMemory({
-          user_ids: userIds!,
-          user_id: agentId!,
+          user_id: runtime.agentId,
           content: responseContent,
           room_id,
           embedding: embeddingZeroVector,
@@ -146,7 +148,7 @@ export default {
     // if so, then we should change the action to WAIT
     if (responseContent.action === "ELABORATE") {
       const agentMessages = state.recentMessagesData
-        .filter((m) => m.user_id === message.agentId)
+        .filter((m) => m.user_id === runtime.agentId)
         .map((m) => (m.content as Content).action);
 
       const lastMessages = agentMessages.slice(0, maxContinuesInARow);
@@ -221,7 +223,7 @@ export default {
         user: "{{user1}}",
         content: {
           content: "That it’s more about moments than things.",
-          action: "ELABORATE",
+          action: "WAIT",
         },
       },
       {

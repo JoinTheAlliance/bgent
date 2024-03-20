@@ -128,18 +128,12 @@ ___
 
 ___
 
-### senderId
-
-• `Optional` **senderId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
-
-___
-
 ### senderName
 
 • `Optional` **senderName**: `string`
 
 ___
 
-### userIds
+### userId
 
-• **userIds**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]
+• `Optional` **userId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`

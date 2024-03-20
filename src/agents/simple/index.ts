@@ -22,18 +22,11 @@ async function handleMessage(
   state?: State,
 ) {
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, senderId, userIds, room_id } = message;
-    const _senderContent = (
-      (senderContent as Content).content ?? senderContent
-    )?.trim();
-    if (_senderContent) {
+    const { content, userId, room_id } = message;
+    if (content) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: senderId!,
-        content: {
-          content: _senderContent,
-          action: (message.content as Content)?.action ?? "null",
-        },
+        user_id: userId!,
+        content,
         room_id,
         embedding: embeddingZeroVector,
       });
@@ -56,7 +49,7 @@ async function handleMessage(
   }
 
   let responseContent: Content | null = null;
-  const { senderId, room_id, userIds: user_ids, agentId } = message;
+  const { userId, room_id } = message;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     const response = await runtime.completion({
@@ -66,10 +59,8 @@ async function handleMessage(
 
     runtime.databaseAdapter.log({
       body: { message, context, response },
-      user_id: senderId,
+      user_id: userId,
       room_id,
-      user_ids: user_ids!,
-      agent_id: agentId!,
       type: "simple_agent_main_completion",
     });
 
@@ -102,14 +93,13 @@ async function handleMessage(
     state: State,
     responseContent: Content,
   ) => {
-    const { agentId, userIds, room_id } = message;
+    const { room_id } = message;
 
     responseContent.content = responseContent.content?.trim();
 
     if (responseContent.content) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: agentId!,
+        user_id: runtime.agentId,
         content: responseContent,
         room_id,
         embedding: embeddingZeroVector,
@@ -131,13 +121,7 @@ const onMessage = async (
   runtime: BgentRuntime,
   state?: State,
 ) => {
-  const { content: senderContent, senderId, agentId } = message;
-
-  if (!message.userIds) {
-    message.userIds = [senderId!, agentId!];
-  }
-
-  if (!senderContent) {
+  if (!message.content) {
     logger.warn("Sender content null, skipping");
     return;
   }
@@ -197,19 +181,8 @@ const routes: Route[] = [
         token: env.OPENAI_API_KEY,
       });
 
-      if (!(message as Message).agentId) {
-        return new Response("agentId is required", { status: 400 });
-      }
-
-      if (!(message as Message).senderId) {
-        (message as Message).senderId = userId;
-      }
-
-      if (!(message as Message).userIds) {
-        (message as Message).userIds = [
-          (message as Message).senderId!,
-          (message as Message).agentId!,
-        ];
+      if (!(message as Message).userId) {
+        (message as Message).userId = userId;
       }
 
       try {

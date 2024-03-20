@@ -1,29 +1,29 @@
-import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
 import dotenv from "dotenv";
+import { getCachedEmbeddings, writeCachedEmbedding } from "../../../test/cache";
+import { createRuntime } from "../../../test/createRuntime";
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
   GetTellMeAboutYourselfConversation3,
   jimFacts,
 } from "../../../test/data";
+import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
 import { populateMemories } from "../../../test/populateMemories";
-import { getRelationship } from "../../relationships";
-import { type BgentRuntime } from "../../runtime";
-import { createRuntime } from "../../../test/createRuntime";
 import { runAiTest } from "../../../test/runAiTest";
-import evaluator from "../fact";
-import { type Message } from "../../types";
-import { getCachedEmbedding, writeCachedEmbedding } from "../../../test/cache";
+import { type User } from "../../../test/types";
 import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
+import { type BgentRuntime } from "../../runtime";
+import { type Message } from "../../types";
+import evaluator from "../fact";
 
 dotenv.config({ path: ".dev.vars" });
 
 describe("Facts Evaluator", () => {
   let user: User;
   let runtime: BgentRuntime;
-  let room_id: UUID;
+  let room_id = zeroUuid;
 
   beforeAll(async () => {
     const setup = await createRuntime({
@@ -34,7 +34,11 @@ describe("Facts Evaluator", () => {
     user = setup.session.user;
     runtime = setup.runtime;
 
-    const data = await getRelationship({
+    if (!user.id) {
+      throw new Error("User ID is undefined");
+    }
+
+    const data = await getOrCreateRelationship({
       runtime,
       userA: user.id as UUID,
       userB: zeroUuid,
@@ -58,9 +62,7 @@ describe("Facts Evaluator", () => {
       ]);
 
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "" },
         room_id,
       };
@@ -83,9 +85,7 @@ describe("Facts Evaluator", () => {
       await addFacts(runtime, user.id as UUID, room_id, jimFacts);
 
       const message: Message = {
-        senderId: user.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user.id as UUID, zeroUuid],
+        userId: user.id as UUID,
         content: { content: "" },
         room_id,
       };
@@ -102,9 +102,9 @@ describe("Facts Evaluator", () => {
   }, 120000); // Adjust the timeout as needed for your tests
 });
 
-async function cleanup(runtime: BgentRuntime, userId: UUID) {
-  await runtime.factManager.removeAllMemoriesByUserIds([userId, zeroUuid]);
-  await runtime.messageManager.removeAllMemoriesByUserIds([userId, zeroUuid]);
+async function cleanup(runtime: BgentRuntime, room_id: UUID) {
+  await runtime.factManager.removeAllMemories(room_id);
+  await runtime.messageManager.removeAllMemories(room_id);
 }
 
 async function addFacts(
@@ -114,10 +114,9 @@ async function addFacts(
   facts: string[],
 ) {
   for (const fact of facts) {
-    const existingEmbedding = getCachedEmbedding(fact);
+    const existingEmbedding = getCachedEmbeddings(fact);
     const bakedMemory = await runtime.factManager.addEmbeddingToMemory({
       user_id: userId,
-      user_ids: [userId, zeroUuid],
       content: { content: fact },
       room_id: room_id,
       embedding: existingEmbedding,

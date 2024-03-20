@@ -1,9 +1,8 @@
-import { type User } from "@supabase/supabase-js";
 import { type UUID } from "crypto";
-import { zeroUuid } from "../lib/constants";
+import { type User } from "./types";
 import { type BgentRuntime } from "../lib/runtime";
 import { Content } from "../lib/types";
-import { getCachedEmbedding, writeCachedEmbedding } from "./cache";
+import { getCachedEmbeddings, writeCachedEmbedding } from "./cache";
 
 export async function populateMemories(
   runtime: BgentRuntime,
@@ -15,15 +14,14 @@ export async function populateMemories(
 ) {
   for (const conversation of conversations) {
     for (const c of conversation(user?.id as UUID)) {
-      const existingEmbedding = getCachedEmbedding(c.content.content);
+      const existingEmbedding = getCachedEmbeddings(c.content.content);
       const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: c.user_id as UUID,
-        user_ids: [user?.id as UUID, zeroUuid],
         content: {
           content: c.content.content,
           action: c.content.action as string,
         },
-        room_id: room_id as UUID,
+        room_id,
         embedding: existingEmbedding,
       });
       await runtime.messageManager.createMemory(bakedMemory);

@@ -1,26 +1,26 @@
 import { type UUID } from "crypto";
 import {
-  type Memory,
-  type Goal,
-  type Relationship,
+  Account,
   Actor,
   GoalStatus,
-  Account,
-  SimilaritySearch,
+  type Goal,
+  type Memory,
+  type Relationship,
 } from "./types";
 
 export abstract class DatabaseAdapter {
   abstract getAccountById(userId: UUID): Promise<Account | null>;
+
   abstract createAccount(account: Account): Promise<void>;
 
-  abstract getMemoriesByIds(params: {
-    userIds: UUID[];
+  abstract getMemories(params: {
+    room_id: UUID;
     count?: number;
     unique?: boolean;
     tableName: string;
   }): Promise<Memory[]>;
 
-  abstract getMemoryByContent({
+  abstract getCachedEmbeddings({
     query_table_name,
     query_threshold,
     query_input,
@@ -34,27 +34,31 @@ export abstract class DatabaseAdapter {
     query_field_name: string;
     query_field_sub_name: string;
     query_match_count: number;
-  }): Promise<SimilaritySearch[]>;
+  }): Promise<
+    {
+      embedding: number[];
+      levenshtein_score: number;
+    }[]
+  >;
 
   abstract log(params: {
     body: { [key: string]: unknown };
     user_id: UUID;
     room_id: UUID;
-    user_ids: UUID[];
-    agent_id: UUID;
     type: string;
   }): Promise<void>;
 
-  abstract getActorDetails(params: { userIds: UUID[] }): Promise<Actor[]>;
+  abstract getActorDetails(params: { room_id: UUID }): Promise<Actor[]>;
 
   abstract searchMemories(params: {
     tableName: string;
-    userIds: UUID[];
+    room_id: UUID;
     embedding: number[];
     match_threshold: number;
     match_count: number;
     unique: boolean;
   }): Promise<Memory[]>;
+
   abstract updateGoalStatus(params: {
     goalId: UUID;
     status: GoalStatus;
@@ -65,7 +69,7 @@ export abstract class DatabaseAdapter {
     params: {
       match_threshold?: number;
       count?: number;
-      userIds?: UUID[];
+      room_id?: UUID;
       unique?: boolean;
       tableName: string;
     },
@@ -79,19 +83,16 @@ export abstract class DatabaseAdapter {
 
   abstract removeMemory(memoryId: UUID, tableName: string): Promise<void>;
 
-  abstract removeAllMemoriesByUserIds(
-    userIds: UUID[],
-    tableName: string,
-  ): Promise<void>;
+  abstract removeAllMemories(room_id: UUID, tableName: string): Promise<void>;
 
-  abstract countMemoriesByUserIds(
-    userIds: UUID[],
+  abstract countMemories(
+    room_id: UUID,
     unique?: boolean,
     tableName?: string,
   ): Promise<number>;
 
   abstract getGoals(params: {
-    userIds: UUID[];
+    room_id: UUID;
     userId?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;
@@ -100,6 +101,22 @@ export abstract class DatabaseAdapter {
   abstract updateGoal(goal: Goal): Promise<void>;
 
   abstract createGoal(goal: Goal): Promise<void>;
+
+  abstract removeGoal(goalId: UUID): Promise<void>;
+
+  abstract removeAllGoals(room_id: UUID): Promise<void>;
+
+  abstract createRoom(name: string): Promise<UUID>;
+
+  abstract removeRoom(roomId: UUID): Promise<void>;
+
+  abstract getRoomsByParticipant(userId: UUID): Promise<UUID[]>;
+
+  abstract getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]>;
+
+  abstract addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void>;
+
+  abstract removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void>;
 
   abstract createRelationship(params: {
     userA: UUID;

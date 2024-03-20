@@ -1,7 +1,7 @@
 ---
-id: "SupabaseDatabaseAdapter"
-title: "Class: SupabaseDatabaseAdapter"
-sidebar_label: "SupabaseDatabaseAdapter"
+id: "SqliteDatabaseAdapter"
+title: "Class: SqliteDatabaseAdapter"
+sidebar_label: "SqliteDatabaseAdapter"
 sidebar_position: 0
 custom_edit_url: null
 ---
@@ -10,24 +10,23 @@ custom_edit_url: null
 
 - [`DatabaseAdapter`](DatabaseAdapter.md)
 
-  ↳ **`SupabaseDatabaseAdapter`**
+  ↳ **`SqliteDatabaseAdapter`**
 
 ## Constructors
 
 ### constructor
 
-• **new SupabaseDatabaseAdapter**(`supabaseUrl`, `supabaseKey`): [`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
+• **new SqliteDatabaseAdapter**(`db`): [`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `supabaseUrl` | `string` |
-| `supabaseKey` | `string` |
+| `db` | `Database` |
 
 #### Returns
 
-[`SupabaseDatabaseAdapter`](SupabaseDatabaseAdapter.md)
+[`SqliteDatabaseAdapter`](SqliteDatabaseAdapter.md)
 
 #### Overrides
 
@@ -58,7 +57,7 @@ ___
 
 ### countMemories
 
-▸ **countMemories**(`room_id`, `unique?`, `tableName`): `Promise`\<`number`\>
+▸ **countMemories**(`room_id`, `unique?`, `tableName?`): `Promise`\<`number`\>
 
 #### Parameters
 
@@ -66,7 +65,7 @@ ___
 | :------ | :------ | :------ |
 | `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
 | `unique` | `boolean` | `true` |
-| `tableName` | `string` | `undefined` |
+| `tableName` | `string` | `""` |
 
 #### Returns
 
@@ -273,7 +272,7 @@ ___
 
 ### getCachedEmbeddings
 
-▸ **getCachedEmbeddings**(`opts`): `Promise`\<`SimilaritySearch`[]\>
+▸ **getCachedEmbeddings**(`opts`): `Promise`\<[]\>
 
 #### Parameters
 
@@ -289,7 +288,7 @@ ___
 
 #### Returns
 
-`Promise`\<`SimilaritySearch`[]\>
+`Promise`\<[]\>
 
 #### Overrides
 
@@ -467,13 +466,14 @@ ___
 
 ### removeMemory
 
-▸ **removeMemory**(`memoryId`): `Promise`\<`void`\>
+▸ **removeMemory**(`memoryId`, `tableName`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `memoryId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `tableName` | `string` |
 
 #### Returns
 

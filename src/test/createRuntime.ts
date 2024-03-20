@@ -1,4 +1,5 @@
-import { Session, User, createClient } from "@supabase/supabase-js";
+import { Session, createClient } from "@supabase/supabase-js";
+import { User } from "./types";
 import { BgentRuntime } from "../lib/runtime";
 import { Action, Evaluator, Provider } from "../lib/types";
 import {
@@ -9,6 +10,9 @@ import {
 } from "./constants";
 import { DatabaseAdapter } from "../lib/database";
 import { SupabaseDatabaseAdapter } from "../lib/adapters/supabase";
+import { SqliteDatabaseAdapter } from "../lib/adapters/sqlite";
+import Database from "better-sqlite3";
+import { UUID } from "crypto";
 
 export async function createRuntime({
   env,
@@ -16,43 +20,79 @@ export async function createRuntime({
   evaluators = [],
   actions = [],
   providers = [],
-  databaseAdapter,
 }: {
   env?: Record<string, string> | NodeJS.ProcessEnv;
   recentMessageCount?: number;
   evaluators?: Evaluator[];
   actions?: Action[];
   providers?: Provider[];
-  databaseAdapter?: DatabaseAdapter;
 }) {
-  const supabase = createClient(
-    env?.SUPABASE_URL ?? SUPABASE_URL,
-    env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
-  );
+  let adapter: DatabaseAdapter;
+  let user: User;
+  let session: Session;
 
-  const { data } = await supabase.auth.signInWithPassword({
-    email: TEST_EMAIL!,
-    password: TEST_PASSWORD!,
-  });
+  switch (env?.TEST_DATABASE_CLIENT as string) {
+    case "sqlite":
+      {
+        // SQLite adapter
+        adapter = new SqliteDatabaseAdapter(new Database(":memory:"));
 
-  let { user, session } = data;
+        // Create a test user and session
+        user = {
+          id: "test-user-id" as UUID,
+          email: "test@example.com",
+        } as User;
+        session = {
+          access_token: "test-access-token",
+          refresh_token: "test-refresh-token",
+          user: user,
+        } as Session;
+      }
+      break;
+    case "supabase":
+    default:
+      {
+        const supabase = createClient(
+          env?.SUPABASE_URL ?? SUPABASE_URL,
+          env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
+        );
 
-  if (!session) {
-    const response = await supabase.auth.signUp({
-      email: TEST_EMAIL!,
-      password: TEST_PASSWORD!,
-    });
-    // change the name of the user
-    const { error } = await supabase
-      .from("accounts")
-      .update({ name: "Test User" })
-      .eq("id", data?.user?.id);
+        const { data } = await supabase.auth.signInWithPassword({
+          email: TEST_EMAIL!,
+          password: TEST_PASSWORD!,
+        });
 
-    if (error) {
-      throw error;
-    }
-    user = response.data.user as User;
-    session = response.data.session as Session;
+        user = data.user as User;
+        session = data.session as Session;
+
+        if (!session) {
+          const response = await supabase.auth.signUp({
+            email: TEST_EMAIL!,
+            password: TEST_PASSWORD!,
+          });
+
+          console.log("response to signup", response);
+
+          // Change the name of the user
+          const { error } = await supabase
+            .from("accounts")
+            .update({ name: "Test User" })
+            .eq("id", response.data.user?.id);
+
+          if (error) {
+            throw new Error("Create runtime error: " + JSON.stringify(error));
+          }
+
+          user = response.data.user as User;
+          session = response.data.session as Session;
+        }
+
+        adapter = new SupabaseDatabaseAdapter(
+          env?.SUPABASE_URL ?? SUPABASE_URL,
+          env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
+        );
+      }
+      break;
   }
 
   const runtime = new BgentRuntime({
@@ -63,12 +103,7 @@ export async function createRuntime({
     actions: actions ?? [],
     evaluators: evaluators ?? [],
     providers: providers ?? [],
-    databaseAdapter:
-      databaseAdapter ??
-      new SupabaseDatabaseAdapter(
-        env?.SUPABASE_URL ?? SUPABASE_URL,
-        env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
-      ),
+    databaseAdapter: adapter,
   });
 
   return { user, session, runtime };
