@@ -61,6 +61,7 @@ describe("Messages Library", () => {
   });
 
   test("formatActors should format actors into a readable string", () => {
+    console.log("ACTORS:", actors)
     const formattedActors = formatActors({ actors });
     actors.forEach((actor) => {
       expect(formattedActors).toContain(actor.name);

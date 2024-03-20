@@ -306,6 +306,7 @@ CREATE TABLE IF NOT EXISTS "public"."goals" (
     "user_id" "uuid",
     "room_id" "uuid",
     "status" "text",
+    "name" "text",
     "objectives" "jsonb"[] DEFAULT '{}'::"jsonb"[] NOT NULL
 );
 

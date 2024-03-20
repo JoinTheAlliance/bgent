@@ -43,7 +43,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       .select(
         `
         participants:participants!inner(
-          user_id:accounts(id, name, details)
+          account:accounts(id, name, details)
         )
       `,
       )
@@ -59,7 +59,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     return data
       .map((room) =>
         room.participants.map((participant) => {
-          const user = participant.user_id[0]; // Assuming user_id is an array with a single object
+          const user = participant.account as unknown as Actor;
           return {
             name: user?.name,
             details: user?.details,
@@ -235,10 +235,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async removeAllMemories(
-    room_id: UUID,
-    tableName: string,
-  ): Promise<void> {
+  async removeAllMemories(room_id: UUID, tableName: string): Promise<void> {
     const result = await this.supabase.rpc("remove_memories", {
       query_table_name: tableName,
       query_room_id: room_id,
@@ -294,11 +291,21 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   }
 
   async updateGoal(goal: Goal): Promise<void> {
-    await this.supabase.from("goals").update(goal).match({ id: goal.id });
+    const { error } = await this.supabase
+      .from("goals")
+      .update(goal)
+      .match({ id: goal.id });
+    if (error) {
+      throw new Error(`Error creating goal: ${error.message}`);
+    }
   }
 
   async createGoal(goal: Goal): Promise<void> {
-    await this.supabase.from("goals").upsert(goal);
+    console.log("inserting goal:", goal);
+    const { error } = await this.supabase.from("goals").insert(goal);
+    if (error) {
+      throw new Error(`Error creating goal: ${error.message}`);
+    }
   }
 
   async removeGoal(goalId: UUID): Promise<void> {

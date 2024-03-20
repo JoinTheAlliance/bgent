@@ -55,6 +55,8 @@ describe("Goals", () => {
       onlyInProgress: false,
     });
 
+    console.log("goals", goals);
+
     const createdGoal = goals.find((goal: Goal) => goal.name === newGoal.name);
 
     expect(createdGoal).toBeDefined();
