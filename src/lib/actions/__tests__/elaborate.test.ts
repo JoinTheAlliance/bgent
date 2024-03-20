@@ -122,7 +122,7 @@ describe("User Profile", () => {
 
       return result === true && result2 === false;
     });
-  }, 20000);
+  }, 60000);
 
   test("Test repetition check on elaborate", async () => {
     await runAiTest("Test repetition check on elaborate", async () => {
@@ -144,7 +144,7 @@ describe("User Profile", () => {
 
       return result.action !== "ELABORATE";
     });
-  }, 20000);
+  }, 60000);
 
   test("Test multiple elaborate messages in a conversation", async () => {
     await runAiTest(
@@ -198,7 +198,7 @@ describe("User Profile", () => {
         return sentMultipleMessages && usedElaborateAction && responsesNotEmpty;
       },
     );
-  }, 20000);
+  }, 60000);
 
   test("Test if message is added to database", async () => {
     await runAiTest("Test if message is added to database", async () => {
@@ -225,7 +225,7 @@ describe("User Profile", () => {
 
       return finalMessageCount - initialMessageCount === 2;
     });
-  }, 20000);
+  }, 60000);
   test("Test if not elaborate", async () => {
     await runAiTest("Test if not elaborate", async () => {
       // this is basically the same test as the one in ignore.test.ts
@@ -243,7 +243,7 @@ describe("User Profile", () => {
 
       return result.action === "IGNORE";
     });
-  }, 20000);
+  }, 60000);
 
   // test conditions where we would expect a wait or an ignore
 });
