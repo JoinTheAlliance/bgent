@@ -460,35 +460,32 @@ export class BgentRuntime {
       recentFactsData,
       goalsData,
       loreData,
-      providers,
-    ]: [Actor[], Memory[], Memory[], Goal[], Memory[], string] =
-      await Promise.all([
-        getActorDetails({ runtime: this, room_id }),
-        this.messageManager.getMemories({
-          room_id,
-          count: recentMessageCount,
-          unique: false,
-        }),
-        this.factManager.getMemories({
-          room_id,
-          count: recentFactsCount,
-        }),
-        getGoals({
-          runtime: this,
-          count: 10,
-          onlyInProgress: false,
-          room_id,
-        }),
-        getLore({
-          runtime: this,
-          message: (message.content as Content).content,
-          count: 5,
-          match_threshold: 0.5,
-        }),
-        getProviders(this, message),
-      ]);
+    ]: [Actor[], Memory[], Memory[], Goal[], Memory[]] = await Promise.all([
+      getActorDetails({ runtime: this, room_id }),
+      this.messageManager.getMemories({
+        room_id,
+        count: recentMessageCount,
+        unique: false,
+      }),
+      this.factManager.getMemories({
+        room_id,
+        count: recentFactsCount,
+      }),
+      getGoals({
+        runtime: this,
+        count: 10,
+        onlyInProgress: false,
+        room_id,
+      }),
+      getLore({
+        runtime: this,
+        message: (message.content as Content).content,
+        count: 5,
+        match_threshold: 0.5,
+      }),
+    ]);
 
-    const goals = await formatGoalsAsString({ goals: goalsData });
+    const goals = formatGoalsAsString({ goals: goalsData });
 
     let relevantFactsData: Memory[] = [];
 
@@ -544,7 +541,6 @@ export class BgentRuntime {
       ),
       lore: addHeader("### Important Information", lore),
       loreData,
-      providers,
       goalsData,
       recentMessages: addHeader("### Conversation Messages", recentMessages),
       recentMessagesData,
@@ -571,15 +567,17 @@ export class BgentRuntime {
       return null;
     });
 
-    const resolvedEvaluators = await Promise.all(evaluatorPromises);
+    const [resolvedEvaluators, resolvedActions, providers] = await Promise.all([
+      Promise.all(evaluatorPromises),
+      Promise.all(actionPromises),
+      getProviders(this, message, initialState),
+    ]);
 
     const evaluatorsData = resolvedEvaluators.filter(Boolean) as Evaluator[];
     const evaluators = formatEvaluators(evaluatorsData);
     const evaluatorNames = formatEvaluatorNames(evaluatorsData);
     const evaluatorConditions = formatEvaluatorConditions(evaluatorsData);
     const evaluatorExamples = formatEvaluatorExamples(evaluatorsData);
-
-    const resolvedActions = await Promise.all(actionPromises);
 
     const actionsData = resolvedActions.filter(Boolean) as Action[];
 
@@ -599,6 +597,7 @@ export class BgentRuntime {
       evaluatorNames,
       evaluatorConditions,
       evaluatorExamples,
+      providers,
     };
 
     return { ...initialState, ...actionState };
