@@ -28,6 +28,7 @@ Creates an instance of BgentRuntime.
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.embeddingModel?` | `string` | The model to use for embedding. |
 | `opts.evaluators?` | [`Evaluator`](../interfaces/Evaluator.md)[] | Optional custom evaluators. |
+| `opts.fetch?` | `unknown` | Custom fetch function to use for making requests. |
 | `opts.model?` | `string` | The model to use for completion. |
 | `opts.providers?` | [`Provider`](../interfaces/Provider.md)[] | Optional context providers. |
 | `opts.recentMessageCount?` | `number` | The number of messages to hold in the recent message cache. |
@@ -101,6 +102,65 @@ ___
 • **factManager**: [`MemoryManager`](MemoryManager.md)
 
 Manage the fact and recall of facts.
+
+___
+
+### fetch
+
+• **fetch**: (`input`: `RequestInfo` \| `URL`, `init?`: `RequestInit`\<`CfProperties`\<`unknown`\>\>) => `Promise`\<`Response`\>(`input`: `RequestInfo`, `init?`: `RequestInit`\<`CfProperties`\<`unknown`\>\>) => `Promise`\<`Response`\>(`input`: `RequestInfo`, `init?`: `RequestInit`\<`RequestInitCfProperties`\>) => `Promise`\<`Response`\> = `fetch`
+
+Fetch function to use
+Some environments may not have access to the global fetch function and need a custom fetch override.
+
+#### Type declaration
+
+▸ (`input`, `init?`): `Promise`\<`Response`\>
+
+Fetch function to use
+Some environments may not have access to the global fetch function and need a custom fetch override.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `RequestInfo` \| `URL` |
+| `init?` | `RequestInit`\<`CfProperties`\<`unknown`\>\> |
+
+##### Returns
+
+`Promise`\<`Response`\>
+
+▸ (`input`, `init?`): `Promise`\<`Response`\>
+
+Fetch function to use
+Some environments may not have access to the global fetch function and need a custom fetch override.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `RequestInfo` |
+| `init?` | `RequestInit`\<`CfProperties`\<`unknown`\>\> |
+
+##### Returns
+
+`Promise`\<`Response`\>
+
+▸ (`input`, `init?`): `Promise`\<`Response`\>
+
+Fetch function to use
+Some environments may not have access to the global fetch function and need a custom fetch override.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `input` | `RequestInfo` |
+| `init?` | `RequestInit`\<`RequestInitCfProperties`\> |
+
+##### Returns
+
+`Promise`\<`Response`\>
 
 ___
 
