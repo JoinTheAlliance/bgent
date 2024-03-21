@@ -33,6 +33,12 @@ custom_edit_url: null
 
 [DatabaseAdapter](DatabaseAdapter.md).[constructor](DatabaseAdapter.md#constructor)
 
+## Properties
+
+### supabase
+
+• **supabase**: `default`\<`any`, ``"public"``, `any`\>
+
 ## Methods
 
 ### addParticipantToRoom

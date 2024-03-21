@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-▸ **formatGoalsAsString**(`«destructured»`): `Promise`\<`string`\>
+▸ **formatGoalsAsString**(`«destructured»`): `string`
 
 #### Parameters
 
@@ -17,4 +17,4 @@ custom_edit_url: null
 
 #### Returns
 
-`Promise`\<`string`\>
+`string`

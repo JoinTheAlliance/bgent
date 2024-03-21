@@ -97,7 +97,8 @@ export class BgentRuntime {
   embeddingModel = "text-embedding-3-small";
 
   /**
-   * Use a custom fetch
+   * Fetch function to use
+   * Some environments may not have access to the global fetch function and need a custom fetch override.
    */
   fetch = fetch;
 
