@@ -105,8 +105,6 @@ export async function createRuntime({
             password: TEST_PASSWORD!,
           });
 
-          console.log("response to signup", response);
-
           // Change the name of the user
           const { error } = await supabase
             .from("accounts")

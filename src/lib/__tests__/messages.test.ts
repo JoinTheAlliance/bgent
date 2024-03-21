@@ -48,7 +48,7 @@ describe("Messages Library", () => {
       runtime,
       room_id,
     });
-    console.log("result", result);
+
     expect(result.length).toBeGreaterThan(0);
     result.forEach((actor: Actor) => {
       expect(actor).toHaveProperty("name");

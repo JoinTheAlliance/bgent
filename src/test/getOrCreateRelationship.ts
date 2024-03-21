@@ -37,18 +37,13 @@ export async function getOrCreateRelationship({
   }
 
   if (!relationship) {
-    console.log("Creating relationship", userA, userB);
     // Create the relationship
     await runtime.databaseAdapter.createRelationship({
       userA,
       userB,
     });
 
-    console.log("Fetching relationship", userA, userB);
-
     relationship = await getRelationship({ runtime, userA, userB });
-
-    console.log("Fetched relationship", relationship);
 
     if (!relationship) {
       throw new Error("Failed to fetch the created relationship");
