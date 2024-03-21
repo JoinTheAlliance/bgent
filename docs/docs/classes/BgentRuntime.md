@@ -179,7 +179,7 @@ ___
 
 ### composeState
 
-▸ **composeState**(`message`): `Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string`  }\>
+▸ **composeState**(`message`, `additionalKeys?`): `Promise`\<\{ `actionConditions`: `string` ; `actionExamples`: `string` ; `actionNames`: `string` ; `actions`: `string` ; `actors`: `string` ; `actorsData`: [`Actor`](../interfaces/Actor.md)[] ; `agentId`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `agentName`: `undefined` \| `string` ; `evaluatorConditions`: `string` ; `evaluatorExamples`: `string` ; `evaluatorNames`: `string` ; `evaluators`: `string` ; `evaluatorsData`: [`Evaluator`](../interfaces/Evaluator.md)[] ; `goals`: `string` ; `goalsData`: [`Goal`](../interfaces/Goal.md)[] ; `lore`: `string` ; `loreData`: [`Memory`](../interfaces/Memory.md)[] ; `providers`: `string` ; `recentFacts`: `string` ; `recentFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `recentMessages`: `string` ; `recentMessagesData`: [`Memory`](../interfaces/Memory.md)[] ; `relevantFacts`: `string` ; `relevantFactsData`: [`Memory`](../interfaces/Memory.md)[] ; `room_id`: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` ; `senderName`: `undefined` \| `string`  }\>
 
 Compose the state of the agent into an object that can be passed or used for response generation.
 
@@ -188,6 +188,7 @@ Compose the state of the agent into an object that can be passed or used for res
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `message` | [`Message`](../interfaces/Message.md) | The message to compose the state from. |
+| `additionalKeys` | `Object` | - |
 
 #### Returns
 

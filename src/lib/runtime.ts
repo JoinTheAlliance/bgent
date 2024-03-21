@@ -444,7 +444,10 @@ export class BgentRuntime {
    * @param message The message to compose the state from.
    * @returns The state of the agent.
    */
-  async composeState(message: Message) {
+  async composeState(
+    message: Message,
+    additionalKeys: { [key: string]: unknown } = {},
+  ) {
     const { userId, room_id } = message;
 
     const recentMessageCount = this.getRecentMessageCount();
@@ -549,6 +552,7 @@ export class BgentRuntime {
       recentFactsData,
       relevantFacts: addHeader("# Relevant Facts", relevantFacts),
       relevantFactsData,
+      ...additionalKeys,
     };
 
     const actionPromises = this.actions.map(async (action: Action) => {

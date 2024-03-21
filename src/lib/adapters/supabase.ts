@@ -302,7 +302,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   }
 
   async createGoal(goal: Goal): Promise<void> {
-    console.log("inserting goal:", goal);
     const { error } = await this.supabase.from("goals").insert(goal);
     if (error) {
       throw new Error(`Error creating goal: ${error.message}`);

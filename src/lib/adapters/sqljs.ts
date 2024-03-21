@@ -367,7 +367,6 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     }
 
     stmt.free();
-    console.log("*** count result:", count);
     return count;
   }
 
@@ -545,7 +544,6 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     const relationship = stmt.getAsObject() as unknown as
       | Relationship
       | undefined;
-    console.log("relationship", relationship);
     stmt.free();
     return relationship || null;
   }
