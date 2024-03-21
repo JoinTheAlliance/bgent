@@ -300,6 +300,12 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     }
     let sql = `SELECT * FROM memories WHERE type = ? AND room_id = ?`;
 
+    if (params.unique) {
+      sql += " AND `unique` = 1";
+    }
+
+    sql += " ORDER BY created_at DESC";
+
     if (params.count) {
       sql += " LIMIT ?";
     }
