@@ -2,7 +2,7 @@ interface RunResult {
   changes: number;
   lastInsertRowid: number | bigint;
 }
-interface Statement<BindParameters extends unknown[]> {
+export interface Statement<BindParameters extends unknown[]> {
   database: Database;
   source: string;
   reader: boolean;

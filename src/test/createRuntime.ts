@@ -1,5 +1,3 @@
-import { Session, createClient } from "@supabase/supabase-js";
-import Database from "better-sqlite3";
 import { SqliteDatabaseAdapter } from "../lib/adapters/sqlite";
 import { SupabaseDatabaseAdapter } from "../lib/adapters/supabase";
 import { zeroUuid } from "../lib/constants";
@@ -15,7 +13,6 @@ import {
 import { User } from "./types";
 import { load } from "../lib/adapters/sqlite/sqlite_vss";
 import { SqlJsDatabaseAdapter } from "../lib/adapters/sqljs";
-import initSqlJs from "sql.js";
 
 export async function createRuntime({
   env,
@@ -32,11 +29,17 @@ export async function createRuntime({
 }) {
   let adapter: DatabaseAdapter;
   let user: User;
-  let session: Session;
+  let session: {
+    user: User;
+  };
 
   switch (env?.TEST_DATABASE_CLIENT as string) {
     case "sqlite":
       {
+        const module = await import("better-sqlite3");
+
+        const Database = module.default;
+
         // SQLite adapter
         adapter = new SqliteDatabaseAdapter(new Database(":memory:"));
 
@@ -48,14 +51,16 @@ export async function createRuntime({
           email: "test@example.com",
         } as User;
         session = {
-          access_token: "test-access-token",
-          refresh_token: "test-refresh-token",
           user: user,
-        } as Session;
+        };
       }
       break;
     case "sqljs":
       {
+        const module = await import("sql.js");
+
+        const initSqlJs = module.default;
+
         // SQLite adapter
         const SQL = await initSqlJs({});
         const db = new SQL.Database();
@@ -70,15 +75,17 @@ export async function createRuntime({
           email: "test@example.com",
         } as User;
         session = {
-          access_token: "test-access-token",
-          refresh_token: "test-refresh-token",
           user: user,
-        } as Session;
+        };
       }
       break;
     case "supabase":
     default:
       {
+        const module = await import("@supabase/supabase-js");
+
+        const { createClient } = module;
+
         const supabase = createClient(
           env?.SUPABASE_URL ?? SUPABASE_URL,
           env?.SUPABASE_SERVICE_API_KEY ?? SUPABASE_ANON_KEY,
@@ -90,7 +97,7 @@ export async function createRuntime({
         });
 
         user = data.user as User;
-        session = data.session as Session;
+        session = data.session as unknown as { user: User };
 
         if (!session) {
           const response = await supabase.auth.signUp({
@@ -111,7 +118,7 @@ export async function createRuntime({
           }
 
           user = response.data.user as User;
-          session = response.data.session as Session;
+          session = response.data.session as unknown as { user: User };
         }
 
         adapter = new SupabaseDatabaseAdapter(
