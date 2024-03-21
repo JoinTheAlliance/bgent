@@ -275,9 +275,12 @@ AND room_id = ?`;
 
     const queryParams = [params.tableName, params.room_id];
 
-    // if (params.unique) {
-    //   sql += " AND `unique` = 1";
-    // }
+    if (params.unique) {
+      sql += " AND `unique` = 1";
+    }
+
+    // get the most recent memories
+    sql += " ORDER BY created_at DESC";
 
     if (params.count) {
       sql += " LIMIT ?";
