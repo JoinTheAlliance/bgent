@@ -1,6 +1,5 @@
 // File: /src/lib/database/SqlJsDatabaseAdapter.ts
 import crypto, { type UUID } from "crypto";
-import { type Database } from "sql.js";
 import { DatabaseAdapter } from "../database";
 import {
   Account,
@@ -11,6 +10,7 @@ import {
   type Relationship,
 } from "../types";
 import { sqliteTables } from "./sqlite/sqliteTables";
+import { Database } from "./sqljs/types";
 
 export class SqlJsDatabaseAdapter extends DatabaseAdapter {
   db: Database;
