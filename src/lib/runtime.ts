@@ -552,7 +552,7 @@ export class BgentRuntime {
     };
 
     const actionPromises = this.actions.map(async (action: Action) => {
-      const result = await action.validate(this, message);
+      const result = await action.validate(this, message, initialState);
       if (result) {
         return action;
       }
