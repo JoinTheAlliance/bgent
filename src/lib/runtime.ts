@@ -97,6 +97,11 @@ export class BgentRuntime {
   embeddingModel = "text-embedding-3-small";
 
   /**
+   * Use a custom fetch
+   */
+  fetch = fetch;
+
+  /**
    * Store messages that are sent and received by the agent.
    */
   messageManager: MemoryManager = new MemoryManager({
@@ -142,6 +147,7 @@ export class BgentRuntime {
    * @param opts.embeddingModel - The model to use for embedding.
    * @param opts.agentId - Optional ID of the agent.
    * @param opts.databaseAdapter - The database adapter used for interacting with the database.
+   * @param opts.fetch - Custom fetch function to use for making requests.
    */
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
@@ -155,12 +161,14 @@ export class BgentRuntime {
     model?: string; // The model to use for completion
     embeddingModel?: string; // The model to use for embedding
     databaseAdapter: DatabaseAdapter; // The database adapter used for interacting with the database
+    fetch?: typeof fetch | unknown;
   }) {
     this.#recentMessageCount =
       opts.recentMessageCount ?? this.#recentMessageCount;
     this.debugMode = opts.debugMode ?? false;
     this.databaseAdapter = opts.databaseAdapter;
     this.agentId = opts.agentId ?? zeroUuid;
+    this.fetch = (opts.fetch as typeof fetch) ?? this.fetch;
 
     if (!opts.databaseAdapter) {
       throw new Error("No database adapter provided");
@@ -257,7 +265,7 @@ export class BgentRuntime {
     };
 
     try {
-      const response = await fetch(
+      const response = await this.fetch(
         `${this.serverUrl}/chat/completions`,
         requestOptions,
       );
@@ -312,7 +320,7 @@ export class BgentRuntime {
       }),
     };
     try {
-      const response = await fetch(
+      const response = await this.fetch(
         `${this.serverUrl}/embeddings`,
         requestOptions,
       );
