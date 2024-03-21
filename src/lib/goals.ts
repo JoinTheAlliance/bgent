@@ -23,7 +23,7 @@ export const getGoals = async ({
   });
 };
 
-export const formatGoalsAsString = async ({ goals }: { goals: Goal[] }) => {
+export const formatGoalsAsString = ({ goals }: { goals: Goal[] }) => {
   const goalStrings = goals.map((goal: Goal) => {
     const header = `Goal: ${goal.name}\nid: ${goal.id}`;
     const objectives =
