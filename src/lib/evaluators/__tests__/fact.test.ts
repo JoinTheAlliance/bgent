@@ -67,7 +67,9 @@ describe("Facts Evaluator", () => {
         room_id,
       };
 
-      const result = await evaluator.handler(runtime, message);
+      const state = await runtime.composeState(message);
+
+      const result = await evaluator.handler(runtime, message, state);
       const resultConcatenated = result.join("\n");
 
       return (
@@ -90,7 +92,9 @@ describe("Facts Evaluator", () => {
         room_id,
       };
 
-      const result = await evaluator.handler(runtime, message);
+      const state = await runtime.composeState(message);
+
+      const result = await evaluator.handler(runtime, message, state);
       const resultConcatenated = result.join("\n");
 
       return (

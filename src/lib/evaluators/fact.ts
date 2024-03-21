@@ -1,7 +1,7 @@
 import { composeContext } from "../context";
 import logger from "../logger";
 import { type BgentRuntime } from "../runtime";
-import { ActionExample, Content, Memory, type Message } from "../types";
+import { ActionExample, Content, Memory, State, type Message } from "../types";
 import { parseJsonArrayFromText } from "../utils";
 
 export const formatFacts = (facts: Memory[]) => {
@@ -55,8 +55,14 @@ Response should be a JSON object array inside a JSON markdown block. Correct res
 ]
 \`\`\``;
 
-async function handler(runtime: BgentRuntime, message: Message) {
-  const state = await runtime.composeState(message);
+async function handler(
+  runtime: BgentRuntime,
+  message: Message,
+  state: State | undefined,
+): Promise<string[]> {
+  if (!state) {
+    state = await runtime.composeState(message);
+  }
 
   const { agentId, room_id } = state;
 

@@ -10,7 +10,7 @@ import { composeContext } from "../context";
 import { evaluationTemplate } from "../evaluators";
 import fact from "../evaluators/fact";
 import { BgentRuntime } from "../runtime";
-import { Message } from "../types";
+import { Message, State } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -80,7 +80,7 @@ describe("Evaluation Process", () => {
       room_id,
     };
 
-    const result = await TEST_EVALUATOR.handler(runtime, message);
+    const result = await TEST_EVALUATOR.handler(runtime, message, {} as State);
     expect(result).toBeTruthy();
   });
 

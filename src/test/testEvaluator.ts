@@ -1,8 +1,10 @@
 import { type BgentRuntime } from "../lib/runtime";
 import { Evaluator, type Message, type State } from "../lib/types";
 
-async function handler(runtime: BgentRuntime, message: Message) {
-  const state = (await runtime.composeState(message)) as State;
+async function handler(runtime: BgentRuntime, message: Message, state: State) {
+  if (!state) {
+    state = (await runtime.composeState(message)) as State;
+  }
   return state;
 }
 

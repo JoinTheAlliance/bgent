@@ -9,7 +9,7 @@ import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
 import { createGoal, getGoals } from "../../goals";
 import { type BgentRuntime } from "../../runtime";
-import { Goal, GoalStatus, Objective, State, type Message } from "../../types";
+import { Goal, GoalStatus, Objective, type Message } from "../../types";
 import evaluator from "../goal";
 
 dotenv.config({ path: ".dev.vars" });
@@ -103,10 +103,10 @@ describe("Goals Evaluator", () => {
           room_id,
         };
 
+        const state = await runtime.composeState(message);
+
         // Process the message with the goal evaluator
-        await evaluator.handler(runtime, message, {} as unknown as State, {
-          onlyInProgress: false,
-        });
+        await evaluator.handler(runtime, message, state);
 
         // Fetch the updated goal to verify the objectives and status were updated
         const updatedGoals = await getGoals({
@@ -160,9 +160,9 @@ describe("Goals Evaluator", () => {
           room_id,
         };
 
-        await evaluator.handler(runtime, message, {} as State, {
-          onlyInProgress: false,
-        });
+        const state = await runtime.composeState(message);
+
+        await evaluator.handler(runtime, message, state);
 
         const goals = await getGoals({
           runtime,

@@ -1,6 +1,7 @@
 import { composeContext } from "../context";
 import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
+import { formatMessages } from "../messages";
 import { type BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
 import {
@@ -19,13 +20,11 @@ export default {
   description:
     "ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly! DO NOT USE WHEN ASKING A QUESTION, ALWAYS USE WAIT WHEN ASKING A QUESTION.",
   validate: async (runtime: BgentRuntime, message: Message) => {
-    const recentMessagesData = await runtime.messageManager.getMemories(
-      {
-        room_id: message.room_id,
-        count: 10,
-        unique: false,
-      },
-    );
+    const recentMessagesData = await runtime.messageManager.getMemories({
+      room_id: message.room_id,
+      count: 10,
+      unique: false,
+    });
     const agentMessages = recentMessagesData.filter(
       (m) => m.user_id === runtime.agentId,
     );
@@ -46,7 +45,20 @@ export default {
     return true;
   },
   handler: async (runtime: BgentRuntime, message: Message, state: State) => {
-    state = (await runtime.composeState(message)) as State;
+    if (!state) {
+      state = (await runtime.composeState(message)) as State;
+    }
+
+    state.recentMessagesData = await runtime.messageManager.getMemories({
+      room_id: message.room_id,
+      count: 10,
+      unique: false,
+    });
+
+    state.recentMessages = formatMessages({
+      messages: state.recentMessagesData,
+      actors: state.actorsData || [],
+    });
 
     const context = composeContext({
       state,

@@ -45,16 +45,11 @@ async function handler(
   runtime: BgentRuntime,
   message: Message,
   state: State | undefined,
-  options: { [key: string]: unknown } = { onlyInProgress: true },
-): Promise<Goal[]> {
+): Promise<Goal[] | null> {
   // get goals
-  let goalsData = await getGoals({
-    runtime,
-    room_id: message.room_id,
-    onlyInProgress: options.onlyInProgress as boolean,
-  });
-
-  state = (await runtime.composeState(message)) as State;
+  if (!state) {
+    state = (await runtime.composeState(message)) as State;
+  }
   const context = composeContext({
     state,
     template,
@@ -69,16 +64,9 @@ async function handler(
   // Parse the JSON response to extract goal updates
   const updates = parseJsonArrayFromText(response);
 
-  // get goals
-  goalsData = await getGoals({
-    runtime,
-    room_id: message.room_id,
-    onlyInProgress: true,
-  });
-
   // Apply the updates to the goals
-  const updatedGoals = goalsData
-    .map((goal: Goal) => {
+  const updatedGoals = state.goalsData
+    ?.map((goal: Goal) => {
       const update = updates?.find((u) => u.id === goal.id);
       if (update) {
         const objectives = goal.objectives;
@@ -107,15 +95,17 @@ async function handler(
     })
     .filter(Boolean);
 
-  // Update goals in the database
-  for (const goal of updatedGoals) {
-    const id = goal.id;
-    // delete id from goal
-    if (goal.id) delete goal.id;
-    await runtime.databaseAdapter.updateGoal({ ...goal, id });
+  if (updatedGoals) {
+    // Update goals in the database
+    for (const goal of updatedGoals) {
+      const id = goal.id;
+      // delete id from goal
+      if (goal.id) delete goal.id;
+      await runtime.databaseAdapter.updateGoal({ ...goal, id });
+    }
+    return updatedGoals; // Return updated goals for further processing or logging
   }
-
-  return updatedGoals; // Return updated goals for further processing or logging
+  return null;
 }
 
 export default {
