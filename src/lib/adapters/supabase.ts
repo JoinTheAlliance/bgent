@@ -12,7 +12,7 @@ import {
 import { DatabaseAdapter } from "../database";
 
 export class SupabaseDatabaseAdapter extends DatabaseAdapter {
-  private supabase: SupabaseClient;
+  supabase: SupabaseClient;
 
   constructor(supabaseUrl: string, supabaseKey: string) {
     super();
