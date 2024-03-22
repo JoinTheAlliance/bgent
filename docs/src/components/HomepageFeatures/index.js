@@ -39,6 +39,7 @@ function Feature ({ Svg, title, description }) {
       backgroundColor: '#ffffff88',
       borderRadius: '10px',
       padding: '10px',
+      paddingTop: '20px',
       margin: '5px'
     }}>
       {/* <div className="text--center">
