@@ -23,7 +23,7 @@ const FeatureList = [
     title: 'For a Better World',
     description: (
       <>
-        If you have ideas for how to make better agents for everyone, <a href="https://discord.gg/jointhealliance">let's do it togethere</a>.
+        If you have ideas for how to make better agents for everyone, <a href="https://discord.gg/jointhealliance">let's do it together</a>.
       </>
     )
   }
