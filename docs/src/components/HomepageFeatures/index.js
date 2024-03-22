@@ -15,7 +15,7 @@ const FeatureList = [
     title: 'Just Works',
     description: (
       <>
-        Simple, tested, used in production. Configurable enough, but works out of the box.
+        Simple, tested, used in production. Configurable enough, batteries included.
       </>
     )
   },
@@ -39,7 +39,7 @@ function Feature ({ Svg, title, description }) {
       backgroundColor: '#ffffff88',
       borderRadius: '10px',
       padding: '10px',
-      paddingTop: '20px'
+      margin: '5px'
     }}>
       {/* <div className="text--center">
         <Svg className={styles.featureSvg} role="img" />
