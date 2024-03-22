@@ -44,7 +44,7 @@ export async function createRuntime({
         adapter = new SqliteDatabaseAdapter(new Database(":memory:"));
 
         // Load sqlite-vss
-        load((adapter as SqliteDatabaseAdapter).db);
+        await load((adapter as SqliteDatabaseAdapter).db);
         // Create a test user and session
         user = {
           id: zeroUuid,

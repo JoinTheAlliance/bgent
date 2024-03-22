@@ -1,7 +1,3 @@
-import { statSync } from "fs";
-import { join } from "path";
-import { arch, platform } from "process";
-
 // TypeScript definitions
 export interface Database {
   loadExtension(file: string, entrypoint?: string | undefined): void;
@@ -28,7 +24,9 @@ function platformPackageName(platform: string, arch: string): string {
   return `sqlite-vss-${os}-${arch}`;
 }
 
-function loadablePathResolver(name: string): string {
+async function loadablePathResolver(name: string): Promise<string> {
+  const { platform, arch } = await import("process");
+
   if (!validPlatform(platform, arch)) {
     throw new Error(
       `Unsupported platform for sqlite-vss, on a ${platform}-${arch} machine, but not in supported platforms (${supportedPlatforms
@@ -36,6 +34,9 @@ function loadablePathResolver(name: string): string {
         .join(",")}). Consult the sqlite-vss NPM package README for details.`,
     );
   }
+
+  const { join } = await import("path");
+  const { statSync } = await import("fs");
 
   const packageName = platformPackageName(platform, arch);
   let loadablePath = join(
@@ -50,7 +51,7 @@ function loadablePathResolver(name: string): string {
     `${name}.${extensionSuffix(platform)}`,
   );
 
-  // if loadable path doesnt exist, check path2
+  // if loadable path doesn't exist, check path2
   if (!statSync(loadablePath, { throwIfNoEntry: false })) {
     loadablePath = join(
       __dirname,
@@ -72,23 +73,25 @@ function loadablePathResolver(name: string): string {
   return loadablePath;
 }
 
-export function getVectorLoadablePath(): string {
+export async function getVectorLoadablePath(): Promise<string> {
   return loadablePathResolver("vector0");
 }
 
-export function getVssLoadablePath(): string {
+export async function getVssLoadablePath(): Promise<string> {
   return loadablePathResolver("vss0");
 }
 
-export function loadVector(db: Database): void {
-  db.loadExtension(getVectorLoadablePath());
+export async function loadVector(db: Database): Promise<void> {
+  const loadablePath = await getVectorLoadablePath();
+  db.loadExtension(loadablePath);
 }
 
-export function loadVss(db: Database): void {
-  db.loadExtension(getVssLoadablePath());
+export async function loadVss(db: Database): Promise<void> {
+  const loadablePath = await getVssLoadablePath();
+  db.loadExtension(loadablePath);
 }
 
-export function load(db: Database): void {
-  loadVector(db);
-  loadVss(db);
+export async function load(db: Database): Promise<void> {
+  await loadVector(db);
+  await loadVss(db);
 }
