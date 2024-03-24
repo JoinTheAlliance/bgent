@@ -150,6 +150,7 @@ export class BgentRuntime {
    * @param opts.databaseAdapter - The database adapter used for interacting with the database.
    * @param opts.fetch - Custom fetch function to use for making requests.
    */
+
   constructor(opts: {
     recentMessageCount?: number; // number of messages to hold in the recent message cache
     agentId?: UUID; // ID of the agent
@@ -236,6 +237,7 @@ export class BgentRuntime {
    * @param opts.model The model to use for completion.
    * @param opts.frequency_penalty The frequency penalty to apply to the completion.
    * @param opts.presence_penalty The presence penalty to apply to the completion.
+   * @param opts.temperature The temperature to apply to the completion.
    * @returns The completed message.
    */
   async completion({
@@ -244,6 +246,7 @@ export class BgentRuntime {
     model = this.model,
     frequency_penalty = 0.0,
     presence_penalty = 0.0,
+    temperature = 0.7
   }) {
     const requestOptions = {
       method: "POST",
@@ -256,6 +259,7 @@ export class BgentRuntime {
         model,
         frequency_penalty,
         presence_penalty,
+        temperature,
         messages: [
           {
             role: "user",
