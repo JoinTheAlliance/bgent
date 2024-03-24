@@ -1,11 +1,10 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { type User } from "../../test/types";
 import { zeroUuid } from "../constants";
 import { createGoal, getGoals, updateGoal } from "../goals";
 import { BgentRuntime } from "../runtime";
-import { GoalStatus, type Goal } from "../types";
+import { GoalStatus, type Goal, type UUID } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Goals", () => {
@@ -50,7 +49,7 @@ describe("Goals", () => {
     // Verify the goal is created in the database
     const goals = await getGoals({
       runtime,
-      userId: user?.id as UUID,
+      user_id: user?.id as UUID,
       room_id: zeroUuid,
       onlyInProgress: false,
     });

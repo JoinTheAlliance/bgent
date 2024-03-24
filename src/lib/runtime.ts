@@ -266,7 +266,7 @@ export class BgentRuntime {
     };
 
     try {
-      const response = await this.fetch(
+      const response = await fetch(
         `${this.serverUrl}/chat/completions`,
         requestOptions,
       );
@@ -321,7 +321,7 @@ export class BgentRuntime {
       }),
     };
     try {
-      const response = await this.fetch(
+      const response = await fetch(
         `${this.serverUrl}/embeddings`,
         requestOptions,
       );
@@ -457,7 +457,7 @@ export class BgentRuntime {
     message: Message,
     additionalKeys: { [key: string]: unknown } = {},
   ) {
-    const { userId, room_id } = message;
+    const { user_id, room_id } = message;
 
     const recentMessageCount = this.getRecentMessageCount();
     const recentFactsCount = Math.ceil(this.getRecentMessageCount() / 2);
@@ -514,6 +514,8 @@ export class BgentRuntime {
       });
     }
 
+    console.log("**** actorsData\n", actorsData);
+
     const actors = formatActors({ actors: actorsData ?? [] });
 
     const recentMessages = formatMessages({
@@ -525,13 +527,15 @@ export class BgentRuntime {
       }),
     });
 
+    console.log("**** recentMessages", recentMessages);
+
     const recentFacts = formatFacts(recentFactsData);
     const relevantFacts = formatFacts(relevantFactsData);
 
     const lore = formatLore(loreData);
 
     const senderName = actorsData?.find(
-      (actor: Actor) => actor.id === userId,
+      (actor: Actor) => actor.id === user_id,
     )?.name;
     const agentName = actorsData?.find(
       (actor: Actor) => actor.id === this.agentId,

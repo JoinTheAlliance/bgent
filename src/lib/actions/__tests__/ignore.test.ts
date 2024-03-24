@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import {
@@ -16,7 +15,7 @@ import logger from "../../logger";
 import { embeddingZeroVector } from "../../memory";
 import { type BgentRuntime } from "../../runtime";
 import { messageHandlerTemplate } from "../../templates";
-import { Content, State, type Message } from "../../types";
+import { Content, State, type Message, type UUID } from "../../types";
 import { parseJSONObjectFromText } from "../../utils";
 import action from "../ignore";
 
@@ -26,14 +25,14 @@ async function handleMessage(
   state?: State,
 ) {
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, userId, room_id } = message;
+    const { content: senderContent, user_id, room_id } = message;
 
     const _senderContent = (
       (senderContent as Content).content ?? senderContent
     )?.trim();
     if (_senderContent) {
       await runtime.messageManager.createMemory({
-        user_id: userId!,
+        user_id: user_id!,
         content: {
           content: _senderContent,
           action: (message.content as Content)?.action ?? "null",
@@ -60,7 +59,7 @@ async function handleMessage(
   }
 
   let responseContent: Content | null = null;
-  const { userId, room_id } = message;
+  const { user_id, room_id } = message;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     const response = await runtime.completion({
@@ -70,7 +69,7 @@ async function handleMessage(
 
     await runtime.databaseAdapter.log({
       body: { message, context, response },
-      user_id: userId,
+      user_id: user_id,
       room_id,
       type: "ignore_test_completion",
     });
@@ -175,7 +174,7 @@ describe("Ignore action tests", () => {
   test("Test ignore action", async () => {
     await runAiTest("Test ignore action", async () => {
       const message: Message = {
-        userId: user?.id as UUID,
+        user_id: user?.id as UUID,
         content: { content: "Never talk to me again", action: "WAIT" },
         room_id: room_id as UUID,
       };
@@ -195,7 +194,7 @@ describe("Ignore action tests", () => {
       "Action handler test 1: response should be ignore",
       async () => {
         const message: Message = {
-          userId: user.id as UUID,
+          user_id: user.id as UUID,
           content: { content: "", action: "IGNORE" },
           room_id: room_id as UUID,
         };
@@ -220,7 +219,7 @@ describe("Ignore action tests", () => {
       "Action handler test 2: response should be ignore",
       async () => {
         const message: Message = {
-          userId: user.id as UUID,
+          user_id: user.id as UUID,
           content: { content: "", action: "IGNORE" },
           room_id: room_id as UUID,
         };
@@ -243,7 +242,7 @@ describe("Ignore action tests", () => {
   test("Expect ignore", async () => {
     await runAiTest("Expect ignore", async () => {
       const message: Message = {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: { content: "Bye", action: "WAIT" },
         room_id: room_id as UUID,
       };

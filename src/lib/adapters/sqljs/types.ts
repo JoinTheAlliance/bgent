@@ -133,7 +133,7 @@ export declare class Database {
     sql: string,
     params: BindParams,
     callback: ParamsCallback,
-    done: () => void
+    done: () => void,
   ): Database;
   each(sql: string, callback: ParamsCallback, done: () => void): Database;
 

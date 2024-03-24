@@ -1,7 +1,6 @@
-import { type UUID } from "crypto";
 import { type User } from "./types";
 import { type BgentRuntime } from "../lib/runtime";
-import { Content } from "../lib/types";
+import { Content, type UUID } from "../lib/types";
 import { getCachedEmbeddings, writeCachedEmbedding } from "./cache";
 
 export async function populateMemories(
@@ -14,7 +13,7 @@ export async function populateMemories(
 ) {
   for (const conversation of conversations) {
     for (const c of conversation(user?.id as UUID)) {
-      const existingEmbedding = getCachedEmbeddings(c.content.content);
+      const existingEmbedding = await getCachedEmbeddings(c.content.content);
       const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: c.user_id as UUID,
         content: {

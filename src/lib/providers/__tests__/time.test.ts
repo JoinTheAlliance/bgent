@@ -1,9 +1,8 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { composeContext } from "../../context";
 import { BgentRuntime } from "../../runtime";
-import { type Message, type State } from "../../types";
+import { type Message, type State, type UUID } from "../../types";
 import timeProvider from "../time";
 import { zeroUuid } from "../../constants";
 
@@ -26,7 +25,7 @@ describe("Time Provider", () => {
 
   test("Time provider should return the current time in the correct format", async () => {
     const message: Message = {
-      userId: user.id,
+      user_id: user.id,
       content: { content: "" },
       room_id: room_id,
     };
@@ -43,7 +42,7 @@ describe("Time Provider", () => {
 
   test("Time provider should be integrated in the state and context correctly", async () => {
     const message: Message = {
-      userId: user.id,
+      user_id: user.id,
       content: { content: "" },
       room_id: room_id,
     };
@@ -68,7 +67,7 @@ describe("Time Provider", () => {
 
   test("Time provider should work independently", async () => {
     const message: Message = {
-      userId: user.id,
+      user_id: user.id,
       content: { content: "" },
       room_id: room_id,
     };

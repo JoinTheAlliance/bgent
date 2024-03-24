@@ -1,13 +1,21 @@
+// SERVER
 import jwt from "@tsndr/cloudflare-worker-jwt";
-import { type UUID } from "crypto";
 import { composeContext } from "../../lib/context";
 import { embeddingZeroVector } from "../../lib/memory";
 
+import { SupabaseClient } from "@supabase/supabase-js";
+import { defaultActions, defaultEvaluators } from "../../lib";
 import { SupabaseDatabaseAdapter } from "../../lib/adapters/supabase";
+import { zeroUuid } from "../../lib/constants";
 import logger from "../../lib/logger";
 import { BgentRuntime } from "../../lib/runtime";
 import { messageHandlerTemplate } from "../../lib/templates";
-import { type Content, type Message, type State } from "../../lib/types";
+import {
+  type Content,
+  type Message,
+  type State,
+  type UUID,
+} from "../../lib/types";
 import { parseJSONObjectFromText } from "../../lib/utils";
 
 /**
@@ -21,11 +29,16 @@ async function handleMessage(
   message: Message,
   state?: State,
 ) {
+  const room_id = message.room_id ?? "00000000-0000-0000-0000-000000000000";
+
+  // Create the room if it doesn't exist
+  await runtime.databaseAdapter.createRoom(message.room_id);
+
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content, userId, room_id } = message;
+    const { content, user_id, room_id } = message;
     if (content) {
       await runtime.messageManager.createMemory({
-        user_id: userId!,
+        user_id: user_id!,
         content,
         room_id,
         embedding: embeddingZeroVector,
@@ -49,7 +62,7 @@ async function handleMessage(
   }
 
   let responseContent: Content | null = null;
-  const { userId, room_id } = message;
+  const { user_id } = message;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     const response = await runtime.completion({
@@ -59,7 +72,7 @@ async function handleMessage(
 
     runtime.databaseAdapter.log({
       body: { message, context, response },
-      user_id: userId,
+      user_id: user_id,
       room_id,
       type: "simple_agent_main_completion",
     });
@@ -68,11 +81,7 @@ async function handleMessage(
       response,
     ) as unknown as Content;
 
-    if (
-      (parsedResponse.user as string)?.includes(
-        (state as State).agentName as string,
-      )
-    ) {
+    if (parsedResponse && parsedResponse.content && parsedResponse.action) {
       responseContent = {
         content: parsedResponse.content,
         action: parsedResponse.action,
@@ -116,6 +125,72 @@ async function handleMessage(
   return responseContent;
 }
 
+async function ensureUserExists(
+  supabase: SupabaseClient,
+  user_id: string,
+  email: string,
+  name: string,
+) {
+  const { data: user, error } = await supabase
+    .from("accounts")
+    .select("*")
+    .eq("id", user_id)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    console.error("Error checking user existence:", error);
+    throw error;
+  }
+
+  if (!user) {
+    await supabase.from("accounts").insert({
+      id: user_id,
+      name,
+      email,
+    });
+  }
+}
+
+async function ensureParticipantExists(
+  supabase: SupabaseClient,
+  user_id: string,
+) {
+  const { data: participants, error } = await supabase
+    .from("participants")
+    .select("*")
+    .eq("user_id", user_id);
+
+  if (error && error.code !== "PGRST116") {
+    console.error("Error checking participant existence:", error);
+    throw error;
+  }
+
+  if (participants?.length === 0) {
+    await supabase.from("participants").insert({
+      user_id: user_id,
+      room_id: zeroUuid,
+    });
+  }
+}
+
+async function ensureRoomExists(runtime: BgentRuntime, user_id: UUID) {
+  const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+    user_id,
+    runtime.agentId,
+  ]);
+
+  if (rooms.length === 0) {
+    const room_id = await runtime.databaseAdapter.createRoom();
+    runtime.databaseAdapter.addParticipant(user_id, room_id);
+    runtime.databaseAdapter.addParticipant(runtime.agentId, room_id);
+    return room_id;
+  }
+  // else return the first room
+  else {
+    return rooms[0];
+  }
+}
+
 const onMessage = async (
   message: Message,
   runtime: BgentRuntime,
@@ -125,8 +200,33 @@ const onMessage = async (
     logger.warn("Sender content null, skipping");
     return;
   }
+  // Ensure user exists
+  await ensureUserExists(
+    (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase,
+    message.user_id,
+    `User@example.com`,
+    "User",
+  );
 
-  const data = (await handleMessage(runtime, message, state)) as Content;
+  // Ensure participant exists
+  await ensureParticipantExists(
+    (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase,
+    message.user_id,
+  );
+
+  await ensureParticipantExists(
+    (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase,
+    runtime.agentId,
+  );
+
+  // // Ensure room exists
+  const room_id = await ensureRoomExists(runtime, message.user_id);
+
+  const data = (await handleMessage(
+    runtime,
+    { ...message, room_id },
+    state,
+  )) as Content;
   return data;
 };
 
@@ -139,7 +239,7 @@ interface HandlerArgs {
     NODE_ENV: string;
   };
   match?: RegExpMatchArray;
-  userId: UUID;
+  user_id: UUID;
 }
 
 class Route {
@@ -161,7 +261,7 @@ class Route {
 const routes: Route[] = [
   {
     path: /^\/api\/agents\/message/,
-    async handler({ req, env, userId }: HandlerArgs) {
+    async handler({ req, env, user_id }: HandlerArgs) {
       if (req.method === "OPTIONS") {
         return;
       }
@@ -179,10 +279,12 @@ const routes: Route[] = [
         serverUrl: "https://api.openai.com/v1",
         databaseAdapter,
         token: env.OPENAI_API_KEY,
+        actions: defaultActions.filter((action) => action.name !== "ELABORATE"),
+        evaluators: defaultEvaluators,
       });
 
-      if (!(message as Message).userId) {
-        (message as Message).userId = userId;
+      if (!(message as Message).user_id) {
+        (message as Message).user_id = user_id;
       }
 
       try {
@@ -234,15 +336,15 @@ async function handleRequest(
           id: string;
         };
 
-        const userId = out?.payload?.sub || out?.payload?.id || out?.id;
+        const user_id = out?.payload?.sub || out?.payload?.id || out?.id;
 
-        if (!userId) {
+        if (!user_id) {
           return _setHeaders(new Response("Unauthorized", { status: 401 }));
         }
 
-        if (!userId) {
+        if (!user_id) {
           console.log(
-            "Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.",
+            "Warning, user_id is null, which means the token was not decoded properly. This will need to be fixed for security reasons.",
           );
         }
 
@@ -250,7 +352,7 @@ async function handleRequest(
           req,
           env,
           match: matchUrl,
-          userId: userId as UUID,
+          user_id: user_id as UUID,
         });
 
         return response;

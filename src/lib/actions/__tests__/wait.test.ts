@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { GetTellMeAboutYourselfConversation1 } from "../../../test/data";
@@ -8,7 +7,7 @@ import { runAiTest } from "../../../test/runAiTest";
 import { type User } from "../../../test/types";
 import { zeroUuid } from "../../constants";
 import { type BgentRuntime } from "../../runtime";
-import { type Message } from "../../types";
+import { type Message, type UUID } from "../../types";
 import action from "../wait"; // Import the wait action
 
 dotenv.config({ path: ".dev.vars" });
@@ -57,7 +56,7 @@ describe("Wait Action Behavior", () => {
   test("Test wait action behavior", async () => {
     await runAiTest("Test wait action behavior", async () => {
       const message: Message = {
-        userId: zeroUuid as UUID,
+        user_id: zeroUuid as UUID,
         content: {
           content: "Please wait a moment, I need to think about this...",
           action: "WAIT",

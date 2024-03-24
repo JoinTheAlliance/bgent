@@ -1,6 +1,3 @@
-import * as fs from "fs";
-import * as colors from "ansi-colors";
-
 interface TestResult {
   testName: string;
   attempts: number;
@@ -8,23 +5,27 @@ interface TestResult {
   successRate: number;
 }
 
-export function deleteReport() {
+export async function deleteReport() {
+  const { existsSync, unlinkSync } = await import("fs");
+
   // Define the path to the test-report.json file
   const reportPath = "./test-report.json";
 
   // Check if test-report.json exists
-  if (fs.existsSync(reportPath)) {
+  if (existsSync(reportPath)) {
     // Delete the file
-    fs.unlinkSync(reportPath);
+    unlinkSync(reportPath);
   }
 }
 
-export function addToReport(
+export async function addToReport(
   testName: string,
   attempts: number,
   successful: number,
   successRate: number,
 ) {
+  const { existsSync, readFileSync, writeFileSync } = await import("fs");
+
   // Define the path to the test-report.json file
   const reportPath = "./test-report.json";
 
@@ -32,9 +33,9 @@ export function addToReport(
   let report: TestResult[] = [];
 
   // Check if test-report.json exists
-  if (fs.existsSync(reportPath)) {
+  if (existsSync(reportPath)) {
     // Read the existing test report
-    const reportContent = fs.readFileSync(reportPath, "utf-8");
+    const reportContent = readFileSync(reportPath, "utf-8");
     report = JSON.parse(reportContent);
   }
 
@@ -60,21 +61,24 @@ export function addToReport(
   }
 
   // Write the updated report to test-report.json
-  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  writeFileSync(reportPath, JSON.stringify(report, null, 2));
 }
 
-export function logReport() {
+export async function logReport() {
+  const { existsSync, readFileSync } = await import("fs");
+  const colors = await import("ansi-colors");
+
   // Define the path to the test-report.json file
   const reportPath = "./test-report.json";
 
   // Check if test-report.json exists
-  if (!fs.existsSync(reportPath)) {
+  if (!existsSync(reportPath)) {
     console.log(colors.red("Error: test-report.json does not exist."));
     return;
   }
 
   // Read the test report
-  const reportContent = fs.readFileSync(reportPath, "utf-8");
+  const reportContent = readFileSync(reportPath, "utf-8");
   const report: TestResult[] = JSON.parse(reportContent);
 
   // Log each test result with appropriate color-coding

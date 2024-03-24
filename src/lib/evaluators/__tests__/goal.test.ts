@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { getOrCreateRelationship } from "../../../test/getOrCreateRelationship";
@@ -9,7 +8,14 @@ import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
 import { createGoal, getGoals } from "../../goals";
 import { type BgentRuntime } from "../../runtime";
-import { Goal, GoalStatus, Objective, State, type Message } from "../../types";
+import {
+  Goal,
+  GoalStatus,
+  Objective,
+  State,
+  type Message,
+  type UUID,
+} from "../../types";
 import evaluator from "../goal";
 
 dotenv.config({ path: ".dev.vars" });
@@ -95,7 +101,7 @@ describe("Goals Evaluator", () => {
 
         // Simulate a conversation indicating the completion of both objectives
         const message: Message = {
-          userId: user.id as UUID,
+          user_id: user.id as UUID,
           content: {
             content:
               "I've completed task 1 and task 2 for the Test Goal. Both are finished. Everything is done and I'm ready for the next goal.",
@@ -155,7 +161,7 @@ describe("Goals Evaluator", () => {
         await populateMemories(runtime, user, room_id, [conversation]);
 
         const message: Message = {
-          userId: user.id as UUID,
+          user_id: user.id as UUID,
           content: { content: "I've decided to mark Goal Y as failed." },
           room_id,
         };

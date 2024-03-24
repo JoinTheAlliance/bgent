@@ -49,8 +49,8 @@ INSTRUCTIONS: Extract ALL claims from the conversation in the scene that are not
 Response should be a JSON object array inside a JSON markdown block. Correct response format:
 \`\`\`json
 [
-  {claim: string, type: enum<fact|opinion>, in_bio: boolean, already_known: boolean },
-  {claim: string, type: enum<fact|opinion>, in_bio: boolean, already_known: boolean },
+  {"claim": string, "type": enum<fact|opinion>, in_bio: boolean, already_known: boolean },
+  {"claim": string, "type": enum<fact|opinion>, in_bio: boolean, already_known: boolean },
   ...
 ]
 \`\`\``;

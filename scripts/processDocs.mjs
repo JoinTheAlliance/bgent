@@ -147,9 +147,7 @@ const main = async () => {
 
     if (rooms.length === 0) {
         const result2 = await supabase.from('rooms').upsert({
-            id: zeroUuid,
-            name: 'Lore Room',
-            created_by: zeroUuid,
+            id: zeroUuid
         });
     }
 

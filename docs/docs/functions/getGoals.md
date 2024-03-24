@@ -17,7 +17,7 @@ custom_edit_url: null
 | › `onlyInProgress?` | `boolean` | `true` |
 | › `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
 | › `runtime` | [`BgentRuntime`](../classes/BgentRuntime.md) | `undefined` |
-| › `userId?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
+| › `user_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | `undefined` |
 
 #### Returns
 

@@ -23,17 +23,17 @@ export async function getOrCreateRelationship({
     userB,
   ]);
 
-  let roomId: UUID;
+  let room_id: UUID;
   if (!rooms || rooms.length === 0) {
     // If no room exists, create a new room for the relationship
-    roomId = await runtime.databaseAdapter.createRoom("Direct Message");
+    room_id = await runtime.databaseAdapter.createRoom();
 
     // Add participants to the newly created room
-    await runtime.databaseAdapter.addParticipantToRoom(userA, roomId);
-    await runtime.databaseAdapter.addParticipantToRoom(userB, roomId);
+    await runtime.databaseAdapter.addParticipant(userA, room_id);
+    await runtime.databaseAdapter.addParticipant(userB, room_id);
   } else {
     // If a room already exists, use the existing room
-    roomId = rooms[0];
+    room_id = rooms[0];
   }
 
   if (!relationship) {
@@ -49,5 +49,5 @@ export async function getOrCreateRelationship({
       throw new Error("Failed to fetch the created relationship");
     }
   }
-  return { ...relationship, room_id: roomId };
+  return { ...relationship, room_id: room_id };
 }

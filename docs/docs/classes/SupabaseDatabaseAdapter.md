@@ -41,16 +41,16 @@ custom_edit_url: null
 
 ## Methods
 
-### addParticipantToRoom
+### addParticipant
 
-▸ **addParticipantToRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+▸ **addParticipant**(`user_id`, `room_id`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -58,7 +58,7 @@ custom_edit_url: null
 
 #### Overrides
 
-[DatabaseAdapter](DatabaseAdapter.md).[addParticipantToRoom](DatabaseAdapter.md#addparticipanttoroom)
+[DatabaseAdapter](DatabaseAdapter.md).[addParticipant](DatabaseAdapter.md#addparticipant)
 
 ___
 
@@ -170,13 +170,13 @@ ___
 
 ### createRoom
 
-▸ **createRoom**(`name`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+▸ **createRoom**(`room_id?`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `name` | `string` |
+| `room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -190,13 +190,13 @@ ___
 
 ### getAccountById
 
-▸ **getAccountById**(`userId`): `Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
+▸ **getAccountById**(`user_id`): `Promise`\<``null`` \| [`Account`](../interfaces/Account.md)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -267,7 +267,7 @@ ___
 | `params.count?` | `number` |
 | `params.onlyInProgress?` | `boolean` |
 | `params.room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `params.userId?` | ``null`` \| \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `params.user_id?` | ``null`` \| \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -334,7 +334,7 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `params` | `Object` |
-| `params.userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `params.user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -348,13 +348,13 @@ ___
 
 ### getRoomsByParticipant
 
-▸ **getRoomsByParticipant**(`userId`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
+▸ **getRoomsByParticipant**(`user_id`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`[]\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -493,14 +493,14 @@ ___
 
 ### removeParticipantFromRoom
 
-▸ **removeParticipantFromRoom**(`userId`, `roomId`): `Promise`\<`void`\>
+▸ **removeParticipantFromRoom**(`user_id`, `room_id`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `userId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
-| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 
@@ -514,13 +514,13 @@ ___
 
 ### removeRoom
 
-▸ **removeRoom**(`roomId`): `Promise`\<`void`\>
+▸ **removeRoom**(`room_id`): `Promise`\<`void`\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `roomId` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` |
 
 #### Returns
 

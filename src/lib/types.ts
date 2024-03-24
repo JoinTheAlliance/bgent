@@ -1,5 +1,9 @@
-import { type UUID } from "crypto";
 import { type BgentRuntime } from "./runtime";
+
+/**
+ * Represents a UUID, which is a universally unique identifier conforming to the UUID standard.
+ */
+export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 /**
  * Represents the content of a message, including its main text (`content`), any associated action (`action`), and the source of the content (`source`), if applicable.
@@ -79,7 +83,7 @@ export interface Goal {
  * Represents the state of the conversation or context in which the agent is operating, including information about users, messages, goals, and other relevant data.
  */
 export interface State {
-  userId?: UUID; // An optional ID of the user who sent the current message.
+  user_id?: UUID; // An optional ID of the user who sent the current message.
   agentId?: UUID; // An optional ID of the agent within the current conversation or context.
   room_id: UUID; // The ID of the current room or conversation context.
   agentName?: string; // An optional name of the agent, used for referencing the agent in conversations.
@@ -107,7 +111,7 @@ export interface State {
  * Represents a message within the conversation, including its content and associated metadata such as the sender, agent, and room IDs.
  */
 export interface Message {
-  userId: UUID; // The ID of the user who sent the message.
+  user_id: UUID; // The ID of the user who sent the message.
   content: Content; // The content of the message, which can be a structured object or a plain string.
   room_id: UUID; // The ID of the room or conversation context in which the message was sent.
 }

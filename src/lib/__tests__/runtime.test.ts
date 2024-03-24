@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbeddings, writeCachedEmbedding } from "../../test/cache";
 import { createRuntime } from "../../test/createRuntime";
@@ -6,7 +5,7 @@ import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
 import { type User } from "../../test/types";
 import { zeroUuid } from "../constants";
 import { BgentRuntime } from "../runtime";
-import { type Message } from "../types";
+import { type Message, type UUID } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -24,17 +23,17 @@ describe("Agent Runtime", () => {
   async function createMemories() {
     const memories = [
       {
-        userId: user?.id as UUID,
+        user_id: user?.id as UUID,
         content: { content: "test memory from user" },
       },
-      { userId: zeroUuid, content: { content: "test memory from agent" } },
+      { user_id: zeroUuid, content: { content: "test memory from agent" } },
     ];
 
-    for (const { userId, content } of memories) {
+    for (const { user_id, content } of memories) {
       try {
-        const embedding = getCachedEmbeddings(content.content);
+        const embedding = await getCachedEmbeddings(content.content);
         const memory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: userId,
+          user_id: user_id,
           content,
           room_id,
           embedding,
@@ -94,7 +93,7 @@ describe("Agent Runtime", () => {
     }
 
     const message: Message = {
-      userId: user.id as UUID,
+      user_id: user.id as UUID,
       content: { content: "test message" },
       room_id: room_id as UUID,
     };

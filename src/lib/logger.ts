@@ -1,8 +1,12 @@
-import * as c from "ansi-colors";
 class Logger {
   frameChar = "*";
 
-  log(message: string, title: string = "", color: string = "white"): void {
+  async log(
+    message: string,
+    title: string = "",
+    color: string = "white",
+  ): Promise<void> {
+    const c = await import("ansi-colors");
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     console.log(c[color]("*** LOG: " + title + "\n" + message));

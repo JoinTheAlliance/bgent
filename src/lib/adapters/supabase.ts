@@ -1,6 +1,5 @@
 // File: /src/lib/database/SupabaseDatabaseAdapter.ts
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { type UUID } from "crypto";
 import {
   type Memory,
   type Goal,
@@ -8,9 +7,10 @@ import {
   Actor,
   GoalStatus,
   Account,
+  type UUID,
 } from "../types";
 import { DatabaseAdapter } from "../database";
-
+import { v4 as uuid } from "uuid";
 export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   supabase: SupabaseClient;
 
@@ -19,11 +19,11 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
-  async getAccountById(userId: UUID): Promise<Account | null> {
+  async getAccountById(user_id: UUID): Promise<Account | null> {
     const { data, error } = await this.supabase
       .from("accounts")
       .select("*")
-      .eq("id", userId);
+      .eq("id", user_id);
     if (error) {
       throw new Error(error.message);
     }
@@ -39,36 +39,43 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
   }
 
   async getActorDetails(params: { room_id: UUID }): Promise<Actor[]> {
-    const response = await this.supabase
-      .from("rooms")
-      .select(
-        `
-        participants:participants!inner(
-          account:accounts(id, name, details)
-        )
+    try {
+      const response = await this.supabase
+        .from("rooms")
+        .select(
+          `
+          participants:participants(
+            account:accounts(id, name, details)
+          )
       `,
-      )
-      .eq("id", params.room_id);
+        )
+        .eq("id", params.room_id);
 
-    if (response.error) {
-      console.error(response.error);
-      return [];
+      console.log("response", response);
+
+      if (response.error) {
+        console.error("Error!" + response.error);
+        return [];
+      }
+      const { data } = response;
+
+      return data
+        .map((room) =>
+          room.participants.map((participant) => {
+            console.log("***** participant", participant);
+            const user = participant.account as unknown as Actor;
+            return {
+              name: user?.name,
+              details: user?.details,
+              id: user?.id,
+            };
+          }),
+        )
+        .flat();
+    } catch (error) {
+      console.error("error", error);
+      throw error;
     }
-
-    const { data } = response;
-
-    return data
-      .map((room) =>
-        room.participants.map((participant) => {
-          const user = participant.account as unknown as Actor;
-          return {
-            name: user?.name,
-            details: user?.details,
-            id: user?.id,
-          };
-        }),
-      )
-      .flat();
   }
 
   async searchMemories(params: {
@@ -271,13 +278,13 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
 
   async getGoals(params: {
     room_id: UUID;
-    userId?: UUID | null;
+    user_id?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;
   }): Promise<Goal[]> {
     const opts = {
       query_room_id: params.room_id,
-      query_user_id: params.userId,
+      query_user_id: params.user_id,
       only_in_progress: params.onlyInProgress,
       row_count: params.count,
     };
@@ -328,11 +335,11 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async getRoomsByParticipant(userId: UUID): Promise<UUID[]> {
+  async getRoomsByParticipant(user_id: UUID): Promise<UUID[]> {
     const { data, error } = await this.supabase
       .from("participants")
       .select("room_id")
-      .eq("user_id", userId);
+      .eq("user_id", user_id);
 
     if (error) {
       throw new Error(`Error getting rooms by participant: ${error.message}`);
@@ -354,50 +361,51 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     return [...new Set(data.map((row) => row.room_id as UUID))];
   }
 
-  async createRoom(name: string): Promise<UUID> {
-    const { data, error } = (await this.supabase
-      .from("rooms")
-      .upsert({ name })
-      .single()) as { data: { id: UUID } | null; error: Error | null };
+  async createRoom(room_id?: UUID): Promise<UUID> {
+    room_id = room_id ?? (uuid() as UUID);
+    console.log("creating room with id", room_id);
+    const { data, error } = await this.supabase.rpc("create_room", {
+      room_id,
+    });
 
     if (error) {
       throw new Error(`Error creating room: ${error.message}`);
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       throw new Error("No data returned from room creation");
     }
 
-    return data.id;
+    return data[0].id as UUID;
   }
 
-  async removeRoom(roomId: UUID): Promise<void> {
+  async removeRoom(room_id: UUID): Promise<void> {
     const { error } = await this.supabase
       .from("rooms")
       .delete()
-      .eq("id", roomId);
+      .eq("id", room_id);
 
     if (error) {
       throw new Error(`Error removing room: ${error.message}`);
     }
   }
 
-  async addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void> {
+  async addParticipant(user_id: UUID, room_id: UUID): Promise<void> {
     const { error } = await this.supabase
       .from("participants")
-      .insert({ user_id: userId, room_id: roomId });
+      .insert({ user_id: user_id, room_id: room_id });
 
     if (error) {
       throw new Error(`Error adding participant: ${error.message}`);
     }
   }
 
-  async removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void> {
+  async removeParticipantFromRoom(user_id: UUID, room_id: UUID): Promise<void> {
     const { error } = await this.supabase
       .from("participants")
       .delete()
-      .eq("user_id", userId)
-      .eq("room_id", roomId);
+      .eq("user_id", user_id)
+      .eq("room_id", room_id);
 
     if (error) {
       throw new Error(`Error removing participant: ${error.message}`);
@@ -408,25 +416,15 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     userA: UUID;
     userB: UUID;
   }): Promise<boolean> {
-    // check for room with values name: `Room for ${params.userA} and ${params.userB}`, created_by: params.userA,
-    const { data: allRoomData, error: allRoomsError } = await this.supabase
-      .from("rooms")
-      .select("id")
-      .eq("name", `Room for ${params.userA} and ${params.userB}`)
-      .eq("created_by", params.userA);
-
-    if (allRoomsError) {
-      throw new Error("All rooms error: " + allRoomsError.message);
-    }
+    const allRoomData = await this.getRoomsByParticipants([
+      params.userA,
+      params.userB,
+    ]);
 
     if (!allRoomData || allRoomData.length === 0) {
       const { error: roomsError } = await this.supabase
         .from("rooms")
-        .insert({
-          name: `Room for ${params.userA} and ${params.userB}`,
-          created_by: params.userA,
-        })
-        .eq("name", `Room for ${params.userA} and ${params.userB}`);
+        .insert({});
 
       if (roomsError) {
         throw new Error("Room error: " + roomsError.message);
@@ -493,11 +491,11 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     return data[0];
   }
 
-  async getRelationships(params: { userId: UUID }): Promise<Relationship[]> {
+  async getRelationships(params: { user_id: UUID }): Promise<Relationship[]> {
     const { data, error } = await this.supabase
       .from("relationships")
       .select("*")
-      .or(`user_a.eq.${params.userId},user_b.eq.${params.userId}`)
+      .or(`user_a.eq.${params.user_id},user_b.eq.${params.user_id}`)
       .eq("status", "FRIENDS");
 
     if (error) {

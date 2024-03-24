@@ -1,6 +1,6 @@
 {
   "name": "bgent",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": false,
   "description": "bgent. because agent was taken.",
   "type": "module",
@@ -74,6 +74,7 @@
     "inquirer": "^9.2.14",
     "sql.js": "^1.10.2",
     "sqlite-vss": "^0.1.2",
-    "unique-names-generator": "^4.7.1"
+    "unique-names-generator": "^4.7.1",
+    "uuidv4": "^6.2.13"
   }
 }

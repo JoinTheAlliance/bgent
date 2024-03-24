@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
@@ -8,7 +7,7 @@ import { formatFacts } from "../evaluators/fact";
 import { formatActors, formatMessages, getActorDetails } from "../messages";
 import { createRelationship } from "../relationships";
 import { type BgentRuntime } from "../runtime";
-import { type Actor, type Content, type Memory } from "../types";
+import { type Actor, type Content, type Memory, type UUID } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 

@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { getCachedEmbeddings, writeCachedEmbedding } from "../../../test/cache";
 import { createRuntime } from "../../../test/createRuntime";
@@ -15,7 +14,7 @@ import { type User } from "../../../test/types";
 import { defaultActions } from "../../actions";
 import { zeroUuid } from "../../constants";
 import { type BgentRuntime } from "../../runtime";
-import { type Message } from "../../types";
+import { type Message, type UUID } from "../../types";
 import evaluator from "../fact";
 
 dotenv.config({ path: ".dev.vars" });
@@ -62,7 +61,7 @@ describe("Facts Evaluator", () => {
       ]);
 
       const message: Message = {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: { content: "" },
         room_id,
       };
@@ -85,7 +84,7 @@ describe("Facts Evaluator", () => {
       await addFacts(runtime, user.id as UUID, room_id, jimFacts);
 
       const message: Message = {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: { content: "" },
         room_id,
       };
@@ -109,14 +108,14 @@ async function cleanup(runtime: BgentRuntime, room_id: UUID) {
 
 async function addFacts(
   runtime: BgentRuntime,
-  userId: UUID,
+  user_id: UUID,
   room_id: UUID,
   facts: string[],
 ) {
   for (const fact of facts) {
-    const existingEmbedding = getCachedEmbeddings(fact);
+    const existingEmbedding = await getCachedEmbeddings(fact);
     const bakedMemory = await runtime.factManager.addEmbeddingToMemory({
-      user_id: userId,
+      user_id: user_id,
       content: { content: fact },
       room_id: room_id,
       embedding: existingEmbedding,

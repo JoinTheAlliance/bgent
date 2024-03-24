@@ -219,7 +219,7 @@ You will need to make sure that the room_id already exists in the database. You 
 
 ```typescript
 const message = {
-  userId: "user-uuid", // Replace with the sender's UUID
+  user_id: "user-uuid", // Replace with the sender's UUID
   content: { content: content }, // The message content
   room_id: "room-uuid", // Replace with the room's UUID
 };

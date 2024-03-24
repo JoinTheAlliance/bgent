@@ -1,6 +1,5 @@
-import { type UUID } from "crypto";
 import { type BgentRuntime } from "./runtime";
-import { type Relationship } from "./types";
+import { type Relationship, type UUID } from "./types";
 
 export async function createRelationship({
   runtime,
@@ -34,28 +33,28 @@ export async function getRelationship({
 
 export async function getRelationships({
   runtime,
-  userId,
+  user_id,
 }: {
   runtime: BgentRuntime;
-  userId: UUID;
+  user_id: UUID;
 }) {
-  return runtime.databaseAdapter.getRelationships({ userId });
+  return runtime.databaseAdapter.getRelationships({ user_id });
 }
 
 export async function formatRelationships({
   runtime,
-  userId,
+  user_id,
 }: {
   runtime: BgentRuntime;
-  userId: UUID;
+  user_id: UUID;
 }) {
-  const relationships = await getRelationships({ runtime, userId });
+  const relationships = await getRelationships({ runtime, user_id });
 
   const formattedRelationships = relationships.map(
     (relationship: Relationship) => {
       const { user_a, user_b } = relationship;
 
-      if (user_a === userId) {
+      if (user_a === user_id) {
         return user_b;
       }
 

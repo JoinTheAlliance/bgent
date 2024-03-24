@@ -22,6 +22,6 @@ ___
 
 ___
 
-### userId
+### user\_id
 
-• **userId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
+• **user\_id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`

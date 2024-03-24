@@ -1,5 +1,6 @@
 // File: /src/lib/database/SqlJsDatabaseAdapter.ts
-import crypto, { type UUID } from "crypto";
+import { v4 } from "uuid";
+
 import { DatabaseAdapter } from "../database";
 import {
   Account,
@@ -8,6 +9,7 @@ import {
   type Goal,
   type Memory,
   type Relationship,
+  type UUID,
 } from "../types";
 import { sqliteTables } from "./sqlite/sqliteTables";
 import { Database } from "./sqljs/types";
@@ -30,10 +32,10 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async getAccountById(userId: UUID): Promise<Account | null> {
+  async getAccountById(user_id: UUID): Promise<Account | null> {
     const sql = "SELECT * FROM accounts WHERE id = ?";
     const stmt = this.db.prepare(sql);
-    stmt.bind([userId]);
+    stmt.bind([user_id]);
     const account = stmt.getAsObject() as unknown as Account | undefined;
 
     if (account && typeof account.details === "string") {
@@ -51,7 +53,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     `;
     const stmt = this.db.prepare(sql);
     stmt.run([
-      account.id ?? crypto.randomUUID(),
+      account.id ?? v4(),
       account.name,
       account.email || "",
       account.avatar_url || "",
@@ -105,7 +107,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     const sql = `INSERT INTO memories (id, type, content, embedding, user_id, room_id, \`unique\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const stmt = this.db.prepare(sql);
     stmt.run([
-      crypto.randomUUID(),
+      v4(),
       tableName,
       JSON.stringify(memory.content),
       JSON.stringify(memory.embedding),
@@ -372,16 +374,16 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
 
   async getGoals(params: {
     room_id: UUID;
-    userId?: UUID | null;
+    user_id?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;
   }): Promise<Goal[]> {
     let sql = "SELECT * FROM goals WHERE room_id = ?";
     const bindings: (string | number)[] = [params.room_id];
 
-    if (params.userId) {
+    if (params.user_id) {
       sql += " AND user_id = ?";
-      bindings.push(params.userId);
+      bindings.push(params.user_id);
     }
 
     if (params.onlyInProgress) {
@@ -428,7 +430,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
       "INSERT INTO goals (id, room_id, user_id, name, status, objectives) VALUES (?, ?, ?, ?, ?, ?)";
     const stmt = this.db.prepare(sql);
     stmt.run([
-      goal.id ?? crypto.randomUUID(),
+      goal.id ?? v4(),
       goal.room_id,
       goal.user_id,
       goal.name,
@@ -452,30 +454,29 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     stmt.free();
   }
 
-  async createRoom(name: string): Promise<UUID> {
-    const roomId = crypto.randomUUID();
+  async createRoom(room_id?: UUID): Promise<UUID> {
     try {
-      const sql = "INSERT INTO rooms (id, name) VALUES (?, ?)";
+      const sql = "INSERT INTO rooms (id) VALUES (?)";
       const stmt = this.db.prepare(sql);
-      stmt.run([roomId, name]);
+      stmt.run([room_id ?? (v4() as UUID)]);
       stmt.free();
     } catch (error) {
       console.log("Error creating room", error);
     }
-    return roomId as UUID;
+    return room_id as UUID;
   }
 
-  async removeRoom(roomId: UUID): Promise<void> {
+  async removeRoom(room_id: UUID): Promise<void> {
     const sql = "DELETE FROM rooms WHERE id = ?";
     const stmt = this.db.prepare(sql);
-    stmt.run([roomId]);
+    stmt.run([room_id]);
     stmt.free();
   }
 
-  async getRoomsByParticipant(userId: UUID): Promise<UUID[]> {
+  async getRoomsByParticipant(user_id: UUID): Promise<UUID[]> {
     const sql = "SELECT room_id FROM participants WHERE user_id = ?";
     const stmt = this.db.prepare(sql);
-    stmt.bind([userId]);
+    stmt.bind([user_id]);
     const rows: { room_id: string }[] = [];
     while (stmt.step()) {
       const row = stmt.getAsObject() as unknown as { room_id: string };
@@ -503,18 +504,18 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     return rows.map((row) => row.room_id as UUID);
   }
 
-  async addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void> {
+  async addParticipant(user_id: UUID, room_id: UUID): Promise<void> {
     const sql =
       "INSERT INTO participants (id, user_id, room_id) VALUES (?, ?, ?)";
     const stmt = this.db.prepare(sql);
-    stmt.run([crypto.randomUUID(), userId, roomId]);
+    stmt.run([v4(), user_id, room_id]);
     stmt.free();
   }
 
-  async removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void> {
+  async removeParticipantFromRoom(user_id: UUID, room_id: UUID): Promise<void> {
     const sql = "DELETE FROM participants WHERE user_id = ? AND room_id = ?";
     const stmt = this.db.prepare(sql);
-    stmt.run([userId, roomId]);
+    stmt.run([user_id, room_id]);
     stmt.free();
   }
 
@@ -528,7 +529,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     const sql =
       "INSERT INTO relationships (id, user_a, user_b, user_id) VALUES (?, ?, ?, ?)";
     const stmt = this.db.prepare(sql);
-    stmt.run([crypto.randomUUID(), params.userA, params.userB, params.userA]);
+    stmt.run([v4(), params.userA, params.userB, params.userA]);
     stmt.free();
     return true;
   }
@@ -548,10 +549,10 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     return relationship || null;
   }
 
-  async getRelationships(params: { userId: UUID }): Promise<Relationship[]> {
+  async getRelationships(params: { user_id: UUID }): Promise<Relationship[]> {
     const sql = "SELECT * FROM relationships WHERE (user_a = ? OR user_b = ?)";
     const stmt = this.db.prepare(sql);
-    stmt.bind([params.userId, params.userId]);
+    stmt.bind([params.user_id, params.user_id]);
     const relationships: Relationship[] = [];
     while (stmt.step()) {
       const relationship = stmt.getAsObject() as unknown as Relationship;

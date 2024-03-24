@@ -1,6 +1,5 @@
-import { type UUID } from "crypto";
 import { type BgentRuntime } from "./runtime";
-import { type Memory } from "./types";
+import { type Memory, type UUID } from "./types";
 
 export const embeddingDimension = 1536;
 export const embeddingZeroVector = Array(embeddingDimension).fill(0);

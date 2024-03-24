@@ -1,6 +1,5 @@
-import { type UUID } from "crypto";
 import { BgentRuntime } from "./runtime";
-import { type Actor, type Content, type Memory } from "./types";
+import { type Actor, type Content, type Memory, type UUID } from "./types";
 
 /**
  * Get details for a list of actors.
@@ -12,8 +11,9 @@ export async function getActorDetails({
   runtime: BgentRuntime;
   room_id: UUID;
 }) {
+  console.log("getActorDetails");
   const actors = await runtime.databaseAdapter.getActorDetails({ room_id });
-
+  console.log("actors", actors);
   return actors as Actor[];
 }
 

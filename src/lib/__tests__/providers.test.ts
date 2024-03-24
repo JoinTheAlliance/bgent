@@ -1,8 +1,7 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { BgentRuntime } from "../runtime";
-import { type Message, type Provider, type State } from "../types";
+import { type Message, type Provider, type State, type UUID } from "../types";
 import { zeroUuid } from "../constants";
 
 dotenv.config({ path: ".dev.vars" });
@@ -29,7 +28,7 @@ describe("TestProvider", () => {
 
   test("TestProvider should return 'Hello Test'", async () => {
     const message: Message = {
-      userId: zeroUuid,
+      user_id: zeroUuid,
       content: { content: "" },
       room_id: room_id,
     };

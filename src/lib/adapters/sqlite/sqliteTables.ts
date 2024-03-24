@@ -75,10 +75,7 @@ CREATE TABLE IF NOT EXISTS "relationships" (
 -- Table: rooms
 CREATE TABLE IF NOT EXISTS "rooms" (
     "id" TEXT PRIMARY KEY,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "created_by" TEXT,
-    "name" TEXT,
-    FOREIGN KEY ("created_by") REFERENCES "accounts"("id")
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Index: relationships_id_key

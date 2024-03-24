@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
@@ -8,7 +7,7 @@ import { composeContext } from "../context";
 import { addLore, getLore } from "../lore";
 import { BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
-import { Memory, type Content } from "../types";
+import { Memory, type Content, type UUID } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 describe("Lore", () => {
@@ -76,7 +75,7 @@ describe("Lore", () => {
     });
 
     const message = {
-      userId: zeroUuid as UUID,
+      user_id: zeroUuid as UUID,
       content: { content: "Test Lore Content" },
       room_id: zeroUuid,
     };

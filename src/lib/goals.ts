@@ -1,23 +1,22 @@
-import { type UUID } from "crypto";
 import { BgentRuntime } from "./runtime";
-import { type Goal, type Objective } from "./types";
+import { type Goal, type Objective, type UUID } from "./types";
 
 export const getGoals = async ({
   runtime,
   room_id,
-  userId,
+  user_id,
   onlyInProgress = true,
   count = 5,
 }: {
   runtime: BgentRuntime;
   room_id: UUID;
-  userId?: UUID;
+  user_id?: UUID;
   onlyInProgress?: boolean;
   count?: number;
 }) => {
   return runtime.databaseAdapter.getGoals({
     room_id,
-    userId,
+    user_id,
     onlyInProgress,
     count,
   });

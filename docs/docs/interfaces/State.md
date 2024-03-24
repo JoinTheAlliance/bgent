@@ -134,6 +134,6 @@ ___
 
 ___
 
-### userId
+### user\_id
 
-• `Optional` **userId**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`
+• `Optional` **user\_id**: \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`

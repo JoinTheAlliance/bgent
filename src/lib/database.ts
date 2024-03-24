@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import {
   Account,
   Actor,
@@ -6,10 +5,11 @@ import {
   type Goal,
   type Memory,
   type Relationship,
+  type UUID,
 } from "./types";
 
 export abstract class DatabaseAdapter {
-  abstract getAccountById(userId: UUID): Promise<Account | null>;
+  abstract getAccountById(user_id: UUID): Promise<Account | null>;
 
   abstract createAccount(account: Account): Promise<void>;
 
@@ -93,7 +93,7 @@ export abstract class DatabaseAdapter {
 
   abstract getGoals(params: {
     room_id: UUID;
-    userId?: UUID | null;
+    user_id?: UUID | null;
     onlyInProgress?: boolean;
     count?: number;
   }): Promise<Goal[]>;
@@ -106,17 +106,20 @@ export abstract class DatabaseAdapter {
 
   abstract removeAllGoals(room_id: UUID): Promise<void>;
 
-  abstract createRoom(name: string): Promise<UUID>;
+  abstract createRoom(room_id?: UUID): Promise<UUID>;
 
-  abstract removeRoom(roomId: UUID): Promise<void>;
+  abstract removeRoom(room_id: UUID): Promise<void>;
 
-  abstract getRoomsByParticipant(userId: UUID): Promise<UUID[]>;
+  abstract getRoomsByParticipant(user_id: UUID): Promise<UUID[]>;
 
   abstract getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]>;
 
-  abstract addParticipantToRoom(userId: UUID, roomId: UUID): Promise<void>;
+  abstract addParticipant(user_id: UUID, room_id: UUID): Promise<void>;
 
-  abstract removeParticipantFromRoom(userId: UUID, roomId: UUID): Promise<void>;
+  abstract removeParticipantFromRoom(
+    user_id: UUID,
+    room_id: UUID,
+  ): Promise<void>;
 
   abstract createRelationship(params: {
     userA: UUID;
@@ -128,5 +131,5 @@ export abstract class DatabaseAdapter {
     userB: UUID;
   }): Promise<Relationship | null>;
 
-  abstract getRelationships(params: { userId: UUID }): Promise<Relationship[]>;
+  abstract getRelationships(params: { user_id: UUID }): Promise<Relationship[]>;
 }

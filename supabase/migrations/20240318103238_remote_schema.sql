@@ -171,6 +171,23 @@ $$;
 
 ALTER FUNCTION "public"."count_memories"("query_table_name" "text", "query_room_id" "uuid", "query_unique" boolean) OWNER TO "postgres";
 
+CREATE OR REPLACE FUNCTION "public"."create_room"(room_id uuid)
+ RETURNS TABLE(id uuid)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+  -- Check if the room already exists
+  IF EXISTS (SELECT 1 FROM rooms WHERE rooms.id = room_id) THEN
+    RETURN QUERY SELECT rooms.id FROM rooms WHERE rooms.id = room_id;
+  ELSE
+    -- Create a new room with the provided room_id
+    RETURN QUERY INSERT INTO rooms (id) VALUES (room_id) RETURNING rooms.id;
+  END IF;
+END;
+$function$
+
+ALTER FUNCTION "public"."create_room"() OWNER TO "postgres";
+
 CREATE OR REPLACE FUNCTION "public"."create_friendship_with_host_agent"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     AS $$
@@ -179,8 +196,7 @@ DECLARE
   new_room_id UUID;
 BEGIN
   -- Create a new room for the direct message between the new user and the host agent
-  INSERT INTO rooms (created_by, name)
-  VALUES (NEW.id, 'Direct Message with Host Agent')
+  INSERT INTO rooms DEFAULT VALUES
   RETURNING id INTO new_room_id;
 
   -- Create a new friendship between the new user and the host agent
@@ -507,9 +523,7 @@ ALTER TABLE "public"."participants" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."rooms" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "created_at" timestamp with time zone DEFAULT ("now"() AT TIME ZONE 'utc'::"text") NOT NULL,
-    "created_by" "uuid",
-    "name" "text"
+    "created_at" timestamp with time zone DEFAULT ("now"() AT TIME ZONE 'utc'::"text") NOT NULL
 );
 
 ALTER TABLE "public"."rooms" OWNER TO "postgres";
@@ -533,7 +547,7 @@ ALTER TABLE ONLY "public"."participants"
     ADD CONSTRAINT "participants_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."memories"
-    ADD CONSTRAINT "reflections_pkey" PRIMARY KEY ("id");
+    ADD CONSTRAINT "memories_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."rooms"
     ADD CONSTRAINT "rooms_pkey" PRIMARY KEY ("id");
@@ -555,10 +569,10 @@ ALTER TABLE ONLY "public"."participants"
     ADD CONSTRAINT "participants_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
 
 ALTER TABLE ONLY "public"."memories"
-    ADD CONSTRAINT "reflections_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
+    ADD CONSTRAINT "memories_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "public"."rooms"("id");
 
 ALTER TABLE ONLY "public"."memories"
-    ADD CONSTRAINT "reflections_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
+    ADD CONSTRAINT "memories_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
 
 ALTER TABLE ONLY "public"."relationships"
     ADD CONSTRAINT "relationships_user_a_fkey" FOREIGN KEY ("user_a") REFERENCES "public"."accounts"("id");
@@ -568,9 +582,6 @@ ALTER TABLE ONLY "public"."relationships"
 
 ALTER TABLE ONLY "public"."relationships"
     ADD CONSTRAINT "relationships_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."accounts"("id");
-
-ALTER TABLE ONLY "public"."rooms"
-    ADD CONSTRAINT "rooms_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."accounts"("id");
 
 CREATE POLICY "Can select and update all data" ON "public"."accounts" USING (("auth"."uid"() = "id")) WITH CHECK (("auth"."uid"() = "id"));
 

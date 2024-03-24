@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../../test/createRuntime";
 import { Goodbye1 } from "../../../test/data";
@@ -8,7 +7,7 @@ import { runAiTest } from "../../../test/runAiTest";
 import { type User } from "../../../test/types";
 import { zeroUuid } from "../../constants";
 import { type BgentRuntime } from "../../runtime";
-import { Content, type Message } from "../../types";
+import { Content, type Message, type UUID } from "../../types";
 import action from "../elaborate";
 import ignore from "../ignore";
 import wait from "../wait";
@@ -97,7 +96,7 @@ describe("User Profile", () => {
   test("Test validate function response", async () => {
     await runAiTest("Test validate function response", async () => {
       const message: Message = {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: { content: "Hello", action: "WAIT" },
         room_id: room_id as UUID,
       };
@@ -110,7 +109,7 @@ describe("User Profile", () => {
       await populateMemories(runtime, user, room_id, [GetContinueExample1]);
 
       const message2: Message = {
-        userId: zeroUuid as UUID,
+        user_id: zeroUuid as UUID,
         content: {
           content: "Hello",
           action: "ELABORATE",
@@ -127,7 +126,7 @@ describe("User Profile", () => {
   test("Test repetition check on elaborate", async () => {
     await runAiTest("Test repetition check on elaborate", async () => {
       const message: Message = {
-        userId: zeroUuid as UUID,
+        user_id: zeroUuid as UUID,
         content: {
           content:
             "Hmm, let think for a second, I was going to tell you about something...",
@@ -151,7 +150,7 @@ describe("User Profile", () => {
       "Test multiple elaborate messages in a conversation",
       async () => {
         const message: Message = {
-          userId: user?.id as UUID,
+          user_id: user?.id as UUID,
           content: {
             content:
               "Write a short story in three parts, using the ELABORATE action for each part.",
@@ -203,7 +202,7 @@ describe("User Profile", () => {
   test("Test if message is added to database", async () => {
     await runAiTest("Test if message is added to database", async () => {
       const message: Message = {
-        userId: user?.id as UUID,
+        user_id: user?.id as UUID,
         content: {
           content: "Tell me more about your favorite food.",
           action: "WAIT",
@@ -230,7 +229,7 @@ describe("User Profile", () => {
     await runAiTest("Test if not elaborate", async () => {
       // this is basically the same test as the one in ignore.test.ts
       const message: Message = {
-        userId: user?.id as UUID,
+        user_id: user?.id as UUID,
         content: { content: "Bye" },
         room_id: room_id as UUID,
       };

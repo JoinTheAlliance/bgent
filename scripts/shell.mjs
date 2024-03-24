@@ -18,16 +18,15 @@ dotenv.config()
 const args = process.argv.slice(2)
 const dev = args.includes('--dev')
 
-const SUPABASE_URL = process.env.SERVER_URL || "https://pronvzrzfwsptkojvudd.supabase.co"
-const SUPABASE_ANON_KEY = process.env.SERVER_URL || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByb252enJ6ZndzcHRrb2p2dWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NTYwNDcsImV4cCI6MjAyMjQzMjA0N30.I6_-XrqssUb2SWYg5DjsUqSodNS3_RPoET3-aPdqywM"
+const zeroUuid = "00000000-0000-0000-0000-000000000000";
+
+const SUPABASE_URL = process.env.SERVER_URL || "https://ffqphwtgkfxrifwtlmyk.supabase.co"
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmcXBod3Rna2Z4cmlmd3RsbXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ1MDIwMDUsImV4cCI6MjAyMDA3ODAwNX0.3ddcMBVpvphTlWOK4i7rg-Qh8Eabhzrwq_5akCE6di0"
 // check for --debug flag in 'node example/shell --debug'
 const SERVER_URL =
   process.env?.SERVER_URL ?? dev
     ? 'http://localhost:7998'
     : 'https://cojourney.shawmakesmagic.workers.dev'
-
-// YOU WILL NEED TO REPLACE THIS
-const agentUUID = '00000000-0000-0000-0000-000000000000'
 
 // Setup environment variables
 const __filename = fileURLToPath(import.meta.url)
@@ -154,76 +153,46 @@ async function startApplication() {
 
   // Assuming session information is stored in the .cjrc file
   const userData = JSON.parse(fs.readFileSync(configFile).toString())
-  const session = userData?.session
+  const session = userData.session
   await checkAndUpdateAccount(session.user) // Check and update account after login
 
-  const supabase = getSupabase(session?.access_token)
+  const supabase = getSupabase(session.access_token)
 
-  const userId = session.user?.id
-
-  // get all entries from 'rooms' where there are two particants (entries in the partipants table) where the user and agent ids match the participant user_id field
-  // this will require a join between the rooms and participants table
-  const { data, error } = await supabase
-    .from('rooms')
-    .select(
-      `*,
-    relationships(
-      *,
-      userData1:accounts!relationships_user_a_fkey(
-        *
-      ),
-      userData2:accounts!relationships_user_b_fkey(
-        *
-      ),
-      actionUserData:accounts!relationships_user_id_fkey(
-        *
-      )
-    ),
-    participants!inner(
-      *,
-      userData:accounts(
-        *
-      )
-    )
-    `
-    )
-    .filter('participants.user_id', 'eq', userId)
-
-  if (error) {
-    console.error('Error fetching room data', error)
-    return
-  }
-  
-  const room_id = data[0] ? data[0].id : "00000000-0000-0000-0000-000000000000"
-  supabase.realtime.accessToken = session?.access_token // THIS IS REQUIRED FOR RLS!!!
-
-  // Listen to the 'messages' table for new messages in the specific room
+  // supabase.realtime.accessToken = session.access_token // THIS IS REQUIRED FOR RLS!!!
+  console.log('supabase.realtime.accessToken', supabase.realtime.accessToken)
+  // Listen to the 'memories' table for new messages in the specific room
   const channel = supabase
-    .channel('table-db-changes')
+    .channel('schema-db-changes')
     .on(
       'postgres_changes',
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages'
+        event: '*',
+        schema: 'public'
       },
       (payload) => {
         // TODO: should filter by room_id at some point
-        if (!payload.new.room_id || payload.new.room_id !== room_id) return
+        // if (!payload.new.room_id || payload.new.room_id !== room_id) return
+        // if (payload.new.type !== 'message') return
 
         const { new: newMessage } = payload
         const { user_id, content } = newMessage
 
         // Determine the message sender
-        const color = user_id === userId ? 'blue' : 'green'
+        const color = user_id !== zeroUuid ? 'blue' : 'green'
         console.log(
           chalk[color](
-            `${user_id === userId ? 'You' : 'Agent'}: ${content.content}`
+            `${user_id !== zeroUuid ? 'You' : 'Agent'}: ${content.content}`
           )
         )
       }
     )
-    .subscribe()
+    .subscribe((status, err) => {
+      if (err) {
+        console.error('Subscription error:', err);
+      } else {
+        console.log('Subscription status:', status);
+      }
+    });
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -240,9 +209,8 @@ async function startApplication() {
         Authorization: 'Bearer ' + session.access_token
       },
       body: JSON.stringify({
-        content: { content, action: "WAIT"},
-        agentId: agentUUID,
-        room_id
+        content: { content, action: "WAIT" },
+        user_id: session.user.id,
       })
     })
 

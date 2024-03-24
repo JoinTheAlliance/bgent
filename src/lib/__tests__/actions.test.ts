@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime";
 import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
@@ -10,7 +9,7 @@ import logger from "../logger";
 import { embeddingZeroVector } from "../memory";
 import { type BgentRuntime } from "../runtime";
 import { messageHandlerTemplate } from "../templates";
-import { Content, State, type Message } from "../types";
+import { Content, State, type Message, type UUID } from "../types";
 import { parseJSONObjectFromText } from "../utils";
 
 async function handleMessage(
@@ -19,14 +18,14 @@ async function handleMessage(
   state?: State,
 ) {
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, userId, room_id } = message;
+    const { content: senderContent, user_id, room_id } = message;
 
     const _senderContent = (
       (senderContent as Content).content ?? senderContent
     )?.trim();
     if (_senderContent) {
       await runtime.messageManager.createMemory({
-        user_id: userId!,
+        user_id: user_id!,
         content: {
           content: _senderContent,
           action: (message.content as Content)?.action ?? "null",
@@ -53,7 +52,7 @@ async function handleMessage(
   }
 
   let responseContent: Content | null = null;
-  const { userId, room_id } = message;
+  const { user_id, room_id } = message;
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     const response = await runtime.completion({
@@ -63,7 +62,7 @@ async function handleMessage(
 
     runtime.databaseAdapter.log({
       body: { message, context, response },
-      user_id: userId,
+      user_id: user_id,
       room_id,
       type: "actions_test_completion",
     });
@@ -196,7 +195,7 @@ describe("Actions", () => {
     expect(testAction).toBeDefined();
     if (testAction && testAction.validate) {
       const isValid = await testAction.validate(runtime, {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: { content: "Test message" },
         room_id: room_id,
       });
@@ -210,7 +209,7 @@ describe("Actions", () => {
 
   test("Test that actions are properly validated in state", async () => {
     const message: Message = {
-      userId: user.id as UUID,
+      user_id: user.id as UUID,
       content: {
         content:
           "Please respond with the message 'ok' and the action TEST_ACTION",
@@ -228,7 +227,7 @@ describe("Actions", () => {
   test("Validate that TEST_ACTION is in the state", async () => {
     await runAiTest("Validate TEST_ACTION is in the state", async () => {
       const message: Message = {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: {
           content:
             "Please respond with the message 'ok' and the action TEST_ACTION",
@@ -253,7 +252,7 @@ describe("Actions", () => {
       }
 
       const mockMessage: Message = {
-        userId: user.id as UUID,
+        user_id: user.id as UUID,
         content: {
           content: "Test message for TEST action",
         },

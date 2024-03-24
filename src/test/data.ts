@@ -1,6 +1,5 @@
-import { type UUID } from "crypto";
 import { zeroUuid } from "../lib/constants";
-import { ConversationExample } from "../lib/types";
+import { ConversationExample, type UUID } from "../lib/types";
 
 // in GetEyeColorConversationExample1, CJ asks Jim what color his eyes are, and Jim says he thinks they are blue
 export const GetEyeColorConversationExample1 = (

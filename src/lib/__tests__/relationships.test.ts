@@ -1,4 +1,3 @@
-import { type UUID } from "crypto";
 import dotenv from "dotenv";
 import { createRuntime } from "../../test/createRuntime"; // Adjust the import path as needed
 import { getOrCreateRelationship } from "../../test/getOrCreateRelationship";
@@ -6,6 +5,7 @@ import { type User } from "../../test/types";
 import { zeroUuid } from "../constants";
 import { createRelationship, getRelationships } from "../relationships"; // Adjust the import path as needed
 import { BgentRuntime } from "../runtime";
+import { type UUID } from "../types";
 
 dotenv.config({ path: ".dev.vars" });
 
@@ -60,7 +60,7 @@ describe("Relationships Module", () => {
 
     const relationships = await getRelationships({
       runtime,
-      userId: userA,
+      user_id: userA,
     });
     expect(relationships).toBeDefined();
     expect(relationships.length).toBeGreaterThan(0);
