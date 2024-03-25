@@ -425,6 +425,7 @@ AND room_id = ?`;
   }
 
   async createRoom(room_id?: UUID): Promise<UUID> {
+    room_id = room_id || (v4() as UUID);
     try {
       const sql = "INSERT INTO rooms (id) VALUES (?)";
       this.db.prepare(sql).run(room_id ?? (v4() as UUID));
