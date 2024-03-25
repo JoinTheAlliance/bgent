@@ -34,8 +34,10 @@ custom_edit_url: null
 - [Message](interfaces/Message.md)
 - [MessageExample](interfaces/MessageExample.md)
 - [Objective](interfaces/Objective.md)
+- [Participant](interfaces/Participant.md)
 - [Provider](interfaces/Provider.md)
 - [Relationship](interfaces/Relationship.md)
+- [Room](interfaces/Room.md)
 - [State](interfaces/State.md)
 
 ## Type Aliases

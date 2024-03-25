@@ -68,7 +68,7 @@ describe("User Profile", () => {
       throw new Error("Relationship not found");
     }
 
-    const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+    const rooms = await runtime.databaseAdapter.getRoomsForParticipants([
       user.id as UUID,
       zeroUuid,
     ]);

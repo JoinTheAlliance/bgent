@@ -134,7 +134,7 @@ export default {
       message.room_id,
     )) as number;
 
-    const reflectionCount = Math.ceil(runtime.getRecentMessageCount() / 2);
+    const reflectionCount = Math.ceil(runtime.getConversationLength() / 2);
 
     return messageCount % reflectionCount === 0;
   },

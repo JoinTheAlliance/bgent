@@ -10,11 +10,51 @@ import {
   type Memory,
   type Relationship,
   type UUID,
+  Participant,
 } from "../types";
 import { sqliteTables } from "./sqlite/sqliteTables";
 import { Database } from "./sqljs/types";
 
 export class SqlJsDatabaseAdapter extends DatabaseAdapter {
+  async getRoom(room_id: UUID): Promise<UUID | null> {
+    const sql = "SELECT id FROM rooms WHERE id = ?";
+    const stmt = this.db.prepare(sql);
+    stmt.bind([room_id]);
+    const room = stmt.getAsObject() as { id: string } | undefined;
+    stmt.free();
+    return room ? (room.id as UUID) : null;
+  }
+
+  async getParticipantsForAccount(user_id: UUID): Promise<Participant[]> {
+    const sql = `
+      SELECT p.id, p.user_id, p.room_id, p.last_message_read
+      FROM participants p
+      WHERE p.user_id = ?
+    `;
+    const stmt = this.db.prepare(sql);
+    stmt.bind([user_id]);
+    const participants: Participant[] = [];
+    while (stmt.step()) {
+      const participant = stmt.getAsObject() as unknown as Participant;
+      participants.push(participant);
+    }
+    stmt.free();
+    return participants;
+  }
+
+  async getParticipantsForRoom(room_id: UUID): Promise<UUID[]> {
+    const sql = "SELECT user_id FROM participants WHERE room_id = ?";
+    const stmt = this.db.prepare(sql);
+    stmt.bind([room_id]);
+    const userIds: UUID[] = [];
+    while (stmt.step()) {
+      const row = stmt.getAsObject() as { user_id: string };
+      userIds.push(row.user_id as UUID);
+    }
+    stmt.free();
+    return userIds;
+  }
+
   db: Database;
 
   constructor(db: Database) {
@@ -46,20 +86,26 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     return account || null;
   }
 
-  async createAccount(account: Account): Promise<void> {
-    const sql = `
+  async createAccount(account: Account): Promise<boolean> {
+    try {
+      const sql = `
       INSERT INTO accounts (id, name, email, avatar_url, details)
       VALUES (?, ?, ?, ?, ?)
-    `;
-    const stmt = this.db.prepare(sql);
-    stmt.run([
-      account.id ?? v4(),
-      account.name,
-      account.email || "",
-      account.avatar_url || "",
-      JSON.stringify(account.details),
-    ]);
-    stmt.free();
+      `;
+      const stmt = this.db.prepare(sql);
+      stmt.run([
+        account.id ?? v4(),
+        account.name,
+        account.email || "",
+        account.avatar_url || "",
+        JSON.stringify(account.details),
+      ]);
+      stmt.free();
+      return true;
+    } catch (error) {
+      console.log("Error creating account", error);
+      return false;
+    }
   }
 
   async getActorDetails(params: { room_id: UUID }): Promise<Actor[]> {
@@ -473,7 +519,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     stmt.free();
   }
 
-  async getRoomsByParticipant(user_id: UUID): Promise<UUID[]> {
+  async getRoomsForParticipant(user_id: UUID): Promise<UUID[]> {
     const sql = "SELECT room_id FROM participants WHERE user_id = ?";
     const stmt = this.db.prepare(sql);
     stmt.bind([user_id]);
@@ -486,7 +532,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     return rows.map((row) => row.room_id as UUID);
   }
 
-  async getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]> {
+  async getRoomsForParticipants(userIds: UUID[]): Promise<UUID[]> {
     // Assuming userIds is an array of UUID strings, prepare a list of placeholders
     const placeholders = userIds.map(() => "?").join(", ");
     // Construct the SQL query with the correct number of placeholders
@@ -504,19 +550,31 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     return rows.map((row) => row.room_id as UUID);
   }
 
-  async addParticipant(user_id: UUID, room_id: UUID): Promise<void> {
-    const sql =
-      "INSERT INTO participants (id, user_id, room_id) VALUES (?, ?, ?)";
-    const stmt = this.db.prepare(sql);
-    stmt.run([v4(), user_id, room_id]);
-    stmt.free();
+  async addParticipant(user_id: UUID, room_id: UUID): Promise<boolean> {
+    try {
+      const sql =
+        "INSERT INTO participants (id, user_id, room_id) VALUES (?, ?, ?)";
+      const stmt = this.db.prepare(sql);
+      stmt.run([v4(), user_id, room_id]);
+      stmt.free();
+      return true;
+    } catch (error) {
+      console.log("Error adding participant", error);
+      return false;
+    }
   }
 
-  async removeParticipantFromRoom(user_id: UUID, room_id: UUID): Promise<void> {
-    const sql = "DELETE FROM participants WHERE user_id = ? AND room_id = ?";
-    const stmt = this.db.prepare(sql);
-    stmt.run([user_id, room_id]);
-    stmt.free();
+  async removeParticipant(user_id: UUID, room_id: UUID): Promise<boolean> {
+    try {
+      const sql = "DELETE FROM participants WHERE user_id = ? AND room_id = ?";
+      const stmt = this.db.prepare(sql);
+      stmt.run([user_id, room_id]);
+      stmt.free();
+      return true;
+    } catch (error) {
+      console.log("Error removing participant", error);
+      return false;
+    }
   }
 
   async createRelationship(params: {

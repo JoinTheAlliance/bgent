@@ -8,10 +8,53 @@ import {
   GoalStatus,
   Account,
   type UUID,
+  Participant,
 } from "../types";
 import { DatabaseAdapter } from "../database";
 import { v4 as uuid } from "uuid";
 export class SupabaseDatabaseAdapter extends DatabaseAdapter {
+  async getRoom(room_id: UUID): Promise<UUID | null> {
+    const { data, error } = await this.supabase
+      .from("rooms")
+      .select("id")
+      .eq("id", room_id)
+      .single();
+
+    if (error) {
+      throw new Error(`Error getting room: ${error.message}`);
+    }
+
+    return data ? (data.id as UUID) : null;
+  }
+
+  async getParticipantsForAccount(user_id: UUID): Promise<Participant[]> {
+    const { data, error } = await this.supabase
+      .from("participants")
+      .select("*")
+      .eq("user_id", user_id);
+
+    if (error) {
+      throw new Error(
+        `Error getting participants for account: ${error.message}`,
+      );
+    }
+
+    return data as Participant[];
+  }
+
+  async getParticipantsForRoom(room_id: UUID): Promise<UUID[]> {
+    const { data, error } = await this.supabase
+      .from("participants")
+      .select("user_id")
+      .eq("room_id", room_id);
+
+    if (error) {
+      throw new Error(`Error getting participants for room: ${error.message}`);
+    }
+
+    return data.map((row) => row.user_id as UUID);
+  }
+
   supabase: SupabaseClient;
 
   constructor(supabaseUrl: string, supabaseKey: string) {
@@ -30,12 +73,13 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     return (data?.[0] as Account) || null;
   }
 
-  async createAccount(account: Account): Promise<void> {
-    // TODO: change to insert and run tests
+  async createAccount(account: Account): Promise<boolean> {
     const { error } = await this.supabase.from("accounts").upsert([account]);
     if (error) {
-      throw new Error(error.message);
+      console.error(error.message);
+      return false;
     }
+    return true;
   }
 
   async getActorDetails(params: { room_id: UUID }): Promise<Actor[]> {
@@ -51,8 +95,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
         )
         .eq("id", params.room_id);
 
-      console.log("response", response);
-
       if (response.error) {
         console.error("Error!" + response.error);
         return [];
@@ -62,7 +104,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       return data
         .map((room) =>
           room.participants.map((participant) => {
-            console.log("***** participant", participant);
             const user = participant.account as unknown as Actor;
             return {
               name: user?.name,
@@ -335,7 +376,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async getRoomsByParticipant(user_id: UUID): Promise<UUID[]> {
+  async getRoomsForParticipant(user_id: UUID): Promise<UUID[]> {
     const { data, error } = await this.supabase
       .from("participants")
       .select("room_id")
@@ -348,7 +389,7 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     return data.map((row) => row.room_id as UUID);
   }
 
-  async getRoomsByParticipants(userIds: UUID[]): Promise<UUID[]> {
+  async getRoomsForParticipants(userIds: UUID[]): Promise<UUID[]> {
     const { data, error } = await this.supabase
       .from("participants")
       .select("room_id")
@@ -390,17 +431,19 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     }
   }
 
-  async addParticipant(user_id: UUID, room_id: UUID): Promise<void> {
+  async addParticipant(user_id: UUID, room_id: UUID): Promise<boolean> {
     const { error } = await this.supabase
       .from("participants")
       .insert({ user_id: user_id, room_id: room_id });
 
     if (error) {
-      throw new Error(`Error adding participant: ${error.message}`);
+      console.error(`Error adding participant: ${error.message}`);
+      return false;
     }
+    return true;
   }
 
-  async removeParticipantFromRoom(user_id: UUID, room_id: UUID): Promise<void> {
+  async removeParticipant(user_id: UUID, room_id: UUID): Promise<boolean> {
     const { error } = await this.supabase
       .from("participants")
       .delete()
@@ -408,15 +451,17 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       .eq("room_id", room_id);
 
     if (error) {
-      throw new Error(`Error removing participant: ${error.message}`);
+      console.error(`Error removing participant: ${error.message}`);
+      return false;
     }
+    return true;
   }
 
   async createRelationship(params: {
     userA: UUID;
     userB: UUID;
   }): Promise<boolean> {
-    const allRoomData = await this.getRoomsByParticipants([
+    let allRoomData = await this.getRoomsForParticipants([
       params.userA,
       params.userB,
     ]);
@@ -431,18 +476,13 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       }
     }
 
-    // get the room_id from the room creation
-    const { data, error: roomError } = await this.supabase
-      .from("rooms")
-      .select("id")
-      .eq("name", `Room for ${params.userA} and ${params.userB}`)
-      .single();
+    allRoomData = await this.getRoomsForParticipants([
+      params.userA,
+      params.userB,
+    ]);
 
-    if (roomError) {
-      throw new Error("Room error: " + roomError.message);
-    }
+    const room_id = allRoomData[0];
 
-    const room_id = data.id as UUID;
     if (!room_id) {
       throw new Error("Room not found");
     }

@@ -105,7 +105,7 @@ describe("Evaluation Process", () => {
   test("Test that fact appears in evaluation handler", async () => {
     const { runtime } = await createRuntime({
       env: process.env as Record<string, string>,
-      recentMessageCount: 1,
+      conversationLength: 1,
       evaluators: [fact],
     });
 

@@ -63,7 +63,6 @@ export { BgentRuntime } from "./runtime";
 export { messageHandlerTemplate } from "./templates";
 
 // Export from ./src/types
-export { GoalStatus } from "./types";
 export type {
   Account,
   Action,
@@ -74,13 +73,16 @@ export type {
   EvaluationExample,
   Evaluator,
   Goal,
+  GoalStatus,
   Handler,
   Memory,
   Message,
   MessageExample,
   Objective,
+  Participant,
   Provider,
   Relationship,
+  Room,
   State,
   Validator,
 } from "./types";

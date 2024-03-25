@@ -18,7 +18,7 @@ export async function getOrCreateRelationship({
     console.log("Error fetching relationship", error);
   }
   // Check if a room already exists for the participants
-  const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+  const rooms = await runtime.databaseAdapter.getRoomsForParticipants([
     userA,
     userB,
   ]);

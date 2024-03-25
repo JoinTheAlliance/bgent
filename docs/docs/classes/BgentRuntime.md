@@ -24,6 +24,7 @@ Creates an instance of BgentRuntime.
 | `opts` | `Object` | The options for configuring the BgentRuntime. |
 | `opts.actions?` | [`Action`](../interfaces/Action.md)[] | Optional custom actions. |
 | `opts.agentId?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | Optional ID of the agent. |
+| `opts.conversationLength?` | `number` | The number of messages to hold in the recent message cache. |
 | `opts.databaseAdapter` | [`DatabaseAdapter`](DatabaseAdapter.md) | The database adapter used for interacting with the database. |
 | `opts.debugMode?` | `boolean` | If true, debug messages will be logged. |
 | `opts.embeddingModel?` | `string` | The model to use for embedding. |
@@ -31,7 +32,6 @@ Creates an instance of BgentRuntime.
 | `opts.fetch?` | `unknown` | Custom fetch function to use for making requests. |
 | `opts.model?` | `string` | The model to use for completion. |
 | `opts.providers?` | [`Provider`](../interfaces/Provider.md)[] | Optional context providers. |
-| `opts.recentMessageCount?` | `number` | The number of messages to hold in the recent message cache. |
 | `opts.serverUrl?` | `string` | The URL of the worker. |
 | `opts.token` | `string` | The JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker. |
 
@@ -278,6 +278,55 @@ The embedding of the input.
 
 ___
 
+### ensureParticipantExists
+
+▸ **ensureParticipantExists**(`user_id`, `room_id`): `Promise`\<`void`\>
+
+Ensure the existence of a participant in the room. If the participant does not exist, they are added to the room.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | The user ID to ensure the existence of. |
+| `room_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | - |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+**`Throws`**
+
+An error if the participant cannot be added.
+
+___
+
+### ensureRoomExists
+
+▸ **ensureRoomExists**(`user_id`, `room_id?`): `Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+Ensure the existence of a room between the agent and a user. If no room exists, a new room is created and the user
+and agent are added as participants. The room ID is returned.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `user_id` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | The user ID to create a room with. |
+| `room_id?` | \`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\` | - |
+
+#### Returns
+
+`Promise`\<\`$\{string}-$\{string}-$\{string}-$\{string}-$\{string}\`\>
+
+The room ID of the room between the agent and the user.
+
+**`Throws`**
+
+An error if the room cannot be created.
+
+___
+
 ### evaluate
 
 ▸ **evaluate**(`message`, `state?`): `Promise`\<`string`[]\>
@@ -299,9 +348,9 @@ The results of the evaluation.
 
 ___
 
-### getRecentMessageCount
+### getConversationLength
 
-▸ **getRecentMessageCount**(): `number`
+▸ **getConversationLength**(): `number`
 
 Get the number of messages that are kept in the conversation buffer.
 
