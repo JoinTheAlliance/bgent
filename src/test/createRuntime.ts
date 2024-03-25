@@ -16,13 +16,13 @@ import { SqlJsDatabaseAdapter } from "../lib/adapters/sqljs";
 
 export async function createRuntime({
   env,
-  recentMessageCount,
+  conversationLength,
   evaluators = [],
   actions = [],
   providers = [],
 }: {
   env?: Record<string, string> | NodeJS.ProcessEnv;
-  recentMessageCount?: number;
+  conversationLength?: number;
   evaluators?: Evaluator[];
   actions?: Action[];
   providers?: Provider[];
@@ -130,7 +130,7 @@ export async function createRuntime({
   const runtime = new BgentRuntime({
     debugMode: false,
     serverUrl: "https://api.openai.com/v1",
-    recentMessageCount,
+    conversationLength,
     token: env!.OPENAI_API_KEY!,
     actions: actions ?? [],
     evaluators: evaluators ?? [],

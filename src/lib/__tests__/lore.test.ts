@@ -14,12 +14,31 @@ describe("Lore", () => {
   let runtime: BgentRuntime;
   let room_id: UUID;
 
+  async function ensureRoomExists(runtime: BgentRuntime, user_id: UUID) {
+    const rooms = await runtime.databaseAdapter.getRoomsForParticipants([
+      user_id,
+      runtime.agentId,
+    ]);
+
+    if (rooms.length === 0) {
+      const room_id = await runtime.databaseAdapter.createRoom();
+      runtime.databaseAdapter.addParticipant(user_id, room_id);
+      runtime.databaseAdapter.addParticipant(runtime.agentId, room_id);
+      return room_id;
+    }
+    // else return the first room
+    else {
+      return rooms[0];
+    }
+  }
+
   beforeAll(async () => {
     const result = await createRuntime({
       env: process.env as Record<string, string>,
     });
     runtime = result.runtime;
     const user = result?.session?.user as User;
+    await ensureRoomExists(runtime, user?.id as UUID);
     const data = await getOrCreateRelationship({
       runtime,
       userA: user?.id as UUID,

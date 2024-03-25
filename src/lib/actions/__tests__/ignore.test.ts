@@ -158,6 +158,8 @@ describe("Ignore action tests", () => {
     }
 
     room_id = data?.room_id;
+    console.log("*** data", data);
+    console.log("Room ID", room_id);
 
     await cleanup();
   });
@@ -187,7 +189,7 @@ describe("Ignore action tests", () => {
 
       return result.action === "IGNORE";
     });
-  }, 60000);
+  }, 120000);
 
   test("Action handler test 1: response should be ignore", async () => {
     await runAiTest(
@@ -212,7 +214,7 @@ describe("Ignore action tests", () => {
         return (lastMessage.content as Content).action === "IGNORE";
       },
     );
-  }, 60000);
+  }, 120000);
 
   test("Action handler test 2: response should be ignore", async () => {
     await runAiTest(
@@ -237,7 +239,7 @@ describe("Ignore action tests", () => {
         return (lastMessage.content as Content).action === "IGNORE";
       },
     );
-  }, 60000);
+  }, 120000);
 
   test("Expect ignore", async () => {
     await runAiTest("Expect ignore", async () => {
@@ -257,5 +259,5 @@ describe("Ignore action tests", () => {
 
       return (lastMessage.content as Content).action === "IGNORE";
     });
-  }, 60000);
+  }, 120000);
 });

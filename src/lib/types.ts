@@ -210,3 +210,19 @@ export interface Account {
   email?: string;
   avatar_url?: string;
 }
+
+/**
+ * Represents a participant in a room, including their ID and account details.
+ */
+export interface Participant {
+  id: UUID;
+  account: Account;
+}
+
+/**
+ * Represents a room or conversation context, including its ID and a list of participants.
+ */
+export interface Room {
+  id: UUID;
+  participants: Participant[];
+}

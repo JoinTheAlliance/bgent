@@ -26,16 +26,15 @@ import {
   formatActionNames,
   formatActions,
 } from "./actions";
-// import { formatGoalsAsString, getGoals } from "./goals";
+import { UUID } from "crypto";
+import { zeroUuid } from "./constants";
+import { DatabaseAdapter } from "./database";
 import { formatFacts } from "./evaluators/fact";
 import { formatGoalsAsString, getGoals } from "./goals";
 import { formatLore, getLore } from "./lore";
 import { formatActors, formatMessages, getActorDetails } from "./messages";
 import { defaultProviders, getProviders } from "./providers";
-import { type Actor, /*type Goal,*/ type Memory } from "./types";
-import { DatabaseAdapter } from "./database";
-import { UUID } from "crypto";
-import { zeroUuid } from "./constants";
+import { type Actor, type Memory } from "./types";
 
 /**
  * Represents the runtime environment for an agent, handling message processing,
@@ -46,7 +45,7 @@ export class BgentRuntime {
    * Default count for recent messages to be kept in memory.
    * @private
    */
-  readonly #recentMessageCount = 32 as number;
+  readonly #conversationLength = 32 as number;
   /**
    * The ID of the agent
    */
@@ -137,7 +136,7 @@ export class BgentRuntime {
   /**
    * Creates an instance of BgentRuntime.
    * @param opts - The options for configuring the BgentRuntime.
-   * @param opts.recentMessageCount - The number of messages to hold in the recent message cache.
+   * @param opts.conversationLength - The number of messages to hold in the recent message cache.
    * @param opts.token - The JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker.
    * @param opts.debugMode - If true, debug messages will be logged.
    * @param opts.serverUrl - The URL of the worker.
@@ -152,7 +151,7 @@ export class BgentRuntime {
    */
 
   constructor(opts: {
-    recentMessageCount?: number; // number of messages to hold in the recent message cache
+    conversationLength?: number; // number of messages to hold in the recent message cache
     agentId?: UUID; // ID of the agent
     token: string; // JWT token, can be a JWT token if outside worker, or an OpenAI token if inside worker
     debugMode?: boolean; // If true, will log debug messages
@@ -165,8 +164,8 @@ export class BgentRuntime {
     databaseAdapter: DatabaseAdapter; // The database adapter used for interacting with the database
     fetch?: typeof fetch | unknown;
   }) {
-    this.#recentMessageCount =
-      opts.recentMessageCount ?? this.#recentMessageCount;
+    this.#conversationLength =
+      opts.conversationLength ?? this.#conversationLength;
     this.debugMode = opts.debugMode ?? false;
     this.databaseAdapter = opts.databaseAdapter;
     this.agentId = opts.agentId ?? zeroUuid;
@@ -201,8 +200,8 @@ export class BgentRuntime {
    * Get the number of messages that are kept in the conversation buffer.
    * @returns The number of recent messages to be kept in memory.
    */
-  getRecentMessageCount() {
-    return this.#recentMessageCount;
+  getConversationLength() {
+    return this.#conversationLength;
   }
 
   /**
@@ -453,6 +452,54 @@ export class BgentRuntime {
   }
 
   /**
+   * Ensure the existence of a participant in the room. If the participant does not exist, they are added to the room.
+   * @param user_id - The user ID to ensure the existence of.
+   * @throws An error if the participant cannot be added.
+   */
+  async ensureParticipantExists(user_id: UUID, room_id: UUID) {
+    const participants =
+      await this.databaseAdapter.getParticipantsForAccount(user_id);
+
+    if (participants?.length === 0) {
+      await this.databaseAdapter.addParticipant(user_id, room_id);
+    }
+  }
+
+  /**
+   * Ensure the existence of a room between the agent and a user. If no room exists, a new room is created and the user
+   * and agent are added as participants. The room ID is returned.
+   * @param user_id - The user ID to create a room with.
+   * @returns The room ID of the room between the agent and the user.
+   * @throws An error if the room cannot be created.
+   */
+  async ensureRoomExists(user_id: UUID, room_id?: UUID) {
+    if (room_id) {
+      // check if room exists
+      const created = await this.databaseAdapter.createRoom(room_id);
+      if (created) {
+        this.databaseAdapter.addParticipant(user_id, room_id);
+        this.databaseAdapter.addParticipant(this.agentId, room_id);
+      }
+      return room_id;
+    }
+    const rooms = await this.databaseAdapter.getRoomsForParticipants([
+      user_id,
+      this.agentId,
+    ]);
+
+    if (rooms.length === 0) {
+      const room_id = await this.databaseAdapter.createRoom();
+      this.databaseAdapter.addParticipant(user_id, room_id);
+      this.databaseAdapter.addParticipant(this.agentId, room_id);
+      return room_id;
+    }
+    // else return the first room
+    else {
+      return rooms[0];
+    }
+  }
+
+  /**
    * Compose the state of the agent into an object that can be passed or used for response generation.
    * @param message The message to compose the state from.
    * @returns The state of the agent.
@@ -463,9 +510,9 @@ export class BgentRuntime {
   ) {
     const { user_id, room_id } = message;
 
-    const recentMessageCount = this.getRecentMessageCount();
-    const recentFactsCount = Math.ceil(this.getRecentMessageCount() / 2);
-    const relevantFactsCount = Math.ceil(this.getRecentMessageCount() / 2);
+    const conversationLength = this.getConversationLength();
+    const recentFactsCount = Math.ceil(this.getConversationLength() / 2);
+    const relevantFactsCount = Math.ceil(this.getConversationLength() / 2);
 
     const [
       actorsData,
@@ -477,7 +524,7 @@ export class BgentRuntime {
       getActorDetails({ runtime: this, room_id }),
       this.messageManager.getMemories({
         room_id,
-        count: recentMessageCount,
+        count: conversationLength,
         unique: false,
       }),
       this.factManager.getMemories({
@@ -518,8 +565,6 @@ export class BgentRuntime {
       });
     }
 
-    console.log("**** actorsData\n", actorsData);
-
     const actors = formatActors({ actors: actorsData ?? [] });
 
     const recentMessages = formatMessages({
@@ -530,8 +575,6 @@ export class BgentRuntime {
         return newMemory;
       }),
     });
-
-    console.log("**** recentMessages", recentMessages);
 
     const recentFacts = formatFacts(recentFactsData);
     const relevantFacts = formatFacts(relevantFactsData);
