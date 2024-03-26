@@ -228,6 +228,7 @@ Send a message to the OpenAI API for completion.
 | `opts.model` | `undefined` \| `string` | `undefined` | The model to use for completion. |
 | `opts.presence_penalty` | `undefined` \| `number` | `0.0` | The presence penalty to apply to the completion. |
 | `opts.stop` | `undefined` \| `never`[] | `[]` | A list of strings to stop the completion at. |
+| `opts.temperature` | `undefined` \| `number` | `0.7` | The temperature to apply to the completion. |
 
 #### Returns
 

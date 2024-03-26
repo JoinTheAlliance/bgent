@@ -404,7 +404,6 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
 
   async createRoom(room_id?: UUID): Promise<UUID> {
     room_id = room_id ?? (uuid() as UUID);
-    console.log("creating room with id", room_id);
     const { data, error } = await this.supabase.rpc("create_room", {
       room_id,
     });
@@ -461,43 +460,46 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
     userA: UUID;
     userB: UUID;
   }): Promise<boolean> {
-    let allRoomData = await this.getRoomsForParticipants([
+    const allRoomData = await this.getRoomsForParticipants([
       params.userA,
       params.userB,
     ]);
+
+    let room_id: UUID;
 
     if (!allRoomData || allRoomData.length === 0) {
-      const { error: roomsError } = await this.supabase
+      // If no existing room is found, create a new room
+      const { data: newRoomData, error: roomsError } = await this.supabase
         .from("rooms")
-        .insert({});
+        .insert({})
+        .single();
 
       if (roomsError) {
-        throw new Error("Room error: " + roomsError.message);
+        throw new Error("Room creation error: " + roomsError.message);
       }
+
+      // @ts-expect-error - newRoomData is not null
+      room_id = newRoomData?.id as UUID;
+    } else {
+      // If an existing room is found, use the first room's ID
+      room_id = allRoomData[0];
     }
 
-    allRoomData = await this.getRoomsForParticipants([
-      params.userA,
-      params.userB,
-    ]);
-
-    const room_id = allRoomData[0];
-
-    if (!room_id) {
-      throw new Error("Room not found");
-    }
     const { error: participantsError } = await this.supabase
       .from("participants")
       .insert([
         { user_id: params.userA, room_id },
         { user_id: params.userB, room_id },
       ]);
-    if (participantsError) {
-      throw new Error(participantsError.message);
-    }
-    // then create a relationship between the two users with the room_id as the relationship's room_id
 
-    const { error } = await this.supabase
+    if (participantsError) {
+      throw new Error(
+        "Participants creation error: " + participantsError.message,
+      );
+    }
+
+    // Create or update the relationship between the two users
+    const { error: relationshipError } = await this.supabase
       .from("relationships")
       .upsert({
         user_a: params.userA,
@@ -508,8 +510,10 @@ export class SupabaseDatabaseAdapter extends DatabaseAdapter {
       .eq("user_a", params.userA)
       .eq("user_b", params.userB);
 
-    if (error) {
-      throw new Error("Relationship error: " + error.message);
+    if (relationshipError) {
+      throw new Error(
+        "Relationship creation error: " + relationshipError.message,
+      );
     }
 
     return true;

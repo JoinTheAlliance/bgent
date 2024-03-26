@@ -245,7 +245,7 @@ export class BgentRuntime {
     model = this.model,
     frequency_penalty = 0.0,
     presence_penalty = 0.0,
-    temperature = 0.7
+    temperature = 0.7,
   }) {
     const requestOptions = {
       method: "POST",

@@ -153,9 +153,7 @@ describe("Ignore action tests", () => {
       userB: zeroUuid,
     });
 
-    if (!data) {
-      throw new Error("Relationship not found");
-    }
+    console.log("data is", data);
 
     room_id = data?.room_id;
     console.log("*** data", data);

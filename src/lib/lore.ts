@@ -41,7 +41,7 @@ export async function addLore({
       user_id,
       content: { content: content.content, source },
       room_id,
-      embedding: embedding,
+      embedding,
     });
   } catch (e) {
     console.error("Error adding lore", e);

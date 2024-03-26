@@ -45,6 +45,9 @@ describe("Lore", () => {
       userB: zeroUuid,
     });
 
+    // create a room at zeroUuid
+    await runtime.databaseAdapter.createRoom(zeroUuid);
+
     if (!data) {
       throw new Error("Relationship not found");
     }
