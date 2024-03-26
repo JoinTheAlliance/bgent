@@ -11,9 +11,7 @@ export async function getActorDetails({
   runtime: BgentRuntime;
   room_id: UUID;
 }) {
-  console.log("getActorDetails");
   const actors = await runtime.databaseAdapter.getActorDetails({ room_id });
-  console.log("actors", actors);
   return actors as Actor[];
 }
 

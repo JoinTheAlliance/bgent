@@ -246,7 +246,7 @@ export class BgentRuntime {
     model = this.model,
     frequency_penalty = 0.0,
     presence_penalty = 0.0,
-    temperature = 0.7
+    temperature = 0.7,
   }) {
     const requestOptions = {
       method: "POST",
@@ -518,8 +518,6 @@ export class BgentRuntime {
       });
     }
 
-    console.log("**** actorsData\n", actorsData);
-
     const actors = formatActors({ actors: actorsData ?? [] });
 
     const recentMessages = formatMessages({
@@ -530,8 +528,6 @@ export class BgentRuntime {
         return newMemory;
       }),
     });
-
-    console.log("**** recentMessages", recentMessages);
 
     const recentFacts = formatFacts(recentFactsData);
     const relevantFacts = formatFacts(relevantFactsData);

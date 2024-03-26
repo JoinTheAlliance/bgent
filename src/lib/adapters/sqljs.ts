@@ -455,6 +455,7 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
   }
 
   async createRoom(room_id?: UUID): Promise<UUID> {
+    room_id = room_id || (v4() as UUID);
     try {
       const sql = "INSERT INTO rooms (id) VALUES (?)";
       const stmt = this.db.prepare(sql);
@@ -538,15 +539,21 @@ export class SqlJsDatabaseAdapter extends DatabaseAdapter {
     userA: UUID;
     userB: UUID;
   }): Promise<Relationship | null> {
-    const sql =
-      "SELECT * FROM relationships WHERE (user_a = ? AND user_b = ?) OR (user_a = ? AND user_b = ?)";
-    const stmt = this.db.prepare(sql);
-    stmt.bind([params.userA, params.userB, params.userB, params.userA]);
-    const relationship = stmt.getAsObject() as unknown as
-      | Relationship
-      | undefined;
-    stmt.free();
-    return relationship || null;
+    let relationship: Relationship | null = null;
+    try {
+      const sql =
+        "SELECT * FROM relationships WHERE (user_a = ? AND user_b = ?) OR (user_a = ? AND user_b = ?)";
+      const stmt = this.db.prepare(sql);
+      stmt.bind([params.userA, params.userB, params.userB, params.userA]);
+
+      if (stmt.step()) {
+        relationship = stmt.getAsObject() as unknown as Relationship;
+      }
+      stmt.free();
+    } catch (error) {
+      console.log("Error fetching relationship", error);
+    }
+    return relationship;
   }
 
   async getRelationships(params: { user_id: UUID }): Promise<Relationship[]> {

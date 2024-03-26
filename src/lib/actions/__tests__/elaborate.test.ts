@@ -64,20 +64,9 @@ describe("User Profile", () => {
       userB: zeroUuid,
     });
 
-    if (!data) {
-      throw new Error("Relationship not found");
-    }
+    console.log("data", data);
 
-    const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
-      user.id as UUID,
-      zeroUuid,
-    ]);
-
-    if (!rooms || rooms.length === 0) {
-      throw new Error("Room not found");
-    }
-
-    room_id = rooms[0];
+    room_id = data.room_id;
 
     await cleanup();
   });
