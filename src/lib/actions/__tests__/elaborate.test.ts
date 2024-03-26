@@ -64,8 +64,6 @@ describe("User Profile", () => {
       userB: zeroUuid,
     });
 
-    console.log("data", data);
-
     room_id = data.room_id;
 
     await cleanup();

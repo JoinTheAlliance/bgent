@@ -174,7 +174,7 @@ async function ensureParticipantExists(
 }
 
 async function ensureRoomExists(runtime: BgentRuntime, user_id: UUID) {
-  const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+  const rooms = await runtime.databaseAdapter.getRoomsForParticipants([
     user_id,
     runtime.agentId,
   ]);

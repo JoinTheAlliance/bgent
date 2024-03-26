@@ -28,20 +28,23 @@ export async function getOrCreateRelationship({
   }
 
   // Check if a room already exists for the participants
-  const rooms = await runtime.databaseAdapter.getRoomsByParticipants([
+  const rooms = await runtime.databaseAdapter.getRoomsForParticipants([
     userA,
     userB,
   ]);
 
   let room_id: UUID;
   if (!rooms || rooms.length === 0) {
+    console.log("No room found for participants");
     // If no room exists, create a new room for the relationship
     room_id = await runtime.databaseAdapter.createRoom();
+    console.log("Created room", room_id);
 
     // Add participants to the newly created room
     await runtime.databaseAdapter.addParticipant(userA, room_id);
     await runtime.databaseAdapter.addParticipant(userB, room_id);
   } else {
+    console.log("Room found for participants", rooms[0]);
     // If a room already exists, use the existing room
     room_id = rooms[0];
   }
@@ -59,5 +62,5 @@ export async function getOrCreateRelationship({
       throw new Error("Failed to fetch the created relationship");
     }
   }
-  return { ...relationship, room_id: room_id };
+  return { ...relationship, room_id };
 }
