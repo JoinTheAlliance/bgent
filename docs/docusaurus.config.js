@@ -95,20 +95,6 @@ const config = {
             items: [
             ]
           },
-
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/jointhealliance'
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/WeWillBuildIt'
-              }
-            ]
-          },
           {
             title: 'More',
             items: [
