@@ -13,6 +13,7 @@ import {
 import { User } from "./types";
 import { load } from "../lib/adapters/sqlite/sqlite_vss";
 import { SqlJsDatabaseAdapter } from "../lib/adapters/sqljs";
+import { MongoDbDatabaseAdapter } from "../lib/adapters/mongodb";
 
 export async function createRuntime({
   env,
@@ -70,6 +71,32 @@ export async function createRuntime({
         // Load sqlite-vss
         // load((adapter as SqliteDatabaseAdapter).db);
         // Create a test user and session
+        user = {
+          id: zeroUuid,
+          email: "test@example.com",
+        } as User;
+        session = {
+          user: user,
+        };
+      }
+      break;
+    case "mongodb":
+      {
+        const module = await import("mongodb");
+        const client = new module.MongoClient(
+          env?.MONGODB_URI ?? "mongodb://localhost:27017",
+        );
+        adapter = await MongoDbDatabaseAdapter.connect(
+          client,
+          env?.MONGODB_DATABASE ?? "bgent",
+          {
+            vectorSearch: {
+              useAtlasVectorSearch: env?.MONGODB_VECTOR_SEARCH === "atlas",
+              indexName:
+                env?.MONGODB_VECTOR_INDEX ?? "memory_embedding_vector_index",
+            },
+          },
+        );
         user = {
           id: zeroUuid,
           email: "test@example.com",

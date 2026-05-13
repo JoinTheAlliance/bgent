@@ -29,6 +29,7 @@ A flexible, scalable and customizable agent for production apps. Comes with batt
 - 📦 Comes with ready-to-deploy examples
 
 ## What can I use it for?
+
 - 🤖 Chatbots
 - 🕵️ Autonomous Agents
 - 📈 Business process handling
@@ -49,6 +50,7 @@ npm install bgent
 
 # Select your database adapter
 npm install sqlite-vss better-sqlite3 # for sqlite (simple, for local development)
+npm install mongodb # for MongoDB or Atlas Vector Search
 npm install @supabase/supabase-js # for supabase (more complicated but can be deployed at scale)
 ```
 
@@ -71,7 +73,9 @@ You can use SQLite for local development. This is the easiest way to get started
 ```typescript
 import { BgentRuntime, SqliteDatabaseAdapter } from "bgent";
 import { Database } from "sqlite3";
-const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(new Database(":memory:"));
+const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(
+  new Database(":memory:"),
+);
 
 const runtime = new BgentRuntime({
   serverUrl: "https://api.openai.com/v1",
@@ -80,6 +84,74 @@ const runtime = new BgentRuntime({
   // ... other options
 });
 ```
+
+### MongoDB Local Setup
+
+MongoDB can be used for local development without Supabase. Start a local MongoDB server, then pass a connected database to the adapter:
+
+```bash
+docker run --name bgent-mongo -p 27017:27017 -d mongo:7
+```
+
+```typescript
+import { BgentRuntime, MongoDbDatabaseAdapter } from "bgent";
+import { MongoClient } from "mongodb";
+
+const client = new MongoClient(
+  process.env.MONGODB_URI ?? "mongodb://localhost:27017",
+);
+await client.connect();
+
+const mongoDatabaseAdapter = new MongoDbDatabaseAdapter(client.db("bgent"));
+
+const runtime = new BgentRuntime({
+  serverUrl: "https://api.openai.com/v1",
+  token: process.env.OPENAI_API_KEY,
+  databaseAdapter: mongoDatabaseAdapter,
+  // ... other options
+});
+```
+
+For the test helper, set:
+
+```bash
+TEST_DATABASE_CLIENT=mongodb
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DATABASE=bgent
+```
+
+#### MongoDB Atlas Vector Search
+
+The MongoDB adapter uses local cosine similarity by default so it works with local MongoDB. To use Atlas Vector Search, create a vector search index on the `memories` collection with the `embedding` vector field and filter fields used by bgent:
+
+```json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 1536,
+      "similarity": "cosine"
+    },
+    { "type": "filter", "path": "type" },
+    { "type": "filter", "path": "room_id" },
+    { "type": "filter", "path": "unique" }
+  ]
+}
+```
+
+Then enable Atlas vector search on the adapter:
+
+```typescript
+const mongoDatabaseAdapter = new MongoDbDatabaseAdapter(client.db("bgent"), {
+  vectorSearch: {
+    useAtlasVectorSearch: true,
+    indexName: "memory_embedding_vector_index",
+  },
+});
+```
+
+Atlas `$vectorSearch` requires an Atlas cluster that supports Vector Search. If Atlas vector search is unavailable, the adapter falls back to local cosine similarity unless `fallbackToCosine` is set to `false`.
 
 ### Supabase Local Setup
 
@@ -136,9 +208,16 @@ npm run shell # start the shell in another terminal to talk to the default agent
 ## Usage
 
 ```typescript
-import { BgentRuntime, SupabaseDatabaseAdapter, SqliteDatabaseAdapter } from "bgent";
+import {
+  BgentRuntime,
+  SupabaseDatabaseAdapter,
+  SqliteDatabaseAdapter,
+  MongoDbDatabaseAdapter,
+} from "bgent";
 
-const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(new Database(":memory:"));
+const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(
+  new Database(":memory:"),
+);
 
 // You can also use Supabase like this
 // const supabaseDatabaseAdapter = new SupabaseDatabaseAdapter(
@@ -184,10 +263,16 @@ bgentRuntime.registerEvaluator(fact);
 ```
 
 ## Custom Data Sources
+
 If you want to add custom data into the context that is sent to the LLM, you can create a `Provider` and add it to the runtime.
 
 ```typescript
-import { type BgentRuntime, type Message, type Provider, type State } from "bgent";
+import {
+  type BgentRuntime,
+  type Message,
+  type Provider,
+  type State,
+} from "bgent";
 
 const time: Provider = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -202,7 +287,6 @@ const runtime = new BgentRuntime({
   providers: [time],
 });
 ```
-
 
 ## Handling User Input
 
