@@ -71,6 +71,7 @@
     "ansi-colors": "^4.1.3",
     "better-sqlite3": "^9.4.3",
     "figlet": "^1.7.0",
+    "firebase-admin": "^13.9.0",
     "inquirer": "^9.2.14",
     "sql.js": "^1.10.2",
     "sqlite-vss": "^0.1.2",

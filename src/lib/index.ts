@@ -53,6 +53,11 @@ export {
 export { SupabaseDatabaseAdapter } from "./adapters/supabase";
 export { SqliteDatabaseAdapter } from "./adapters/sqlite";
 export { SqlJsDatabaseAdapter } from "./adapters/sqljs";
+export {
+  FirebaseDatabaseAdapter,
+  type FirebaseDatabaseAdapterConfig,
+  type FirebaseVectorDistanceMeasure,
+} from "./adapters/firebase";
 
 export { DatabaseAdapter } from "./database";
 

@@ -50,6 +50,7 @@ npm install bgent
 # Select your database adapter
 npm install sqlite-vss better-sqlite3 # for sqlite (simple, for local development)
 npm install @supabase/supabase-js # for supabase (more complicated but can be deployed at scale)
+npm install firebase-admin # for Firebase Cloud Firestore
 ```
 
 ### Set up environment variables
@@ -62,6 +63,7 @@ Copy and paste the `.dev.vars.example` to `.dev.vars` and fill in the environmen
 SUPABASE_URL="https://your-supabase-url.supabase.co"
 SUPABASE_SERVICE_API_KEY="your-supabase-service-api-key"
 OPENAI_API_KEY="your-openai-api-key"
+FIREBASE_PROJECT_ID="your-firebase-project-id"
 ```
 
 ### SQLite Local Setup (Easiest)
@@ -114,6 +116,28 @@ This library uses Supabase as a database. You can set up a free account at [supa
 
 Once you've set up your Supabase project, you can find your API key by going to the "Settings" tab and then "API". You will need to set the `SUPABASE_URL` and `SUPABASE_SERVICE_API_KEY` environment variables in your `.dev.vars` file.
 
+### Firebase Cloud Firestore Setup
+
+Bgent also includes a Firebase adapter backed by Cloud Firestore. It uses the Firebase Admin SDK, so it should run in a trusted server environment with Application Default Credentials or an already initialized Firebase Admin app.
+
+```typescript
+import { BgentRuntime, FirebaseDatabaseAdapter } from "bgent";
+
+const firebaseDatabaseAdapter = new FirebaseDatabaseAdapter({
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  collectionPrefix: "bgent",
+});
+
+const runtime = new BgentRuntime({
+  serverUrl: "https://api.openai.com/v1",
+  token: process.env.OPENAI_API_KEY,
+  databaseAdapter: firebaseDatabaseAdapter,
+  // ... other options
+});
+```
+
+For memory retrieval, the adapter stores embeddings in Firestore and can use Firestore nearest-neighbor vector search when you create a vector index on the `embedding` field. See [Firebase adapter setup](./docs/docs/firebase.md) for collection layout, vector index commands, and notes for using the Firebase adapter with Google Vertex AI Extensions.
+
 ## Local Model Setup
 
 While bgent uses ChatGPT 3.5 by default, you can use a local model by setting the `serverUrl` to a local endpoint. The [LocalAI](https://localai.io/) project is a great way to run a local model with a compatible API endpoint.
@@ -136,7 +160,7 @@ npm run shell # start the shell in another terminal to talk to the default agent
 ## Usage
 
 ```typescript
-import { BgentRuntime, SupabaseDatabaseAdapter, SqliteDatabaseAdapter } from "bgent";
+import { BgentRuntime, FirebaseDatabaseAdapter, SupabaseDatabaseAdapter, SqliteDatabaseAdapter } from "bgent";
 
 const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(new Database(":memory:"));
 
@@ -145,6 +169,11 @@ const sqliteDatabaseAdapter = new SqliteDatabaseAdapter(new Database(":memory:")
 //   process.env.SUPABASE_URL,
 //   process.env.SUPABASE_SERVICE_API_KEY)
 //   ;
+
+// Or use Firebase Cloud Firestore
+// const firebaseDatabaseAdapter = new FirebaseDatabaseAdapter({
+//   projectId: process.env.FIREBASE_PROJECT_ID,
+// });
 
 const runtime = new BgentRuntime({
   serverUrl: "https://api.openai.com/v1",

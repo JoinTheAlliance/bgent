@@ -5,13 +5,18 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { defineConfig } from "rollup";
 import pkg from "./package.json";
 
+const externalDependencies = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {}),
+];
+
 export default defineConfig([
   {
     input: "src/index.ts",
-    external: [
-      ...Object.keys(pkg.dependencies || {}),
-      ...Object.keys(pkg.peerDependencies || {}),
-    ],
+    external: (id) =>
+      externalDependencies.some(
+        (dependency) => id === dependency || id.startsWith(`${dependency}/`),
+      ),
     output: [
       {
         file: pkg.main,
