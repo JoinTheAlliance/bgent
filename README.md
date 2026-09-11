@@ -50,6 +50,7 @@ npm install bgent
 # Select your database adapter
 npm install sqlite-vss better-sqlite3 # for sqlite (simple, for local development)
 npm install @supabase/supabase-js # for supabase (more complicated but can be deployed at scale)
+npm install mongodb # for MongoDB (local or Atlas, with vector search)
 ```
 
 ### Set up environment variables
@@ -113,6 +114,27 @@ This library uses Supabase as a database. You can set up a free account at [supa
 - Step 8: Select the “Databases” tab from the left navigation menu to verify all of the tables have been added properly.
 
 Once you've set up your Supabase project, you can find your API key by going to the "Settings" tab and then "API". You will need to set the `SUPABASE_URL` and `SUPABASE_SERVICE_API_KEY` environment variables in your `.dev.vars` file.
+
+### MongoDB Local Setup
+
+You can also use MongoDB as your database adapter — no Docker or Supabase account needed. Point it at any local `mongod` (or `mongodb-memory-server` for a fully in-process instance), or an Atlas cluster when you want vector search at scale.
+
+```typescript
+import { BgentRuntime, MongoDatabaseAdapter } from "bgent";
+
+const adapter = new MongoDatabaseAdapter("mongodb://localhost:27017", "bgent");
+await adapter.connect();
+
+const runtime = new BgentRuntime({
+  serverUrl: "https://api.openai.com/v1",
+  token: process.env.OPENAI_API_KEY,
+  databaseAdapter: adapter,
+  model: "gpt-3.5-turbo",
+  embeddingModel: "text-embedding-3-small",
+});
+```
+
+See the full guide at [mongodb-quickstart](https://bgent.org/docs/mongodb-quickstart).
 
 ## Local Model Setup
 
