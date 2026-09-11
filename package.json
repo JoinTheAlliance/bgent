@@ -72,6 +72,7 @@
     "better-sqlite3": "^9.4.3",
     "figlet": "^1.7.0",
     "inquirer": "^9.2.14",
+    "mongodb": "^7.6.0",
     "sql.js": "^1.10.2",
     "sqlite-vss": "^0.1.2",
     "unique-names-generator": "^4.7.1",
