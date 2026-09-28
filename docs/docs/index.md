@@ -50,7 +50,7 @@ npx bgent
 
 ## Installation
 
-Currently bgent is dependent on Supabase for local development. You can install it with the following command:
+bgent supports SQLite, Supabase, and MongoDB database adapters. Install it with the following command:
 
 ```bash
 npm install bgent
@@ -62,7 +62,7 @@ npm install @supabase/supabase-js # for supabase (more complicated but can be de
 
 ### Set up environment variables
 
-You will need a Supbase account, as well as an OpenAI developer account.
+The Supabase adapter needs a Supabase account. Model calls need an AI provider token; the MongoDB integration tests use precomputed vectors and need no model account.
 
 Copy and paste the `.dev.vars.example` to `.dev.vars` and fill in the environment variables:
 
@@ -88,6 +88,10 @@ const runtime = new BgentRuntime({
   // ... other options
 });
 ```
+
+### MongoDB Local Setup
+
+Use the exported `MongoDBDatabaseAdapter` with a connected MongoDB Node.js client. It supports the complete adapter contract and native MongoDB Vector Search. The [MongoDB quickstart](https://github.com/JoinTheAlliance/bgent/blob/main/docs/docs/mongodb.md) includes a pinned local Docker deployment, initialization, and real database/vector tests without a cloud account.
 
 ### Supabase Local Setup
 

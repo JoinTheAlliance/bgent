@@ -23,7 +23,8 @@
     "test:coverage": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --coverage",
     "reset-profile": "rimraf ~/.cjrc",
     "deploy": "wrangler deploy",
-    "postinstall": "cd docs && npm install"
+    "postinstall": "cd docs && npm install",
+    "test:mongodb": "MONGODB_TEST_URI=${MONGODB_TEST_URI:-mongodb://127.0.0.1:27160/?directConnection=true} npm test -- --testPathPattern=mongodb.integration"
   },
   "bin": {
     "bgent": "./scripts/shell.mjs"
@@ -72,6 +73,7 @@
     "better-sqlite3": "^9.4.3",
     "figlet": "^1.7.0",
     "inquirer": "^9.2.14",
+    "mongodb": "6.20.0",
     "sql.js": "^1.10.2",
     "sqlite-vss": "^0.1.2",
     "unique-names-generator": "^4.7.1",

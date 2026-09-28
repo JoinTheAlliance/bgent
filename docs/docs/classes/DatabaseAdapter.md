@@ -19,6 +19,8 @@ like accounts, memories, actors, goals, and rooms.
 
   ↳ [`SqlJsDatabaseAdapter`](SqlJsDatabaseAdapter.md)
 
+  ↳ [`MongoDBDatabaseAdapter`](MongoDBDatabaseAdapter.md)
+
 ## Constructors
 
 ### constructor
