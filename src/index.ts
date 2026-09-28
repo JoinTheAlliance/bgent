@@ -18,6 +18,8 @@ export { DatabaseAdapter } from "./lib/database";
 export { SupabaseDatabaseAdapter } from "./lib/adapters/supabase";
 export { SqliteDatabaseAdapter } from "./lib/adapters/sqlite";
 export { SqlJsDatabaseAdapter } from "./lib/adapters/sqljs";
+export { MongoDBDatabaseAdapter } from "./lib/adapters/mongodb";
+export type { MongoDBAdapterOptions } from "./lib/adapters/mongodb";
 
 import wait from "./lib/actions/wait";
 export { wait };

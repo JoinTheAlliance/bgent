@@ -117,3 +117,7 @@ npm run shell # start the shell in another terminal to talk to the default agent
 
 ### what next?
 it is good to interact with the  bgent and read more about the documentation on https://www.bgent.org/docs
+
+## MongoDB
+
+See [MongoDB local setup and vector search](docs/mongodb.md) for the MongoDB adapter, a pinned Docker deployment, and integration tests using precomputed embeddings.

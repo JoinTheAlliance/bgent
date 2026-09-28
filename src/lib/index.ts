@@ -53,6 +53,8 @@ export {
 export { SupabaseDatabaseAdapter } from "./adapters/supabase";
 export { SqliteDatabaseAdapter } from "./adapters/sqlite";
 export { SqlJsDatabaseAdapter } from "./adapters/sqljs";
+export { MongoDBDatabaseAdapter } from "./adapters/mongodb";
+export type { MongoDBAdapterOptions } from "./adapters/mongodb";
 
 export { DatabaseAdapter } from "./database";
 
